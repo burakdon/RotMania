@@ -122,7 +122,7 @@ export const CARDS: Card[] = [
     { head: 'goat', body: 'blob', c1: '#f1f3f5', c2: '#e03131', c3: '#f1f3f5', arms: 'nubs', legs: 'nubs', eyes: 'sleepy', acc: ['horns', 'scarf'] }),
   c('lumachina', 'Lumachina Lentissima', 'beast', 'OW', 'GY', 1, 3, 8,
     each({ k: 'craftRow' }), 'Fast enough. Slow is just fast with better memories.',
-    { head: 'snail', body: 'none', c1: '#e599f7', c2: '#9c6644', legs: 'none', arms: 'none', eyes: 'big' }),
+    { head: 'snail', body: 'none', c1: '#e599f7', c2: '#ffd8a8', legs: 'none', arms: 'none', eyes: 'big' }),
   c('gufo', 'Gufo Gufissimo', 'beast', 'C', 'PP', 4, 2, 25,
     each({ k: 'tuckDraw' }), 'Reads every terms of service. Every single one.',
     { head: 'owl', body: 'blob', c1: '#9c6644', c2: '#ffe8cc', c3: '#9c6644', arms: 'wings', legs: 'nubs', eyes: 'big', acc: ['glasses'] }),
