@@ -82,13 +82,16 @@ describe('deprogramming', () => {
 });
 
 describe('check-ins', () => {
-  it('unfed agents cost points at the end of night 2', () => {
+  it('unfed agents cost points at the first Check-in (after night 3)', () => {
     let s = toPlay(seated(2, 7));
     s.players[0].res.grass = 0;
     s.players[0].allies = [];
     let guard = 0;
-    while (s.round < 2 && s.phase === 'play') {
-      if (s.prompt?.player === 0 && s.prompt.type === 'place') s = apply(s, { type: 'place', space: 'oddjobs', res: 'pcb' });
+    while (s.round < 3 && s.phase === 'play') {
+      if (s.prompt?.player === 0 && s.prompt.type === 'place') {
+        s.players[0].res.grass = 0;
+        s = apply(s, { type: 'place', space: 'oddjobs', res: 'pcb' });
+      }
       else s = apply(s, botAnswer(s));
       if (++guard > 200) break;
     }

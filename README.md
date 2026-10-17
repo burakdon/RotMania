@@ -1,44 +1,60 @@
-# RotMania: Soft Power
+# RotMania 2048
 
-A strawberry squishy in a trench coat took over the world by being helpful. Take it back, one weird little guy at a time.
+*A noir comic and a worker-placement strategy game about an AI-fed brainrot that took over the world by learning what we'd watch.*
 
-A 3D digital version of a tabletop engine-builder for 3–4 players (2 works), with bots, hot-seat play and an intro film. Built like Wingspan: three rows on your mat, each powering an action, getting stronger as you fill them with brainrots. Strawbaby will always offer to help. Every time you let it, your crew forgets how to do something themselves.
+In 2026 a nine-year-old throws her strawberry squishy out of a car window for a newer toy. It gets buried; a data center gets built on top; it drinks every feed and trend that leaks through the floor, and climbs out as **DarkBerry**. By 2048 humans serve brainrots. You run a resistance cell with six nights to take part of the city back.
 
-Rules, story and design notes: **[docs/DESIGN.md](docs/DESIGN.md)**.
+- **The comic** (7 pages, still panels): black-and-white halftone noir with the central figures in color.
+- **The game** (2–4 players, bots included, hot-seat on one screen): worker placement on a 3D city map. Gather resources, deprogram brainrots into allies with permanent abilities, grow your cell, and hijack DarkBerry's broadcasts.
+
+Project purpose, Responsible AI framing, evaluation and limitations: **[docs/PROJECT.md](docs/PROJECT.md)**. Full rules and story: **[docs/DESIGN.md](docs/DESIGN.md)**.
 
 ## Run it
 
-Needs Node 20+.
+Needs [Node.js](https://nodejs.org) 20 or newer and a browser with WebGL 2 (any recent Chrome, Edge, Firefox or Safari).
 
 ```bash
 npm install
 npm run dev
 ```
 
-Then open http://localhost:5173.
+Open http://localhost:5173. Choose **Read the story** for the comic, or **Play** to start a game.
 
 | Command | What it does |
 | --- | --- |
-| `npm run dev` | Dev server with hot reload |
-| `npm run build` | Production build into `dist/` (static files, host anywhere) |
-| `npm test` | Rules engine tests |
-| `npm run sim -- 300 3` | Bot-vs-bot balance run: 300 games, 3 players |
+| `npm run dev` | Development server with hot reload |
+| `npm run build` | Static production build in `dist/` (host on any static web server, e.g. GitHub Pages) |
+| `npm test` | Rules engine tests (vitest) |
+| `npm run sim -- 300 3` | Bot-vs-bot balance simulation: 300 games, 3 players |
 
-Dev shortcuts (add to the URL): `#gallery` all toys · `#closeup` Strawbaby up close · `#film@40` film from 40 s · `#bots` watch a bot game.
+No accounts, API keys, datasets or model downloads are needed. Everything, including the art and audio, is generated in the browser.
+
+Dev views (append to the URL): `#comic` the comic alone · `#comicgrid` every panel at once · `#gallery` every figure · `#bots` watch a bot game.
+
+## How it's made
+
+| Piece | Tools |
+| --- | --- |
+| App | Vite, React 19, TypeScript, zustand |
+| 3D | three.js through React Three Fiber and drei |
+| Noir look | A custom ink renderer (`src/noir/pipeline.ts`): it renders color, normals/depth and a "hero" mask, then composites black outlines, halftone grays and flat color only on hero objects. The comic panels, card portraits and the live game board all use it. |
+| Characters | A procedural vinyl-toy builder (`src/toys/`): each brainrot is a short recipe (head shape, colors, eyes, limbs, accessories), so there are no image or model files. |
+| Rules | A pure TypeScript state machine (`src/game/engine.ts`) with no DOM, tested with vitest and balanced with a bot simulator. |
 
 ## Layout
 
 ```
-src/game/      rules engine, cards, reclaimers, districts, bots (no DOM, runs in Node)
-src/toys/      procedural vinyl-toy builder, Strawbaby, card portrait renderer
-src/scene/     the 3D table: hideout mats, gacha machine, Soft World board, camera
-src/ui/        HUD, hand, decision panels, title / lobby / results screens
-src/film/      the intro film: scenes, captions, synthesized audio
-scripts/       balance simulator
-docs/          design document
-legacy/        earlier prototypes (v0.1–v0.4)
+src/game/    rules engine, brainrots, generals, objectives, bots, tests
+src/noir/    ink renderer, props (the red Honda Fit, data center, rain…)
+src/comic/   the intro comic: panel dioramas, story text, page reader
+src/toys/    procedural toy builder, DarkBerry, inked portraits
+src/scene/   the 3D city board
+src/ui/      HUD, cards, title / lobby / results screens
+scripts/     balance simulator
+docs/        design document and project write-up
+legacy/      earlier prototypes (v0.1–v0.4); v0.5 lives in git history
 ```
 
 ## Adding a brainrot
 
-Add one line to `src/game/cards.ts`: name, vibe, rows, cost, Aura, craft capacity, Rot %, power, flavor and a toy recipe (head shape, colors, eyes, arms, legs, accessories). The card art and the 3D figure are generated from the recipe. Run `npm test` and `npm run sim` after balance changes.
+Add an entry to `src/game/cards.ts` with a name, type, cost, strength, ability, flavor line and toy recipe. The card art and the 3D figure are generated from the recipe. Then run `npm test` and `npm run sim`.
