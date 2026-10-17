@@ -178,7 +178,7 @@ export function Results() {
   return (
     <div className="results">
       <div className="results-3d">
-        <Canvas shadows camera={{ position: [0, 1.4, 4.4], fov: 35 }}>
+        <Canvas shadows camera={{ position: [0, 1.8, 7.2], fov: 35 }}>
           <color attach="background" args={[soft.ending === 'soft' ? '#ffd1e0' : soft.ending === 'sewn' ? '#e6f7ec' : '#fff1e0']} />
           <StudioLights />
           <Strawbaby coat={soft.ending !== 'sewn'} torn={soft.ending === 'sewn'} scale={1.5} />
@@ -186,7 +186,7 @@ export function Results() {
             <circleGeometry args={[8, 48]} />
             <meshStandardMaterial color="#ffffff" />
           </mesh>
-          <OrbitControls enablePan={false} enableZoom={false} target={[0, 1, 0]} autoRotate autoRotateSpeed={0.8} />
+          <OrbitControls enablePan={false} enableZoom={false} target={[0, 0.85, 0]} autoRotate autoRotateSpeed={0.8} />
         </Canvas>
       </div>
       <div className="results-body">

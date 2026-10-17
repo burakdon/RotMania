@@ -106,6 +106,8 @@ function log(s: GameState, p: number | null, msg: string, kind: 'act' | 'soft' |
   if (s.log.length > 300) s.log.splice(0, s.log.length - 300);
 }
 const nm = (s: GameState, p: number) => s.players[p].name;
+/** "Mina's" / "your" (the default human seat is literally named You) */
+const poss = (name: string) => (name.toLowerCase() === 'you' ? 'your' : `${name}'s`);
 
 function push(s: GameState, ...tasks: Task[]) {
   for (let i = tasks.length - 1; i >= 0; i--) s.queue.push(tasks[i]);
@@ -400,7 +402,7 @@ function handle(s: GameState, pr: Prompt, ans: Answer) {
       const ps = pr as Extract<Prompt, { type: 'soft' }>;
       if (!ps.rows.includes(ans.row)) throw new Error('not there');
       p.soft[ans.row]++;
-      log(s, p.id, `A Soft token settles on ${p.name}'s ${ROW_NAMES[ans.row]} row.`, 'soft');
+      log(s, p.id, `A Soft token settles on ${poss(p.name)} ${ROW_NAMES[ans.row]} row.`, 'soft');
       return;
     }
     case 'tuck': {
@@ -505,7 +507,7 @@ function exec(s: GameState, t: Task) {
         } else {
           p.soft[t.row]--;
           if (row.some((x) => cardOf(x.card).power?.when === 'each'))
-            log(s, p.id, `${p.name}'s ${ROW_NAMES[t.row]} crew forgot how. Powers skipped; the Soft token wears off.`, 'soft');
+            log(s, p.id, `${poss(p.name).replace(/^y/, 'Y')} ${ROW_NAMES[t.row]} crew forgot how. Powers skipped; the Soft token wears off.`, 'soft');
           return;
         }
       }
@@ -528,7 +530,7 @@ function exec(s: GameState, t: Task) {
           if (col >= 0) {
             q.meanwhileUsed = true;
             const c = cardOf(q.rows[r][col].card);
-            log(s, q.id, `Meanwhile, ${q.name}'s ${c.name} reacts.`, 'power');
+            log(s, q.id, `Meanwhile, ${poss(q.name)} ${c.name} reacts.`, 'power');
             tasks.push({ t: 'fx', player: q.id, fx: c.power!.fx, at: [r, col] });
             break;
           }
@@ -577,7 +579,7 @@ function showPrompt(s: GameState, pr: Prompt) {
     case 'soft':
       if (pr.rows.length === 1) {
         p.soft[pr.rows[0]]++;
-        log(s, p.id, `A Soft token settles on ${p.name}'s ${ROW_NAMES[pr.rows[0]]} row.`, 'soft');
+        log(s, p.id, `A Soft token settles on ${poss(p.name)} ${ROW_NAMES[pr.rows[0]]} row.`, 'soft');
         return;
       }
       break;
