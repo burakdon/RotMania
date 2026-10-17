@@ -59,6 +59,7 @@ export function Title() {
         <div className="title-btns">
           <button className="go" onClick={() => go('comic')}>Read the story</button>
           <button className="go alt" onClick={() => go('lobby')}>Play</button>
+          <button className="go alt" onClick={() => go('handbook')}>Rulebook</button>
         </div>
         <div className="title-small">2–4 players · about 45 minutes · bots included</div>
       </div>

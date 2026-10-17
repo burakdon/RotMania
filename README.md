@@ -9,7 +9,9 @@ In 2026 a nine-year-old throws her strawberry squishy out of a car window for a 
 - **The comic** (8 pages, still panels): black-and-white noir illustration with the central figures in color. Panel art was generated with ChatGPT's image tool from the prompts in [docs/COMIC_PROMPTS.md](docs/COMIC_PROMPTS.md) and art-directed by the author; captions and lettering are added by the app.
 - **The game** (2–4 players, bots included, hot-seat on one screen): worker placement on a 3D city map. Gather resources, deprogram brainrots into allies with permanent abilities, grow your cell, and hijack Darth Berry's broadcasts.
 
-Project purpose, Responsible AI framing, evaluation and limitations: **[docs/PROJECT.md](docs/PROJECT.md)**. Full rules and story: **[docs/DESIGN.md](docs/DESIGN.md)**.
+**Rulebook:** open the game and choose **Rulebook**, or go straight to [burakdon.github.io/RotMania/#handbook](https://burakdon.github.io/RotMania/#handbook). It prints as an A5 booklet (use *Print / save as PDF*).
+
+Project purpose, Responsible AI framing, evaluation and limitations: **[docs/PROJECT.md](docs/PROJECT.md)**. Design notes and balance: **[docs/DESIGN.md](docs/DESIGN.md)**.
 
 ## Run it
 
@@ -31,7 +33,7 @@ Open http://localhost:5173. Choose **Read the story** for the comic, or **Play**
 
 No accounts, API keys, datasets or model downloads are needed. The comic panels ship as images in `src/comic/art/`; everything else (cards, board, figures) is generated in the browser.
 
-Dev views (append to the URL): `#comic` the comic alone · `#comicgrid` every panel at once · `#gallery` every figure · `#bots` watch a bot game.
+Views (append to the URL): `#handbook` the rulebook · `#comic` the comic alone · `#comicgrid` every panel at once · `#gallery` every figure · `#darth` Darth Berry and the generals up close · `#bots` watch a bot game.
 
 ## How it's made
 

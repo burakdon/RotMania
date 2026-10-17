@@ -6,7 +6,8 @@ import { useStore } from './store';
 import { apply } from './game/engine';
 import { botAnswer } from './game/bots';
 import { Comic, ComicGrid } from './comic/Comic';
-import { Gallery } from './toys/Gallery';
+import { DarthCloseup, Gallery } from './toys/Gallery';
+import { Handbook } from './ui/Handbook';
 
 const route = location.hash.replace('#', '');
 if (import.meta.env.DEV) {
@@ -22,4 +23,4 @@ if (route === 'bots') {
   useStore.getState().setBotSpeed(0.04);
   useStore.getState().start([0, 1, 2].map((i) => ({ name: ['Cell Rossa', 'Cell Blu', 'Cell Giallo'][i], bot: true })));
 }
-createRoot(document.getElementById('root')!).render(<StrictMode>{route === 'comicgrid' ? <ComicGrid /> : route === 'comic' ? <Comic onDone={() => (location.hash = '')} /> : route === 'gallery' ? <Gallery /> : <App />}</StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode>{route === 'comicgrid' ? <ComicGrid /> : route === 'comic' ? <Comic onDone={() => (location.hash = '')} /> : route === 'gallery' ? <Gallery /> : route === 'darth' ? <DarthCloseup /> : route === 'handbook' ? <Handbook /> : <App />}</StrictMode>);

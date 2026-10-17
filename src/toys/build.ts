@@ -390,18 +390,33 @@ function accessories(t: ToyRecipe, root: THREE.Group, head: THREE.Group, h: Head
         }
         break;
       case 'officercap': {
-        const capc = t.c3 ?? '#2b2d42';
-        addH(m(G.cylTaper(1.15), mat(capc, 'fabric'), [0, h.top + 0.06, 0], [h.half * 0.75, 0.16, h.half * 0.75]));
-        addH(m(G.cyl(), mat('#111', 'vinyl'), [0, h.top - 0.01, h.half * 0.5], [h.half * 0.5, 0.025, h.half * 0.35]));
-        addH(m(G.star(), mat('#fcc419', 'metal'), [0, h.top + 0.08, h.half * 0.82], 0.07));
+        // black peaked cap, gold braid, glossy visor, gold laurel badge
+        const capc = '#121214';
+        addH(m(G.cylTaper(1.18), mat(capc, 'fabric'), [0, h.top + 0.06, 0], [h.half * 0.74, 0.16, h.half * 0.74]));
+        addH(m(G.cyl(), mat('#d4a62a', 'metal'), [0, h.top - 0.005, 0], [h.half * 0.66, 0.035, h.half * 0.66]));
+        addH(m(G.cyl(), mat('#0a0a0b', 'vinyl'), [0, h.top - 0.015, h.half * 0.48], [h.half * 0.5, 0.025, h.half * 0.36], [0.15, 0, 0]));
+        addH(m(G.star(), mat('#e0b23a', 'metal'), [0, h.top + 0.09, h.half * 0.8], 0.065));
+        for (const sx of [-1, 1]) addH(m(G.sph(), mat('#d4a62a', 'metal'), [sx * 0.07, h.top + 0.07, h.half * 0.78], [0.03, 0.05, 0.02], [0, 0, sx * 0.5]));
         break;
       }
-      case 'medals':
-        for (let i = 0; i < 3; i++) {
-          addR(m(G.box(), mat(['#e03131', '#1971c2', '#fcc419'][i], 'fabric'), [-0.12 + i * 0.07, f.bodyY + 0.12, (f.bodyHalf || 0.25) * 0.92], [0.05, 0.08, 0.02]));
-          addR(m(G.cyl(), mat('#fcc419', 'metal'), [-0.12 + i * 0.07, f.bodyY + 0.05, (f.bodyHalf || 0.25) * 0.95], [0.025, 0.01, 0.025], [Math.PI / 2, 0, 0]));
+      case 'medals': {
+        const gold = mat('#d4a62a', 'metal');
+        const front = (f.bodyHalf || 0.25) * 0.94;
+        // ribbon bar and medals
+        ['#e03131', '#1971c2', '#f59f00', '#2f9e44'].forEach((c, i) => addR(m(G.box(), mat(c, 'fabric'), [-0.13 + i * 0.045, f.bodyY + 0.16, front], [0.04, 0.035, 0.02])));
+        for (let i = 0; i < 3; i++) addR(m(G.cyl(), gold, [-0.12 + i * 0.05, f.bodyY + 0.09, front + 0.005], [0.022, 0.01, 0.022], [Math.PI / 2, 0, 0]));
+        // gold epaulettes with fringe
+        for (const sx of [-1, 1]) {
+          addR(m(G.rbox(0.3), gold, [sx * (f.bodyHalf || 0.25) * 0.85, f.bodyTop - 0.06, 0], [0.16, 0.035, 0.14], [0, 0, sx * -0.25]));
+          for (let k = 0; k < 4; k++) addR(m(G.cyl(), gold, [sx * ((f.bodyHalf || 0.25) * 0.85 + 0.07), f.bodyTop - 0.1, -0.05 + k * 0.035], [0.008, 0.06, 0.008]));
         }
+        // aiguillette looping across the chest
+        addR(m(G.tor(0.12, Math.PI), gold, [0.08, f.bodyY + 0.1, front - 0.01], [0.09, 0.08, 0.09], [0, 0, Math.PI + 0.3]));
+        // gold belt with a star buckle
+        addR(m(G.cyl(), mat('#a9842a', 'fabric'), [0, f.bodyY - 0.08, 0], [(f.bodyHalf || 0.25) + 0.01, 0.045, (f.bodyHalf || 0.25) * 0.94]));
+        addR(m(G.star(), gold, [0, f.bodyY - 0.08, front + 0.02], 0.05));
         break;
+      }
       case 'collar':
       case 'cassetteshell':
         break;
@@ -472,44 +487,117 @@ export function buildStrawbaby(opts: { coat?: boolean; torn?: boolean; glow?: bo
   return toy;
 }
 
-/** Darth Berry: what climbed out of the hole. Crimson, scarred, fedora and black trench coat. */
+/**
+ * Darth Berry, matching the comic's character sheet: a round, bruised-crimson strawberry head with gold seeds,
+ * wilted olive leaves poking out under a black fedora with a red band, a stitched seam through one eye with a
+ * bolted metal plate, glowing red pupils, a segmented metal neck, and a long belted black trench coat with
+ * hands in the pockets. Built from scratch rather than from a toy recipe.
+ */
 export function buildDarthBerry(opts: { hat?: boolean; glowEyes?: boolean } = {}): THREE.Group {
-  const recipe: ToyRecipe = {
-    head: 'strawberry', body: 'coat', c1: '#8c0d26', c2: '#2f4a2c', c3: '#2a2523', seed: '#a8864c',
-    arms: 'nubs', legs: 'nubs', eyes: 'angry',
-  };
-  const toy = buildToy(recipe);
-  const head = toy.userData.head as THREE.Group;
-  const yarn = mat('#d9c48a', 'matte');
-  // stitched scars: one long seam across the face, two X-stitches
-  const seam = new THREE.CatmullRomCurve3([new THREE.Vector3(-0.36, 0.32, 0.22), new THREE.Vector3(-0.12, 0.2, 0.44), new THREE.Vector3(0.1, 0.02, 0.47), new THREE.Vector3(0.3, -0.2, 0.36)]);
-  head.add(m(new THREE.TubeGeometry(seam, 24, 0.012, 6, false), mat('#3a0610', 'matte')));
-  for (let i = 0; i <= 7; i++) {
-    const p = seam.getPoint(i / 7);
-    const tan = seam.getTangent(i / 7);
-    const st = m(G.cyl(), yarn, [p.x, p.y, p.z + 0.01], [0.01, 0.09, 0.01]);
-    st.rotation.z = Math.atan2(tan.y, tan.x) + Math.PI / 2 + 0.5;
-    head.add(st);
+  const root = new THREE.Group();
+  const coatMat = mat('#1b1918', 'fabric');
+  const coatEdge = mat('#2c2826', 'fabric');
+  const metal = mat('#8a8d92', 'metal');
+  const dark = mat('#0e0e10', 'vinyl');
+  const radiusAt = (y: number) => 0.4 - ((y - 0.1) / 0.92) * 0.09;
+
+  // boots
+  for (const x of [-0.14, 0.14]) root.add(m(G.rbox(0.4), dark, [x, 0.08, 0.07], [0.2, 0.16, 0.3]));
+  // long coat with a flared hem
+  root.add(m(G.cylTaper(0.78), coatMat, [0, 0.56, 0], [0.4, 0.92, 0.36]));
+  root.add(m(G.cylTaper(0.97), coatMat, [0, 0.15, 0], [0.41, 0.12, 0.37]));
+  for (const sx of [-1, 1]) root.add(m(G.sph(), coatMat, [sx * 0.27, 0.96, 0], [0.13, 0.1, 0.13]));
+  root.add(m(G.box(), coatEdge, [0.04, 0.42, radiusAt(0.42) * 0.93], [0.02, 0.62, 0.02], [0.05, 0, 0]));
+  // belt and buckle
+  root.add(m(G.cyl(), coatEdge, [0, 0.62, 0], [radiusAt(0.62) + 0.015, 0.07, radiusAt(0.62) * 0.92 + 0.015]));
+  root.add(m(G.rbox(0.2), metal, [0, 0.62, radiusAt(0.62) * 0.92 + 0.02], [0.1, 0.075, 0.025]));
+  // double-breasted buttons
+  for (const y of [0.76, 0.86]) for (const x of [-0.09, 0.09]) root.add(m(G.cyl(), metal, [x, y, radiusAt(y) * 0.92 + 0.005], [0.022, 0.012, 0.022], [Math.PI / 2 - 0.12, 0, 0]));
+  // lapels and popped collar
+  for (const sx of [-1, 1]) root.add(m(G.box(), coatEdge, [sx * 0.1, 0.9, 0.27], [0.12, 0.2, 0.025], [0.3, sx * 0.35, sx * 0.55]));
+  root.add(m(G.cylTaper(1.35), coatMat, [0, 1.04, -0.01], [0.2, 0.15, 0.19]));
+  // sleeves bending down into the pockets (no hands showing)
+  for (const sx of [-1, 1]) {
+    root.add(m(G.cap(1.4), coatMat, [sx * 0.33, 0.74, 0.08], [0.095, 0.17, 0.095], [-0.35, 0, sx * 0.16]));
+    root.add(m(G.box(), coatEdge, [sx * 0.22, 0.5, radiusAt(0.5) * 0.9], [0.14, 0.03, 0.03], [0, sx * -0.4, 0]));
   }
-  for (const [x, y] of [[0.3, 0.3], [-0.32, -0.18]]) {
-    head.add(m(G.cyl(), yarn, [x, y, 0.42], [0.012, 0.11, 0.012], [0, 0, 0.8]));
-    head.add(m(G.cyl(), yarn, [x, y, 0.42], [0.012, 0.11, 0.012], [0, 0, -0.8]));
+  // segmented metal neck
+  for (let i = 0; i < 3; i++) root.add(m(G.cyl(), metal, [0, 1.03 + i * 0.05, 0], [0.11 - i * 0.008, 0.035, 0.11 - i * 0.008]));
+
+  // head: round strawberry, bruised crimson, gold seeds
+  const info = HEADS.strawberry({ head: 'strawberry', c1: '#a3122b', c2: '#7d7a3e', seed: '#d4a64a' });
+  const head = info.g;
+  head.scale.set(1, 0.9, 1);
+  head.position.y = 1.55;
+  root.add(head);
+  // wilted olive leaves poking out under the brim
+  const leafA = mat('#8b874a', 'matte');
+  const leafB = mat('#6c6834', 'matte');
+  for (let i = 0; i < 12; i++) {
+    const ang = (i / 12) * Math.PI * 2 + 0.2;
+    const leaf = m(G.sph(), i % 2 ? leafA : leafB, [Math.sin(ang) * 0.47, 0.33, Math.cos(ang) * 0.43], [0.17, 0.035, 0.08]);
+    leaf.rotation.set(0, ang - Math.PI / 2, 0);
+    leaf.rotateZ(-0.6);
+    head.add(leaf);
   }
-  if (opts.glowEyes ?? true) {
-    for (const x of [-0.2, 0.2]) head.add(m(G.sph(), mat('#ff1f3d', 'glow'), [x * 1.0, 0.07, 0.5], 0.035));
+  // eyes: big glossy black, glowing red pupils, angry lids
+  for (const x of [-0.17, 0.17]) {
+    head.add(m(G.sph(), dark, [x, 0.0, 0.43], [0.135, 0.15, 0.08]));
+    if (opts.glowEyes ?? true) {
+      head.add(m(G.sph(), mat('#ff1f3d', 'glow'), [x, -0.005, 0.5], 0.036));
+      head.add(m(G.sph(), mat('#ffffff', 'glow'), [x + 0.045, 0.05, 0.495], 0.014));
+    }
+    head.add(m(G.box(), mat('#6e0c1d', 'vinyl'), [x, 0.125, 0.46], [0.19, 0.055, 0.06], [0, 0, x < 0 ? -0.38 : 0.38]));
   }
+  // small frown
+  head.add(m(G.tor(0.22, Math.PI), mat('#2a0509', 'matte'), [0, -0.23, 0.44], [0.055, 0.04, 0.04]));
+  // the seam: through his right eye (your left), stitched with thick yarn
+  const seam = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-0.1, 0.46, 0.22), new THREE.Vector3(-0.2, 0.2, 0.42), new THREE.Vector3(-0.19, -0.06, 0.465), new THREE.Vector3(-0.1, -0.33, 0.4),
+  ]);
+  head.add(m(new THREE.TubeGeometry(seam, 30, 0.013, 6, false), mat('#3a0610', 'matte')));
+  const yarn = mat('#d8b56a', 'matte');
+  for (let i = 0; i <= 8; i++) {
+    const p = seam.getPoint(i / 8);
+    const tan = seam.getTangent(i / 8);
+    const base = Math.atan2(tan.y, tan.x);
+    for (const d of [0.75, -0.75]) {
+      const st = m(G.cap(1), yarn, [p.x, p.y, p.z + 0.012], [0.016, 0.05, 0.016]);
+      st.rotation.z = base + Math.PI / 2 + d;
+      head.add(st);
+    }
+  }
+  // bolted metal plate on the temple
+  const plateNormal = new THREE.Vector3(-0.78, 0.22, 0.58).normalize();
+  const plate = m(new THREE.CylinderGeometry(1, 1, 1, 6), metal, [-0.39, 0.12, 0.29], [0.1, 0.025, 0.12]);
+  plate.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), plateNormal);
+  head.add(plate);
+  for (const [dx, dy] of [[0.02, 0.07], [0.04, -0.06], [-0.02, 0]]) head.add(m(G.sph(), mat('#5b5e63', 'metal'), [-0.4 + dx, 0.12 + dy, 0.31], 0.018));
+
   if (opts.hat ?? true) {
-    const felt = mat('#1c1a1a', 'fabric');
+    const felt = mat('#151414', 'fabric');
     const hat = new THREE.Group();
-    hat.add(m(G.cyl(), felt, [0, 0, 0], [0.62, 0.035, 0.6]));
-    hat.add(m(G.cylTaper(0.86), felt, [0, 0.16, 0], [0.36, 0.3, 0.34]));
-    hat.add(m(G.cyl(), mat('#9b1028', 'fabric'), [0, 0.06, 0], [0.365, 0.07, 0.345]));
-    hat.add(m(G.box(), felt, [0, 0.31, 0], [0.4, 0.04, 0.12]));
-    hat.position.set(0.02, 0.5, -0.02);
-    hat.rotation.set(-0.12, 0, -0.14);
+    hat.add(m(G.cyl(), felt, [0, 0, 0], [0.74, 0.035, 0.7]));
+    // brim rolls down at the front
+    hat.add(m(G.tor(0.04, Math.PI), felt, [0, -0.02, 0.0], [0.72, 0.68, 0.7], [-Math.PI / 2, 0, 0]));
+    hat.add(m(G.cylTaper(0.72), felt, [0, 0.24, 0], [0.38, 0.44, 0.35]));
+    hat.add(m(G.cyl(), mat('#a51d2d', 'fabric'), [0, 0.09, 0], [0.385, 0.13, 0.355]));
+    // the crease and the front pinch
+    hat.add(m(G.box(), mat('#0b0b0c', 'fabric'), [0, 0.45, -0.02], [0.05, 0.03, 0.4]));
+    for (const sx of [-1, 1]) hat.add(m(G.sph(), mat('#0b0b0c', 'fabric'), [sx * 0.12, 0.36, 0.22], [0.05, 0.1, 0.04]));
+    hat.position.set(0.05, 0.42, -0.02);
+    hat.rotation.set(-0.1, 0, -0.2);
     head.add(hat);
   }
-  return toy;
+
+  // stand about as tall as the other figures
+  const scale = 1.45 / (opts.hat ?? true ? 2.3 : 2.05);
+  root.scale.setScalar(scale);
+  const wrap = new THREE.Group();
+  wrap.add(root);
+  wrap.userData.head = head;
+  wrap.userData.headY = 1.55 * scale;
+  return wrap;
 }
 
 export function disposeNothing() {

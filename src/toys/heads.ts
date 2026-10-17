@@ -504,7 +504,7 @@ export const HEADS: Record<string, (t: ToyRecipe) => HeadInfo> = {
       m(g, mat(t.c1, 'metal'), [0, 0, 0], 0.46),
       m(G.cyl(), mat('#868e96', 'metal'), [0, 0.5, 0], [0.04, 0.12, 0.04]),
     );
-    (h.children[0] as THREE.Mesh).material = new THREE.MeshStandardMaterial({ color: t.c1, metalness: 1, roughness: 0.12, flatShading: true });
+    (h.children[0] as THREE.Mesh).material = new THREE.MeshStandardMaterial({ color: t.c1, metalness: 0.55, roughness: 0.18, flatShading: true });
     return { g: h, top: 0.55, bottom: -0.46, face: { y: 0, z: 0.46, spread: 0.16, size: 0.08 }, half: 0.46, mouth: false };
   },
   mic: (t) => {

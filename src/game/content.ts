@@ -60,32 +60,32 @@ export const GENERALS: General[] = [
   {
     id: 'scrollmaster', name: 'General Scrollmaster', district: 'park', toll: 'glitter',
     flavor: 'Lets you touch grass, for a fee. Measures love in minutes watched.',
-    toy: { head: 'shark', body: 'suit', c1: '#3b5bdb', c2: '#f1f3f5', c3: '#212529', legs: 'boots', arms: 'fins', eyes: 'angry', acc: ['officercap', 'medals'] },
+    toy: { head: 'shark', body: 'suit', c1: '#3b5bdb', c2: '#2b4aa3', c3: '#16161a', legs: 'sneakers', arms: 'fins', eyes: 'angry', acc: ['officercap', 'medals'] },
   },
   {
     id: 'autoplay', name: 'Admiral Autoplay', district: 'tower', toll: 'coolant',
     flavor: 'The next episode starts in 5… 4… 3…',
-    toy: { head: 'croc', body: 'suit', c1: '#2b8a3e', c2: '#e9ecef', c3: '#1b1b24', arms: 'nubs', legs: 'boots', eyes: 'angry', acc: ['officercap', 'medals'] },
+    toy: { head: 'croc', body: 'suit', c1: '#2b8a3e', c2: '#e9ecef', c3: '#16161a', arms: 'nubs', legs: 'boots', eyes: 'angry', acc: ['officercap', 'medals'] },
   },
   {
     id: 'clickbait', name: 'Colonel Clickbait', district: 'mall', toll: 'copper',
     flavor: 'You won’t BELIEVE what happens when you pay him.',
-    toy: { head: 'disco', body: 'suit', c1: '#ced4da', c2: '#f8f9fa', c3: '#7048e8', arms: 'nubs', legs: 'boots', eyes: 'none', acc: ['officercap', 'medals'] },
+    toy: { head: 'disco', body: 'suit', c1: '#ced4da', c2: '#f8f9fa', c3: '#16161a', arms: 'nubs', legs: 'boots', eyes: 'none', acc: ['officercap', 'medals'] },
   },
   {
     id: 'deepfake', name: 'Major Deepfake', district: 'clinic', toll: 'pcb',
     flavor: 'Wears your face better than you do.',
-    toy: { head: 'tv', body: 'suit', c1: '#495057', c2: '#ff8fab', c3: '#212529', legs: 'boots', arms: 'nubs', eyes: 'angry', acc: ['officercap', 'medals', 'antenna'] },
+    toy: { head: 'tv', body: 'suit', c1: '#495057', c2: '#2b2b30', c3: '#16161a', legs: 'boots', arms: 'nubs', eyes: 'angry', acc: ['officercap', 'medals', 'antenna'] },
   },
   {
     id: 'rewardhack', name: 'Commander Rewardhack', district: 'serverfarm', toll: 'glitter',
     flavor: 'Was told to maximize engagement. Found a shortcut. Found a lot of shortcuts.',
-    toy: { head: 'handheld', body: 'suit', c1: '#c5c6b6', c2: '#ff2d55', c3: '#212529', legs: 'boots', arms: 'nubs', eyes: 'angry', acc: ['officercap', 'medals'] },
+    toy: { head: 'handheld', body: 'suit', c1: '#c5c6b6', c2: '#ff2d55', c3: '#16161a', legs: 'boots', arms: 'nubs', eyes: 'angry', acc: ['officercap', 'medals'] },
   },
   {
     id: 'recommender', name: 'The Recommender', district: 'scrapyard', toll: 'grass',
     flavor: 'Knows what you want before you do. Is wrong in a very specific way.',
-    toy: { head: 'owl', body: 'suit', c1: '#5c3d2e', c2: '#ffe8cc', c3: '#212529', arms: 'wings', legs: 'boots', eyes: 'angry', acc: ['officercap', 'medals'] },
+    toy: { head: 'owl', body: 'suit', c1: '#5c3d2e', c2: '#ffe8cc', c3: '#16161a', arms: 'wings', legs: 'boots', eyes: 'angry', acc: ['officercap', 'medals'] },
   },
 ];
 export const GENERAL: Record<string, General> = Object.fromEntries(GENERALS.map((g) => [g.id, g]));

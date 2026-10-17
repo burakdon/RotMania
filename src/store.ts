@@ -4,7 +4,7 @@ import { botAnswer } from './game/bots';
 import { apply, newGame, type SeatConfig } from './game/engine';
 import type { Answer, GameState } from './game/types';
 
-export type Screen = 'title' | 'comic' | 'lobby' | 'game' | 'results';
+export type Screen = 'title' | 'comic' | 'lobby' | 'game' | 'results' | 'handbook';
 
 interface Store {
   screen: Screen;

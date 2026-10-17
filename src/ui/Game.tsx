@@ -12,6 +12,7 @@ import { useStore } from '../store';
 import { useGeneralPortrait } from '../toys/portraits';
 import { BrainrotCard } from './BrainrotCard';
 import { BagView, Meeple, ResIcon, Star } from './icons';
+import { Handbook } from './Handbook';
 import { useUI } from './uiStore';
 
 export function GameScreen() {
@@ -508,36 +509,5 @@ export function RulesSheet() {
   const show = useUI((u) => u.showRules);
   const set = useUI((u) => u.setRules);
   if (!show) return null;
-  return (
-    <div className="modal-back" onClick={() => set(false)}>
-      <div className="modal rules" onClick={(e) => e.stopPropagation()}>
-        <button className="x" onClick={() => set(false)}>×</button>
-        <h2>How to play</h2>
-        <p>
-          <b>Six nights.</b> Most points after night six wins.
-        </p>
-        <p>
-          <b>Each night</b>, players take turns placing one agent on a free space in the city and doing what it says. Most spaces fit one agent: if someone got there first, go elsewhere. Odd Jobs always has room. When everyone is out of agents, the night ends and agents come home.
-        </p>
-        <p>
-          <b>Resources.</b> <ResIcon r="grass" /> Grass, <ResIcon r="coolant" /> GPU Coolant, <ResIcon r="pcb" /> PCBs, <ResIcon r="glitter" /> Glitter and <ResIcon r="copper" /> Copper Wiring. Some spaces pile up resources every night they go untaken.
-        </p>
-        <p>
-          <b>Deprogram brainrots</b> at the Clinic to turn them into allies. Each ally is worth its <Star /> strength at the end and has a permanent ability. Some can even work a night shift in one district like an extra agent.
-        </p>
-        <p>
-          <b>Grow your cell.</b> Recruit (from night 2) to get more agents next night, up to 5. Each recruit is worth {2} points at the end.
-        </p>
-        <p>
-          <b>Patrols.</b> Every night one of Darth Berry’s generals patrols a district. Using a space there costs a 1-resource toll.
-        </p>
-        <p>
-          <b>Check-ins</b> after nights 3 and 6: every agent needs 1 Grass to stay grounded. Each one you can’t ground costs 2 points.
-        </p>
-        <p>
-          <b>Points:</b> ally strength, broadcasts (Hijack the Feed / Pirate Broadcast), secret objectives, recruits, end-game abilities, 1 per 3 leftover resources, minus ungrounded agents.
-        </p>
-      </div>
-    </div>
-  );
+  return <Handbook onClose={() => set(false)} />;
 }

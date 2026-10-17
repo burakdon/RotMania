@@ -28,3 +28,26 @@ export function Gallery() {
     </Canvas>
   );
 }
+
+/** Dev view: Darth Berry up close, front and three-quarter. Open with #darth. */
+export function DarthCloseup() {
+  return (
+    <Canvas camera={{ position: [0, 1.0, 3.6], fov: 35 }}>
+      <color attach="background" args={['#b9b5ad']} />
+      <ambientLight intensity={0.55} />
+      <directionalLight position={[2, 4, 5]} intensity={2.4} />
+      <directionalLight position={[-3, 2, -3]} intensity={0.8} />
+      <primitive object={markHero(buildDarthBerry())} position={[-0.75, 0, 0]} />
+      <primitive object={markHero(buildDarthBerry())} position={[0.75, 0, 0]} rotation-y={-0.6} />
+      {GENERALS.map((g, i) => (
+        <primitive key={g.id} object={markHero(buildToy(g.toy))} position={[-2.5 + i, 0, -1.6]} scale={0.8} />
+      ))}
+      <mesh rotation-x={-Math.PI / 2}>
+        <planeGeometry args={[20, 20]} />
+        <meshStandardMaterial color="#a19d95" />
+      </mesh>
+      <OrbitControls target={[0, 0.75, 0]} />
+      <NoirEffect />
+    </Canvas>
+  );
+}

@@ -1,6 +1,7 @@
 import { Comic } from './comic/Comic';
 import { useStore } from './store';
 import { GameScreen } from './ui/Game';
+import { Handbook } from './ui/Handbook';
 import { Lobby, Results, Title } from './ui/Screens';
 
 export function App() {
@@ -17,5 +18,7 @@ export function App() {
       return <GameScreen />;
     case 'results':
       return <Results />;
+    case 'handbook':
+      return <Handbook onClose={() => go('title')} />;
   }
 }
