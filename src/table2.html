@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RotMania — table</title>
+<style>
+:root{
+  --wood:#3a2a1c;--board:#efe6d2;--board2:#e2d7bd;--ink:#2a2420;--ink2:#6b625a;--line:#bfb39a;
+  --blue:#2f6fb5;--amber:#d08a1e;--green:#2e8b57;--pink:#c43f8a;--purple:#6b4fbf;--red:#c0392b;--gold:#e0b64a;
+  --phone:#0b0f14;--phone2:#141b24;--phonetxt:#d7e1ec;--phonedim:#7d8da0;--phonegreen:#39d98a;--phoneamber:#f5b942;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;--mono:ui-monospace,Menlo,Consolas,monospace;--sans:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at center,#2a3a31,#141c18 70%);color:var(--ink);font-family:var(--sans);font-size:13px;min-height:100vh}
+button{font-family:var(--sans);font-size:12px;border:1px solid var(--line);background:#fffaf0;color:var(--ink);border-radius:6px;padding:7px 10px;cursor:pointer}
+button:disabled{opacity:.4;cursor:default}
+button.primary{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.hidden{display:none !important}
+#setup{max-width:560px;margin:60px auto;background:var(--board);border-radius:10px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#setup h1{font-family:var(--serif);font-size:38px;margin:0}
+#setup input{width:100%;padding:9px;border:1px solid var(--line);border-radius:6px;font-size:14px;margin-top:6px;background:#fffdf7}
+#setup p{line-height:1.5}
+#table{display:grid;grid-template-columns:1fr 320px;gap:16px;padding:16px;max-width:1560px;margin:0 auto}
+.board{background:var(--board);border:10px solid var(--wood);border-radius:8px;padding:14px 18px;box-shadow:0 18px 50px rgba(0,0,0,.6)}
+.board h1{font-family:var(--serif);font-size:30px;margin:0}
+h2{font-family:var(--serif);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);margin:12px 0 5px;font-weight:600}
+.sub{color:var(--ink2);font-size:11px}
+.strip{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.dial{display:flex;gap:3px}.dial span{width:48px;text-align:center;border:1px solid var(--line);border-radius:4px;padding:3px 0;font-size:11px;background:var(--board2)}
+.dial span.on{background:var(--ink);color:#fff;border-color:var(--ink)}.seasons span{width:60px}
+.path{display:flex;gap:2px;margin:4px 0}
+.path .sq{position:relative;flex:1;height:34px;border:1px solid var(--ink2);border-radius:3px;background:#fbf6ea;font-size:9px;color:var(--ink2);text-align:center;padding-top:1px}
+.path .sq.danger{background:#f3d2c9;border-color:var(--red)}
+.path .sq.cp::after{content:"⚠";position:absolute;left:0;right:0;bottom:1px;font-size:10px}.path .sq.cp.done::after{opacity:.3}
+.path .sq.end::after{content:"🎱";position:absolute;left:0;right:0;bottom:1px;font-size:12px}
+.pawn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:#111;border:2px solid #fff;box-shadow:0 2px 3px rgba(0,0,0,.5);z-index:2}
+.pawn.rot{background:var(--purple)}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--ink2);margin-top:2px;flex-wrap:wrap}
+.rotpath .sq{height:30px}.rotpath .sq.s1{background:#fbf6ea}.rotpath .sq.s2{background:#f6ebdc}.rotpath .sq.s3{background:#f1dfd1}.rotpath .sq.s4{background:#ecd3cc}.rotpath .sq.s5{background:#e6c6c9}
+.ai{display:flex;gap:12px;align-items:flex-start}
+.dna{width:64px;height:64px;border-radius:50%;border:3px solid var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--purple);font-family:var(--serif);flex:none}
+.dna b{font-size:22px}.dna span{font-size:9px;letter-spacing:.1em}
+.slots{display:flex;gap:5px;flex-wrap:wrap;flex:1}
+.slot{width:104px;height:60px;border:1px dashed var(--line);border-radius:5px;font-size:8.5px;color:var(--ink2);padding:3px 4px;background:var(--board2);overflow:hidden}
+.slot.owned{border:1px solid var(--purple);background:#efe9fb;color:var(--ink)}.slot b{display:block;font-size:9.5px}.slot.owned b{color:var(--purple)}
+.slot.facedown{background:repeating-linear-gradient(45deg,#4a3a8a 0 4px,#5b4aa5 4px 8px);border:1px solid #2d2259;color:#ddd;display:flex;align-items:center;justify-content:center;letter-spacing:.1em}
+/* goals board */
+.goals{display:flex;gap:5px}.goal{flex:1;border:1px solid var(--line);border-radius:5px;padding:4px 5px;font-size:9.5px;background:var(--board2);min-height:46px}
+.goal.on{border-color:var(--ink);background:#fff8e6}.goal.done{opacity:.55}.goal b{display:block;font-size:10px}
+/* icon chips */
+.ic{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 3px;border-radius:4px;font-size:9.5px;font-weight:700;color:#fff;border:1px solid rgba(0,0,0,.25);vertical-align:middle;line-height:1}
+.ic.cap{background:var(--gold);color:#2a2420}.ic.com{background:var(--blue)}.ic.en{background:var(--green)}.ic.aura{background:#fff;color:#8a6d00;border-color:#c9a400}
+.ic.rot{background:var(--purple)}.ic.dna{background:#3b2a6e}.ic.safe{background:#555}.ic.clue{background:#8a3a3a}.ic.peek{background:#a85a2a}.ic.reveal{background:#2a6a7a}.ic.push{background:#111}.ic.decom{background:#777}
+.ic.D{background:var(--amber)}.ic.I{background:var(--blue)}.ic.O{background:var(--green)}.ic.C{background:var(--pink)}
+.pw{display:flex;align-items:center;gap:3px;flex-wrap:wrap;padding:2px 0;border-top:1px dotted var(--line)}
+.pw .k{width:12px;height:12px;border-radius:2px;flex:none;border:1px solid rgba(0,0,0,.3)}.pw.brown .k{background:#8a5a2a}.pw.pink .k{background:#e36fb0}.pw.white .k{background:#fff}
+.pw .arrow{font-size:9px;color:var(--ink2)}
+/* cards */
+.card{width:126px;height:178px;border-radius:7px;background:#fffdf7;border:1px solid #b8ad96;box-shadow:0 2px 4px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden;font-size:9px;line-height:1.2;position:relative;flex:none}
+.card .art{height:58px;position:relative;overflow:hidden}
+.card.I .art{background:#dde9f7}.card.D .art{background:#f8e6c8}.card.O .art{background:#d9eee2}.card.C .art{background:#f7dce9}
+.card .art svg{width:100%;height:100%}
+.card .cost{position:absolute;top:3px;left:3px;display:flex;flex-direction:column;gap:2px}
+.card .band{height:16px;color:#fff;font-weight:700;font-size:8.5px;display:flex;align-items:center;justify-content:space-between;padding:0 5px;letter-spacing:.06em;text-transform:uppercase}
+.card.I .band{background:var(--blue)}.card.D .band{background:var(--amber)}.card.O .band{background:var(--green)}.card.C .band{background:var(--pink)}
+.card .name{font-family:var(--serif);font-weight:700;font-size:10.5px;padding:3px 5px 1px;line-height:1.15}
+.card .body{padding:0 5px;flex:1}
+.card .flavor{padding:2px 5px 4px;font-style:italic;color:var(--ink2);font-size:7.5px}
+.card .vp{position:absolute;right:4px;bottom:4px;width:18px;height:18px;border-radius:50%;background:var(--ink);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.card .stat{position:absolute;right:4px;top:40px;display:flex;gap:1px}
+.pip{width:9px;height:9px;border-radius:50%;background:#111;border:1px solid #fff}.shield{width:12px;height:13px;background:#2e8b57;clip-path:polygon(0 0,100% 0,100% 60%,50% 100%,0 60%);border:1px solid #fff}
+.card.mini{width:100px;height:140px;font-size:8px}.card.mini .art{height:40px}.card.mini .name{font-size:9px}.card.mini .flavor{display:none}
+.card.clickable{cursor:pointer}.card.clickable:hover{transform:translateY(-3px);box-shadow:0 8px 16px rgba(0,0,0,.35)}
+.card.dim{opacity:.5}
+.card.event{width:300px;height:110px}.card.event .band{background:var(--ink)}.card.event .name{font-size:12px}.card.event .body{font-size:10px;padding-top:4px}
+.pile{width:126px;height:178px;border-radius:7px;background:repeating-linear-gradient(45deg,#2b2b36 0 5px,#3a3a48 5px 10px);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;border:1px solid #111;flex:none}
+.pile b{font-size:22px}
+.envelope{width:126px;height:80px;border:2px solid var(--ink);border-radius:4px;background:#fff8e0;display:flex;align-items:flex-end;justify-content:center;font-size:10px;position:relative;flex:none;padding-bottom:6px}
+.envelope::before{content:"";position:absolute;left:0;right:0;top:0;border-left:61px solid transparent;border-right:61px solid transparent;border-top:38px solid #f0e4c0}
+.sealed{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center}
+.market{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+/* mats */
+.mats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+.mat{background:#fbf6ea;border:2px solid var(--line);border-radius:8px;padding:10px;position:relative}
+.mat.active{border-color:var(--ink);box-shadow:0 0 0 3px rgba(42,36,32,.15)}
+.mat .head{display:flex;justify-content:space-between;align-items:center}
+.mat .nation{font-family:var(--serif);font-size:17px;font-weight:700}
+.tokens{display:flex;gap:10px;margin:6px 0;align-items:center;font-size:12px;flex-wrap:wrap}
+.tokens .grp{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+.tok{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;font-size:8px;font-weight:700;color:#fff;border:1px solid rgba(0,0,0,.3)}
+.tok.cap{background:var(--gold);color:#2a2420}.tok.com{background:var(--blue)}.tok.en{background:var(--green)}.tok.safe{background:#555;border-radius:3px}.tok.aura{background:#fff;color:#8a6d00;border-color:#c9a400}
+.rowline{display:flex;gap:6px;align-items:stretch;margin-top:5px}
+.rowhead{width:92px;flex:none;border-radius:6px;padding:4px 5px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;font-size:9px}
+.rowhead.I{background:var(--blue)}.rowhead.D{background:var(--amber)}.rowhead.O{background:var(--green)}.rowhead.C{background:var(--pink)}
+.rowhead b{font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.rowhead .base{display:flex;gap:2px;flex-wrap:wrap;align-items:center}
+.rowhead button{margin-top:3px;padding:4px;font-size:10px;background:#fff;border:none;font-weight:700;color:var(--ink)}
+.rowhead button.hot{background:#111;color:#fff}
+.rowcards{display:flex;gap:4px;overflow-x:auto;flex:1;padding:2px 0}
+.emptyslot{width:100px;height:140px;border:1px dashed var(--line);border-radius:7px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--line);font-size:18px}
+.firstmark{font-size:10px;background:var(--ink);color:#fff;padding:1px 6px;border-radius:999px}
+.hint{font-size:11px;color:var(--ink2);margin-top:6px}
+.decombtn{margin-top:6px}
+/* phone */
+.phone{position:sticky;top:16px;background:#111;border-radius:30px;padding:14px 10px;box-shadow:0 18px 50px rgba(0,0,0,.6);height:calc(100vh - 32px);display:flex;flex-direction:column}
+.phone .screen{background:var(--phone);color:var(--phonetxt);border-radius:20px;flex:1;padding:14px;font-family:var(--mono);font-size:12px;overflow:auto;display:flex;flex-direction:column}
+.phone h3{margin:0 0 6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--phonedim)}
+.phone .lock{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px}
+.phone .lock .who{color:var(--phonegreen);font-size:22px;font-weight:700}
+.phone button{background:var(--phone2);color:var(--phonetxt);border:1px solid #2a3644;font-family:var(--mono)}
+.phone button.go{background:var(--phonegreen);color:#04120a;border-color:var(--phonegreen);font-weight:700}
+.pbox{border:1px solid #2a3644;border-radius:10px;padding:10px;margin:0 0 10px;background:var(--phone2)}
+.pbox.alert{border-color:var(--phoneamber)}.pbox.alert h3{color:var(--phoneamber)}
+.pline{padding:4px 0;border-bottom:1px dashed #2a3644}.pdim{color:var(--phonedim)}
+.ptabs{display:flex;gap:4px;margin-bottom:8px}.ptabs button{flex:1;font-size:10px;padding:5px}.ptabs button.on{border-color:var(--phonegreen);color:var(--phonegreen)}
+.possible span{display:inline-block;width:26px;text-align:center;border:1px solid #2a3644;border-radius:4px;margin:2px 1px}.possible span.x{opacity:.3;text-decoration:line-through}
+/* overlays */
+.overlay{position:fixed;inset:0;background:rgba(10,12,10,.88);display:flex;align-items:center;justify-content:center;z-index:50;overflow:auto;padding:20px}
+.overlay .box{background:var(--board);border:8px solid var(--wood);border-radius:8px;padding:20px 24px;max-width:760px;width:100%;max-height:90vh;overflow:auto}
+.overlay h2{font-family:var(--serif);margin:0 0 10px;font-size:22px;letter-spacing:0;text-transform:none;color:var(--ink)}
+.step{padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}.step b{font-family:var(--serif)}
+.bad{color:var(--red)}.good{color:var(--green)}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:6px 5px;border-bottom:1px solid var(--line);text-align:right}td:first-child,th:first-child{text-align:left}
+.win td{font-weight:700}
+.log{font-family:var(--mono);font-size:11px;max-height:140px;overflow:auto;background:var(--board2);padding:8px;border-radius:5px;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:60;max-width:720px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+@media (max-width:1150px){#table{grid-template-columns:1fr}.phone{position:static;height:auto}.phone .screen{min-height:380px}.mats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="setup">
+  <h1>ROTMANIA</h1>
+  <div class="sub">Digital playtest of the table version · v0.3</div>
+  <p>A whistleblower from Frontier Lab Inc. says the world ends on <b>January 1, 2030</b>. You run a nation from 2023. Build an engine of Industry, Deployments, Oversight and Culture. Activating your Deployments pays best — and moves the shared AI pawn toward a line sealed in an envelope. Cross it and you sank the 8-ball.</p>
+  <p class="sub">Three actions a year (place a card, or activate one of your four rows), then winter. The dark panel is the companion phone: it holds only what the real phone will hold.</p>
+  <div id="names"></div>
+  <div style="display:flex;gap:8px;margin-top:8px"><button id="addP">+ nation</button><button id="rmP">− nation</button></div>
+  <input id="seed" placeholder="seed (optional, for repeatable playtests)">
+  <button class="primary" id="start" style="width:100%;padding:12px;margin-top:14px;font-size:14px">SET UP THE TABLE</button>
+  <button id="resume" class="hidden" style="width:100%;margin-top:8px">Resume saved game</button>
+</div>
+
+<div id="table" class="hidden">
+  <div>
+    <div class="board">
+      <div class="strip" style="justify-content:space-between">
+        <div><h1>ROTMANIA</h1><div class="sub">Sealed line is in 30–38. Danger band printed from 28.</div></div>
+        <div><div class="dial" id="yearDial"></div><div class="dial seasons" id="seasonDial" style="margin-top:4px"></div></div>
+        <div><button id="menuBtn">☰ menu</button></div>
+      </div>
+      <h2>AI track</h2>
+      <div class="path" id="aiPath"></div>
+      <div class="legend"><span>⚠ incidents at 10 · 20 · 27</span><span style="color:var(--red)">■ danger band</span><span>🎱 the end</span><span id="sandbagNote"></span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div><h2>Rot track</h2><div class="path rotpath" id="rotPath"></div><div class="legend" id="rotLegend"></div></div>
+        <div><h2>The AI</h2><div class="ai"><div class="dna"><b id="dna">0</b><span>DNA</span></div><div class="slots" id="slots"></div></div></div>
+      </div>
+      <h2>Round goals <span class="sub" style="letter-spacing:0;text-transform:none;font-weight:400">— scored each winter: 4 / 2 / 1</span></h2>
+      <div class="goals" id="goals"></div>
+      <div style="display:grid;grid-template-columns:320px 1fr;gap:18px;margin-top:4px">
+        <div><h2>This year's event</h2><div id="eventCard"></div></div>
+        <div><h2>Feed</h2><div class="sub" id="feed"></div></div>
+      </div>
+      <h2>Market <span class="sub" style="letter-spacing:0;text-transform:none;font-weight:400">— the active nation clicks a card to place it in its row</span></h2>
+      <div class="market" id="market"></div>
+      <div class="legend" style="margin-top:8px"><span><span class="pw brown" style="border:none;display:inline-flex"><span class="k"></span></span> when this row is activated</span><span><span class="pw pink" style="border:none;display:inline-flex"><span class="k"></span></span> when another nation does something</span><span><span class="pw white" style="border:none;display:inline-flex"><span class="k"></span></span> once, when placed</span><span><span class="ic cap">$</span> Capital <span class="ic com">C</span> Compute <span class="ic en">E</span> Energy <span class="ic aura">✦</span> Aura (points) <span class="ic rot">R</span> Rot <span class="ic dna">DNA</span> <span class="ic safe">S</span> safety <span class="ic clue">?</span> clue card <span class="ic peek">👁</span> peek <span class="ic push">●</span> pawn</span></div>
+    </div>
+    <div class="mats" id="mats"></div>
+  </div>
+  <div class="phone"><div class="screen" id="phone"></div></div>
+</div>
+<div id="overlay" class="overlay hidden"><div class="box" id="obox"></div></div>
+<div id="toast" class="toast hidden"></div>
+
+<script>/*CARDS*/</script>
+<script>/*ENGINE*/</script>
+<script>
+(function(){
+const E=window.Engine; const $=id=>document.getElementById(id); const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+let S=null, unlocked=null, privQ=[], shownWinter=null, ptab='intel', toastT=null;
+
+/* ---------- placeholder mascots: deterministic SVG per card id (replace with real art later) ---------- */
+function hash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+function mascot(c){ const h=hash(c.id); const r=(i)=>((h>>>(i*4))&15)/15;
+  const hue={I:210,D:36,O:140,C:325}[c.type]+Math.round((r(0)-0.5)*40); const body=`hsl(${hue},${55+r(1)*25}%,${48+r(2)*15}%)`; const dark=`hsl(${hue},50%,28%)`;
+  const shape=Math.floor(r(3)*3); const eyes=1+Math.floor(r(4)*3); const w=50+r(5)*30, hgt=34+r(6)*20; const cx=60, cy=34;
+  let bodyEl = shape===0?`<ellipse cx="${cx}" cy="${cy}" rx="${w/2}" ry="${hgt/2}" fill="${body}" stroke="${dark}" stroke-width="2"/>`
+    : shape===1?`<rect x="${cx-w/2}" y="${cy-hgt/2}" width="${w}" height="${hgt}" rx="${8+r(7)*12}" fill="${body}" stroke="${dark}" stroke-width="2"/>`
+    : `<path d="M${cx-w/2},${cy+hgt/2} Q${cx-w/2-6},${cy-hgt/2} ${cx},${cy-hgt/2-4} Q${cx+w/2+6},${cy-hgt/2} ${cx+w/2},${cy+hgt/2} Z" fill="${body}" stroke="${dark}" stroke-width="2"/>`;
+  let eyeEls=''; for(let i=0;i<eyes;i++){ const ex=cx-((eyes-1)*9)/2+i*9+(r(8)-0.5)*6, ey=cy-4+(r(9+i)-0.5)*8; const er=3+r(10+i)*3; eyeEls+=`<circle cx="${ex}" cy="${ey}" r="${er}" fill="#fff" stroke="${dark}"/><circle cx="${ex+1}" cy="${ey+1}" r="${er*0.45}" fill="#111"/>`; }
+  const mouth = r(12)>0.5?`<path d="M${cx-8},${cy+10} Q${cx},${cy+10+r(13)*10} ${cx+8},${cy+10}" stroke="${dark}" stroke-width="2" fill="none"/>`:`<rect x="${cx-7}" y="${cy+9}" width="14" height="${3+r(13)*5}" rx="2" fill="${dark}"/>`;
+  const acc = r(14)>0.6?`<line x1="${cx}" y1="${cy-hgt/2}" x2="${cx+6}" y2="${cy-hgt/2-12}" stroke="${dark}" stroke-width="2"/><circle cx="${cx+6}" cy="${cy-hgt/2-13}" r="3" fill="${dark}"/>`: r(14)>0.3?`<rect x="${cx-10}" y="${cy-hgt/2-9}" width="20" height="9" rx="2" fill="${dark}"/>`:'';
+  const legs = `<line x1="${cx-10}" y1="${cy+hgt/2}" x2="${cx-12}" y2="${cy+hgt/2+8}" stroke="${dark}" stroke-width="2"/><line x1="${cx+10}" y1="${cy+hgt/2}" x2="${cx+12}" y2="${cy+hgt/2+8}" stroke="${dark}" stroke-width="2"/>`;
+  return `<svg viewBox="0 0 120 68" xmlns="http://www.w3.org/2000/svg">${legs}${bodyEl}${eyeEls}${mouth}${acc}<text x="117" y="65" font-size="6" fill="${dark}" text-anchor="end" opacity=".6">art TBD</text></svg>`; }
+
+/* ---------- icon language ---------- */
+const IC={cap:'<span class="ic cap">$</span>',com:'<span class="ic com">C</span>',en:'<span class="ic en">E</span>',aura:'<span class="ic aura">✦</span>',rot:'<span class="ic rot">R</span>',dna:'<span class="ic dna">DNA</span>',safety:'<span class="ic safe">S</span>'};
+function nIc(k,n){ if(!n) return ''; const neg=n<0; const a=Math.abs(n); return `<span style="white-space:nowrap">${neg?'−':'+'}${a>3?a+'×':''}${IC[k].repeat(a>3?1:a)}</span>`; }
+function gainIc(g){ return ['cap','com','en','aura','safety','rot','dna'].map(k=>nIc(k,g[k])).join(''); }
+function costIc(cost){ return ['cap','com','en'].map(k=>IC[k].repeat(cost[k]||0)).join(''); }
+function powerHtml(pw,c){ let inner='';
+  switch(pw.k){
+    case 'gain': inner=gainIc(pw); break;
+    case 'gainPer': inner=`${nIc(pw.res,pw.n)} <span class="arrow">per</span> <span class="ic ${pw.per}">${pw.per}</span>`; break;
+    case 'convert': inner=`${costIc(pw.pay)} <span class="arrow">→</span> ${gainIc(pw.get)}`; break;
+    case 'clue': inner='<span class="ic clue">?</span> <span class="arrow">clue card</span>'; break;
+    case 'peek': inner='<span class="ic peek">👁</span> <span class="arrow">peek clue</span>'; break;
+    case 'buyClue': inner=`${costIc(pw.pay)} <span class="arrow">→</span> <span class="ic clue">?</span>`; break;
+    case 'reveal': inner='<span class="ic reveal">⚑</span> <span class="arrow">flip hidden trait</span>'; break;
+    case 'decom': inner='<span class="ic decom">✕</span><span class="ic D">D</span> <span class="arrow">free, +</span><span class="ic aura">✦</span>'; break;
+  }
+  if(pw.t==='pink'){ const trig={otherPlacesD:'other <span class="ic D">D</span> placed',otherCulture:'other activates <span class="ic C">C</span>',incident:'incident fails',otherBigSpread:'other pushes 3+'}[pw.on]; inner=`<span class="arrow">${trig} →</span> ${gainIc(pw)}`; }
+  return `<div class="pw ${pw.t}"><span class="k"></span>${inner}</div>`; }
+function cardHtml(c, opts={}){ const cost=opts.cost||c.cost;
+  const stat = c.type==='D'?`<div class="stat" title="spread">${'<span class="pip"></span>'.repeat(c.spread)}</div>` : c.type==='O'?`<div class="stat" title="safety strength">${'<span class="shield"></span>'.repeat(c.str)}${c.spreadMod?'<span class="ic push" style="height:12px;min-width:12px;font-size:8px">−1</span>':''}</div>`:'';
+  return `<div class="card ${c.type} ${opts.mini?'mini':''} ${opts.click?'clickable':''} ${opts.dim?'dim':''}" ${opts.data||''} title="${esc(c.name)} — ${esc(c.flavor)}">
+    <div class="art">${mascot(c)}<div class="cost">${['cap','com','en'].map(k=>(cost[k]||0)?`<span>${IC[k].repeat(cost[k])}</span>`:'').join('')}</div>${stat}</div>
+    <div class="band"><span>${E.TYPE_NAME[c.type]}</span></div>
+    <div class="name">${esc(c.name)}</div><div class="body">${c.powers.map(p=>powerHtml(p,c)).join('')}</div>${opts.mini?'':'<div class="flavor">'+esc(c.flavor)+'</div>'}<div class="vp">${c.vp}</div></div>`; }
+
+/* ---------- setup ---------- */
+let n=4; const nm=$('names');
+function renderNames(){ const cur=[...nm.querySelectorAll('input')].map(i=>i.value); nm.innerHTML=''; for(let i=0;i<n;i++){const inp=document.createElement('input');inp.placeholder='Nation '+(i+1);inp.value=cur[i]||'';nm.appendChild(inp);} }
+renderNames(); $('addP').onclick=()=>{if(n<4){n++;renderNames();}}; $('rmP').onclick=()=>{if(n>2){n--;renderNames();}};
+$('start').onclick=()=>{ const names=[...nm.querySelectorAll('input')].map((i,k)=>i.value.trim()||('Nation '+(k+1))); const raw=$('seed').value.trim();
+  S=E.newGame(names, raw===''?null:(isNaN(+raw)?hash(raw):+raw)); unlocked=null; privQ=[]; shownWinter=null; $('setup').classList.add('hidden'); $('table').classList.remove('hidden'); turn(); };
+try{ if(localStorage.getItem('rotmania3')) $('resume').classList.remove('hidden'); }catch(e){}
+$('resume').onclick=()=>{ try{ const raw=JSON.parse(localStorage.getItem('rotmania3')); S=raw.S; S.event=E.EVENTS.find(e=>e.id===raw.eventId)||E.EVENTS[0]; shownWinter=raw.shownWinter; unlocked=null; privQ=[]; $('setup').classList.add('hidden'); $('table').classList.remove('hidden'); if(S.gameOver) endGame(); else turn(); }catch(e){ alert('Could not load save.'); } };
+function save(){ try{ localStorage.setItem('rotmania3',JSON.stringify({S:Object.assign({},S,{event:undefined}),eventId:S.event.id,shownWinter})); }catch(e){} }
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.remove('hidden'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.add('hidden'),4500); }
+
+/* ---------- flow ---------- */
+function turn(){
+  if(S.gameOver){ endGame(); return; }
+  if(S.lastWinter && S.lastWinter.year!==shownWinter){ winterReport(); return; }
+  const p=E.currentPlayer(S);
+  const mine=S.privateQueue.filter(q=>q.player===p.idx); S.privateQueue=S.privateQueue.filter(q=>q.player!==p.idx); privQ=privQ.concat(mine);
+  if(unlocked!==p.idx) unlocked=null;
+  render();
+}
+function doAct(a){ const actor=E.currentPlayer(S).idx; const r=E.act(S,a); if(!r.ok){ alert(r.msg); return; } save(); toast(r.msg);
+  if(r.private&&r.private.length){ r.private.forEach(x=>privQ.push({kind:'text',title:x.title,body:x.body})); unlocked=actor; render(); return; }
+  turn(); }
+
+/* ---------- board ---------- */
+function render(){
+  const p=E.currentPlayer(S);
+  $('yearDial').innerHTML=E.YEARS.map(y=>`<span class="${y===E.year(S)?'on':''}">${y}</span>`).join('');
+  $('seasonDial').innerHTML=['spring','summer','autumn','winter'].map(s=>`<span class="${s===S.season?'on':''}">${s}</span>`).join('');
+  const shown=E.shownTrack(S);
+  $('aiPath').innerHTML=Array.from({length:E.TRACK_MAX+1},(_,i)=>`<div class="sq ${i>=E.DANGER_LO?'danger':''} ${E.CHECKPOINTS.includes(i)?'cp':''} ${S.checkpointsDone.includes(i)?'done':''} ${i===E.TRACK_MAX?'end':''}">${i%5===0?i:''}${i===shown?'<div class="pawn"></div>':''}</div>`).join('');
+  $('sandbagNote').textContent = S.traits.some(t=>t.id==='sandbagging'&&t.revealed) ? '· Sandbagging flipped: pawn now shows its true position' : '';
+  $('rotPath').innerHTML=Array.from({length:11},(_,i)=>`<div class="sq s${E.rotIdx(i)+1}">${i}${i===S.rot?'<div class="pawn rot"></div>':''}</div>`).join('');
+  $('rotLegend').innerHTML=E.ROT_STAGES.map(s=>`<span>${s.name}</span>`).join('');
+  $('dna').textContent=S.dna;
+  $('slots').innerHTML=E.TRAITS.map(t=>{ const o=S.traits.find(x=>x.id===t.id); if(!o) return `<div class="slot"><b>${t.name} · ${t.cost}</b>${t.hidden?'(enters face down)':t.text}</div>`; return o.revealed?`<div class="slot owned"><b>${t.name}</b>${t.text.replace('HIDDEN: ','')}</div>`:`<div class="slot facedown">HIDDEN</div>`; }).join('');
+  $('goals').innerHTML=S.goals.map((gid,i)=>{ const g=E.GOALS.find(x=>x.id===gid); const res=S.goalResults; return `<div class="goal ${i===S.yearIdx?'on':''} ${i<S.yearIdx?'done':''}"><b>${E.YEARS[i]} <span class="ic ${/^[IDOC]$/.test(g.icon)?g.icon:'push'}">${g.icon}</span></b>${g.name}</div>`; }).join('');
+  $('eventCard').innerHTML=`<div class="card event"><div class="band"><span>WORLD EVENT · ${E.year(S)}</span></div><div class="name">${esc(S.event.head)}</div><div class="body">${esc(S.event.text)}</div></div>`;
+  $('feed').innerHTML=(S.news.length?S.news.map(x=>'<div>· '+esc(x)+'</div>').join(''):'<div>Quiet. Suspiciously quiet.</div>');
+  const canAct = unlocked===p.idx && privQ.length===0;
+  $('market').innerHTML = S.market.map((id,slot)=>{ if(!id) return '<div class="card dim"><div class="body" style="padding-top:70px;text-align:center">empty</div></div>'; const c=E.CARD_BY_ID[id]; const cost=E.cardCost(S,c); const ok=canAct&&E.canAfford(p,cost)&&E.count(p,c.type)<E.ROW_MAX; return cardHtml(c,{cost,click:ok,dim:canAct&&!ok,data:`data-slot="${slot}"`}); }).join('')
+    + `<div class="pile"><span>DRAW PILE</span><b>${S.deck.length}</b><span style="color:#bbb;font-size:9px">+${S.discard.length} discard</span></div>`
+    + `<div><div class="envelope"><div class="sealed">SEAL</div><b>THE LINE</b></div><div class="pile" style="height:72px;margin-top:6px;background:repeating-linear-gradient(45deg,#6b2d2d 0 5px,#8a3a3a 5px 10px)"><span>CLUE DECK</span><b>${S.clueDeck.length}</b></div></div>`;
+  $('market').querySelectorAll('.card.clickable').forEach(el=>el.onclick=()=>doAct({type:'place',slot:+el.dataset.slot}));
+  $('mats').innerHTML=S.players.map(q=>matHtml(q, q.idx===p.idx, canAct&&q.idx===p.idx)).join('');
+  if(canAct){ const m=$('mats').querySelector('.mat.active');
+    m.querySelectorAll('[data-row]').forEach(b=>b.onclick=()=>doAct({type:'row',row:b.dataset.row}));
+    m.querySelectorAll('.card.clickable').forEach(el=>el.onclick=()=>{ if(confirm(`Decommission ${E.CARD_BY_ID[p.rows.D[+el.dataset.i]].name} for ${E.decomCost(S)}$?`)) doAct({type:'decommission',index:+el.dataset.i}); }); }
+  renderPhone();
+}
+function toks(cls,label,nn){ return `<div class="grp"><span class="sub">${label}</span>${Array.from({length:Math.min(nn,10)},()=>`<span class="tok ${cls}">${label[0]}</span>`).join('')}${nn>10?'<b>+'+(nn-10)+'</b>':''}${nn===0?'<span class="sub">0</span>':''}</div>`; }
+const BASE={I:`${IC.cap}${IC.com}${IC.en}`,D:`${IC.cap} +${IC.cap}<span class="arrow">per</span><span class="ic D">D</span> · <span class="ic push">●</span><span class="arrow">+spread</span>`,O:`<span class="ic clue">?</span><span class="arrow">or</span>${IC.cap}${IC.cap}`,C:`${IC.aura}${IC.cap}`};
+function matHtml(q, active, canAct){
+  const legal=canAct?E.legalActions(S):[]; const has=t=>legal.some(a=>a.type===t);
+  const sp=E.playerSpread(S,q), shown=E.shownTrack(S);
+  return `<div class="mat ${active?'active':''}">
+    <div class="head"><span class="nation">${esc(q.name)}</span><span>${q.idx===S.startPlayer?'<span class="firstmark">first</span>':''} <span class="sub">spread ${sp} · safety ${E.playerSafety(S,q)}</span></span></div>
+    <div class="tokens">${toks('cap','$',q.res.cap)}${toks('com','C',q.res.com)}${toks('en','E',q.res.en)}${toks('aura','✦',q.aura)}<div class="grp"><span class="sub">safety</span>${Array.from({length:q.safetyTokens},()=>'<span class="tok safe">S</span>').join('')||'<span class="sub">0</span>'}</div><span class="sub">goals ${q.goalPts} · awards ${q.awards}</span></div>
+    ${E.TYPES.map(t=>`<div class="rowline"><div class="rowhead ${t}"><b>${E.TYPE_NAME[t]}</b><div class="base">${BASE[t]}</div>${active?`<button data-row="${t}" ${canAct?'':'disabled'} class="${t==='D'&&sp&&shown+sp>=E.DANGER_LO?'hot':''}">Activate${t==='D'&&sp?' (pawn +'+sp+')':''}</button>`:''}</div>
+      <div class="rowcards">${q.rows[t].map((id,i)=>cardHtml(E.CARD_BY_ID[id],{mini:true,click:canAct&&t==='D'&&has('decommission'),data:`data-i="${i}"`})).join('')}${'<div class="emptyslot">+</div>'.repeat(Math.max(0,E.ROW_MAX-q.rows[t].length))}</div></div>`).join('')}
+    ${active?`<div class="hint">${canAct?`Place: click a market card. Activate: a row button (base action, then every card in the row left→right). Decommission (${E.decomCost(S)}$): click one of your deployments.`:'Unlock the companion phone to act.'}</div>`:''}
+  </div>`;
+}
+
+/* ---------- companion phone ---------- */
+function renderPhone(){
+  const p=E.currentPlayer(S); const ph=$('phone');
+  if(unlocked!==p.idx){ ph.innerHTML=`<h3>Companion · locked</h3><div class="lock"><div class="pdim">hand the phone to</div><div class="who">${esc(p.name)}</div><div class="pdim">${E.year(S)} ${S.season} · ${privQ.length?privQ.length+' private item(s) waiting':'your action'}</div><button class="go" id="unlock" style="padding:12px 18px">I am ${esc(p.name)} — unlock</button></div>`; $('unlock').onclick=()=>{ unlocked=p.idx; render(); }; return; }
+  if(privQ.length){ const q=privQ[0]; let title,body;
+    if(q.kind==='objective'){ const o=E.OBJECTIVES.find(o=>o.id===p.objective); title='Secret objective: '+o.name; body=o.text; }
+    else if(q.kind==='briefing'){ const b=p.briefings[p.briefings.length-1]; title='Advisor briefing · '+b.year; body=esc(b.text)+`<div class="pdim" style="margin-top:8px">Advisors are right ~${Math.round(b.accuracy*100)}% of the time at this Rot level. A lying advisor names the real line.</div>`; }
+    else { title=q.title; body=esc(q.body); }
+    ph.innerHTML=`<h3>Private · ${esc(p.name)}</h3><div class="pbox alert"><h3>${title}</h3><div>${body}</div></div><button class="go" id="pok" style="padding:10px">Got it (hide)</button><div class="pdim" style="margin-top:8px">${privQ.length-1} more waiting</div>`;
+    $('pok').onclick=()=>{ privQ.shift(); if(!privQ.length){ if(S.gameOver){ endGame(); return; } if(E.currentPlayer(S).idx!==p.idx){ turn(); return; } } render(); }; return; }
+  const o=E.OBJECTIVES.find(o=>o.id===p.objective);
+  const known=new Set(p.clues.map(c=>c.value).concat(p.peeks.map(c=>c.value)));
+  ph.innerHTML=`<h3>Companion · ${esc(p.name)}</h3>
+    <div class="ptabs"><button class="${ptab==='intel'?'on':''}" data-t="intel">Intel</button><button class="${ptab==='log'?'on':''}" data-t="log">Log</button><button class="${ptab==='rules'?'on':''}" data-t="rules">Rules</button></div>
+    ${ptab==='intel'?`<div class="pbox alert"><h3>Secret objective</h3><b>${o.name}</b> — ${o.text}</div>
+      <div class="pbox"><h3>Where is the line?</h3><div class="possible">${Array.from({length:9},(_,i)=>30+i).map(v=>`<span class="${known.has(v)?'x':''}">${v}</span>`).join('')}</div><div class="pdim" style="margin-top:4px">crossed out = eliminated by clue cards you drew or peeked</div></div>
+      <div class="pbox"><h3>Clue cards (always true)</h3>${p.clues.length?p.clues.map(c=>`<div class="pline">${c.year} · ${esc(c.text)} <span class="pdim">(${esc(c.source)})</span></div>`).join(''):'<span class="pdim">None yet. Activate Oversight.</span>'}${p.peeks.map(c=>`<div class="pline pdim">${c.year} · peeked: not ${c.value} (${esc(c.source)})</div>`).join('')}</div>
+      <div class="pbox"><h3>Advisor briefings (unreliable)</h3>${p.briefings.length?p.briefings.slice().reverse().map(b=>`<div class="pline">${b.year} · ${esc(b.text)}</div>`).join(''):'<span class="pdim">Your advisor reports every winter.</span>'}</div>`:''}
+    ${ptab==='log'?`<div class="pbox">${S.log.slice().reverse().slice(0,40).map(l=>`<div class="pline"><span class="pdim">${l.year} ${l.season.slice(0,3)}</span> ${esc(l.msg)}</div>`).join('')}</div>`:''}
+    ${ptab==='rules'?rulesHtml():''}
+    <div style="margin-top:auto"><button id="lock" style="width:100%">Lock phone (before passing)</button></div>`;
+  ph.querySelectorAll('.ptabs button').forEach(b=>b.onclick=()=>{ptab=b.dataset.t;renderPhone();}); $('lock').onclick=()=>{ unlocked=null; render(); };
+}
+function rulesHtml(){ return `<div class="pbox"><h3>Year</h3>Event, then +3$. Three actions each (spring/summer/autumn): place a card from the market into its row (max 5), or activate a row: its base action, then every card in it left→right. Then winter.</div>
+<div class="pbox"><h3>Rows</h3>Industry: +1$ +1C +1E. Deployment: +1$ +1$ per card, then the pawn moves by your spread. Oversight: draw a clue card (or +2$). Culture: +1 Aura +1$.</div>
+<div class="pbox"><h3>Winter</h3>The AI moves +1 on its own (+ traits), gains DNA from everyone's spread, may evolve a trait. Incidents at 10/20/27: world safety must reach 2/3/4 + 1. Round goal scored 4/2/1. Advisors brief each nation.</div>
+<div class="pbox"><h3>8-ball</h3>Line sealed in 30–38. If your push crosses it you lose and the game ends. If the AI's own push crosses, the nation with the most spread is blamed. Clue cards eliminate values; lying advisors name the real line.</div>
+<div class="pbox"><h3>Score</h3>Card VP + Aura + goals + Defender awards + secret objective + 1 per 2 safety + 1 per 4 spare tokens.</div>`; }
+
+/* ---------- winter & end ---------- */
+function winterReport(){
+  const w=S.lastWinter; shownWinter=w.year; save();
+  let h=`<h2>Winter ${w.year}</h2>`;
+  if(S.gameOver) h+=`<div class="step bad"><b>CATASTROPHE.</b> ${esc(S.log[S.log.length-1].msg)}</div>`;
+  else{
+    h+=`<div class="step">The AI moves on its own: <b>+${w.auto}</b>. It feeds on everyone's spread: ${w.pushes.map(x=>S.players[x.player].name+' '+x.spread).join(', ')}.</div>`;
+    if(w.trait) h+=`<div class="step"><b>The AI evolves: ${E.TRAIT_BY_ID[w.trait].name}.</b> ${E.TRAIT_BY_ID[w.trait].text}</div>`;
+    if(w.hiddenEvolved) h+=`<div class="step"><b>The AI evolves a face-down trait.</b> Red Teams, auditors, or the next incident flip it.</div>`;
+    if(w.incident){ const i=w.incident; h+=`<div class="step ${i.contained?'good':'bad'}"><b>Incident at ${i.cp}: ${i.contained?'contained':'NOT contained'}.</b> World safety ${i.total} / needed ${i.required}.${i.revealed?' Flipped: '+i.revealed+'.':''}${i.defenders.length?' Defender +3 VP: '+i.defenders.map(d=>S.players[d].name).join(', ')+'.':''}${i.hit.map(x=>' '+S.players[x.player].name+' loses '+x.lost+'.').join('')}</div>`; }
+    if(w.goal) h+=`<div class="step"><b>Round goal — ${w.goal.name}:</b> ${w.goal.places.map(x=>S.players[x.player].name+' '+x.pts+' VP').join(', ')||'nobody qualified'}</div>`;
+    if(w.pink.length) h+=`<div class="step"><b>Reactions:</b> ${w.pink.join('; ')}</div>`;
+    h+=`<div class="step"><b>Feed.</b> ${w.news.map(x=>'<div>· '+esc(x)+'</div>').join('')}</div>`;
+    h+=`<div class="step">Advisors have slipped a briefing to each nation. Next: ${E.year(S)} — ${esc(S.event.head)} <span class="sub">(${esc(S.event.text)})</span></div>`;
+  }
+  h+=`<button class="primary" id="wok" style="margin-top:12px">Continue</button>`;
+  $('obox').innerHTML=h; $('overlay').classList.remove('hidden'); $('wok').onclick=()=>{ $('overlay').classList.add('hidden'); turn(); };
+}
+function endGame(){
+  try{localStorage.removeItem('rotmania3');}catch(e){}
+  const g=S.gameOver; let h;
+  if(g.reason==='sunk') h=`<h2>🎱 8-BALL SUNK</h2><p>${g.blamed?`The AI crossed the line on its own; <b>${esc(S.players[g.sunkBy].name)}</b> ran the most spread and takes the blame.`:`<b>${esc(S.players[g.sunkBy].name)}</b> pushed the pawn to ${S.track}.`} The envelope is opened: the line was <b>${S.line}</b>.</p>`;
+  else if(g.reason==='ai') h=`<h2>EVERYONE LOSES</h2><p>The AI crossed the line (${S.line}) on its own and no nation stood out.</p>`;
+  else h=`<h2>JANUARY 1, 2030</h2><p>The world did not end. The envelope is opened: the line was <b>${S.line}</b>; the pawn stopped at ${S.track}.</p>`;
+  const rows=S.players.map((p,i)=>({p,s:S.scores[i]})).sort((a,b)=>b.s.total-a.s.total);
+  h+=`<table><tr><th>Nation</th><th>Cards</th><th>Aura</th><th>Goals</th><th>Awards</th><th>Objective</th><th>Rep</th><th>Spare</th><th>Total</th></tr>${rows.map(({p,s})=>`<tr class="${S.winner===p.idx?'win':''}"><td>${esc(p.name)}${s.sunk?' 🎱':''} <span class="sub">${E.OBJECTIVES.find(o=>o.id===p.objective).name}</span></td><td>${s.cards}</td><td>${s.aura}</td><td>${s.goals}</td><td>${s.awards}</td><td>${s.objective}</td><td>${s.reputation}</td><td>${s.leftovers}</td><td>${s.total}</td></tr>`).join('')}</table>`;
+  const st=S.stats; h+=`<p class="sub">Placed: ${st.builds.I} Industry · ${st.builds.D} Deployment · ${st.builds.O} Oversight · ${st.builds.C} Culture. Row actions: I ${st.rowActions.I} / D ${st.rowActions.D} / O ${st.rowActions.O} / C ${st.rowActions.C}. Decommissions ${st.decommissions}. Incidents: ${st.incidents.map(i=>i.cp+(i.contained?' ✓':' ✗')).join(', ')||'none'}. Final Rot ${S.rot} (${E.rotStage(S.rot)}). Traits: ${S.traits.map(t=>E.TRAIT_BY_ID[t.id].name).join(', ')||'none'}. Seed ${S.seed==null?'random':S.seed}.</p>`;
+  h+=`<div class="log">${S.log.map(l=>`<div>${l.year} ${l.season.slice(0,3)} · ${esc(l.msg)}</div>`).join('')}</div>`;
+  h+=`<div style="display:flex;gap:8px;margin-top:12px"><button id="exp">Export playtest log (JSON)</button><button class="primary" id="again">New game</button></div>`;
+  $('obox').innerHTML=h; $('overlay').classList.remove('hidden');
+  $('again').onclick=()=>{ $('overlay').classList.add('hidden'); $('table').classList.add('hidden'); $('setup').classList.remove('hidden'); }; $('exp').onclick=exportLog;
+}
+function exportLog(){ const blob=new Blob([JSON.stringify({version:3,log:S.log,stats:S.stats,players:S.players.map(p=>({name:p.name,rows:p.rows,objective:p.objective,clues:p.clues,peeks:p.peeks,briefings:p.briefings,res:p.res,aura:p.aura})),track:S.track,line:S.line,rot:S.rot,traits:S.traits,goals:S.goals,seed:S.seed,scores:S.scores||null},null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`rotmania-playtest-${Date.now()}.json`; a.click(); }
+$('menuBtn').onclick=()=>{ $('obox').innerHTML=`<h2>Menu</h2><p class="sub">Auto-saved after every action on this browser.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="mexp">Export playtest log</button><button id="mgallery">Card gallery</button><button id="mnew">Abandon game</button><button class="primary" id="mclose">Back</button></div><div id="gallery"></div>`; $('overlay').classList.remove('hidden');
+  $('mclose').onclick=()=>$('overlay').classList.add('hidden'); $('mexp').onclick=exportLog; $('mgallery').onclick=()=>{ $('gallery').innerHTML='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">'+E.CARDS.map(c=>cardHtml(c)).join('')+'</div>'; };
+  $('mnew').onclick=()=>{ if(confirm('Abandon this game?')){ try{localStorage.removeItem('rotmania3');}catch(e){} $('overlay').classList.add('hidden'); $('table').classList.add('hidden'); $('setup').classList.remove('hidden'); } }; };
+})();
+</script>
+</body>
+</html>

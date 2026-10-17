@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RotMania — table</title>
+<style>
+/* The screen mirrors the physical table: a cream cardboard board with printed tracks, poker cards, wooden tokens,
+   and one dark "companion phone" for hidden information. */
+:root{
+  --felt:#1f2a24;--wood:#3a2a1c;--board:#efe6d2;--board2:#e4d9c0;--ink:#2a2420;--ink2:#6b625a;--line:#bfb39a;
+  --blue:#2f6fb5;--amber:#d08a1e;--green:#2e8b57;--pink:#c43f8a;--purple:#6b4fbf;--red:#c0392b;--gold:#e0b64a;
+  --phone:#0b0f14;--phone2:#141b24;--phonetxt:#d7e1ec;--phonedim:#7d8da0;--phonegreen:#39d98a;--phoneamber:#f5b942;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;--mono:ui-monospace,Menlo,Consolas,monospace;--sans:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at center,#2a3a31,#141c18 70%);color:var(--ink);font-family:var(--sans);font-size:13px;min-height:100vh}
+button{font-family:var(--sans);font-size:12px;border:1px solid var(--line);background:#fffaf0;color:var(--ink);border-radius:6px;padding:7px 10px;cursor:pointer}
+button:disabled{opacity:.4;cursor:default}
+button.primary{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.hidden{display:none !important}
+
+/* ===== setup ===== */
+#setup{max-width:560px;margin:60px auto;background:var(--board);border-radius:10px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#setup h1{font-family:var(--serif);font-size:38px;margin:0;letter-spacing:.02em}
+#setup input{width:100%;padding:9px;border:1px solid var(--line);border-radius:6px;font-size:14px;margin-top:6px;background:#fffdf7}
+#setup p{line-height:1.5}
+
+/* ===== table layout ===== */
+#table{display:grid;grid-template-columns:1fr 320px;gap:16px;padding:16px;max-width:1500px;margin:0 auto}
+.board{background:var(--board);border:10px solid var(--wood);border-radius:8px;padding:14px 18px;box-shadow:0 18px 50px rgba(0,0,0,.6);background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.015) 0 2px,transparent 2px 4px)}
+.board h1{font-family:var(--serif);font-size:30px;margin:0;letter-spacing:.03em}
+.board h2{font-family:var(--serif);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);margin:10px 0 4px;font-weight:600}
+.sub{color:var(--ink2);font-size:11px}
+.strip{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+
+/* dials */
+.dial{display:flex;gap:3px}.dial span{width:48px;text-align:center;border:1px solid var(--line);border-radius:4px;padding:3px 0;font-size:11px;background:var(--board2)}
+.dial span.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.seasons span{width:60px}
+
+/* AI track path */
+.path{display:flex;gap:2px;margin:4px 0}
+.path .sq{position:relative;flex:1;height:34px;border:1px solid var(--ink2);border-radius:3px;background:#fbf6ea;font-size:9px;color:var(--ink2);text-align:center;padding-top:1px}
+.path .sq.danger{background:#f3d2c9;border-color:var(--red)}
+.path .sq.cp::after{content:"⚠";position:absolute;left:0;right:0;bottom:1px;font-size:10px}
+.path .sq.cp.done::after{opacity:.3}
+.path .sq.end::after{content:"🎱";position:absolute;left:0;right:0;bottom:1px;font-size:12px}
+.pawn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:#111;border:2px solid #fff;box-shadow:0 2px 3px rgba(0,0,0,.5)}
+.pawn.rot{background:var(--purple)}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--ink2);margin-top:2px}
+
+/* rot track */
+.rotpath .sq{height:30px;font-size:9px}
+.rotpath .sq.s1{background:#fbf6ea}.rotpath .sq.s2{background:#f6ebdc}.rotpath .sq.s3{background:#f1dfd1}.rotpath .sq.s4{background:#ecd3cc}.rotpath .sq.s5{background:#e6c6c9}
+
+/* AI area */
+.ai{display:flex;gap:12px;align-items:flex-start}
+.dna{width:70px;height:70px;border-radius:50%;border:3px solid var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--purple);font-family:var(--serif)}
+.dna b{font-size:24px}.dna span{font-size:9px;letter-spacing:.1em}
+.slots{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.slot{width:112px;height:66px;border:1px dashed var(--line);border-radius:5px;font-size:9px;color:var(--ink2);padding:4px;background:var(--board2)}
+.slot.owned{border:1px solid var(--purple);background:#efe9fb;color:var(--ink)}.slot.owned b{color:var(--purple);font-size:10px;display:block}
+.slot.facedown{background:repeating-linear-gradient(45deg,#4a3a8a 0 4px,#5b4aa5 4px 8px);border:1px solid #2d2259;color:#ddd;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.1em}
+
+/* cards (poker proportion 63:88) */
+.card{width:118px;height:165px;border-radius:7px;background:#fffdf7;border:1px solid #b8ad96;box-shadow:0 2px 4px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden;font-size:9.5px;line-height:1.25;position:relative;flex:none}
+.card .band{height:22px;color:#fff;font-weight:700;font-size:10px;display:flex;align-items:center;justify-content:space-between;padding:0 6px;letter-spacing:.03em}
+.card.I .band{background:var(--blue)}.card.D .band{background:var(--amber)}.card.S .band{background:var(--green)}.card.C .band{background:var(--pink)}
+.card .name{font-family:var(--serif);font-weight:700;font-size:11.5px;padding:5px 6px 2px}
+.card .body{padding:0 6px;flex:1;color:var(--ink)}
+.card .flavor{padding:3px 6px 5px;font-style:italic;color:var(--ink2);font-size:8.5px;border-top:1px dotted var(--line)}
+.card .cost{display:flex;gap:3px;flex-wrap:wrap}
+.card .vp{position:absolute;right:5px;bottom:5px;width:18px;height:18px;border-radius:50%;background:var(--ink);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.card.mini{width:92px;height:128px;font-size:8.5px}.card.mini .name{font-size:10px}.card.mini .band{height:18px;font-size:9px}
+.card.clickable{cursor:pointer}.card.clickable:hover{transform:translateY(-3px);box-shadow:0 8px 16px rgba(0,0,0,.35)}
+.card.dim{opacity:.5}
+.card.event{width:300px;height:110px}.card.event .band{background:var(--ink)}.card.event .name{font-size:12px}
+.tok{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:9px;font-weight:700;color:#fff;border:1px solid rgba(0,0,0,.3)}
+.tok.cap{background:var(--gold);color:#2a2420}.tok.com{background:var(--blue)}.tok.en{background:var(--green)}.tok.safe{background:#555;border-radius:3px}
+.pile{width:118px;height:165px;border-radius:7px;background:repeating-linear-gradient(45deg,#2b2b36 0 5px,#3a3a48 5px 10px);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;border:1px solid #111;flex:none}
+.pile b{font-size:22px}
+.envelope{width:118px;height:80px;border:2px solid var(--ink);border-radius:4px;background:#fff8e0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;position:relative;flex:none}
+.envelope::before{content:"";position:absolute;left:0;right:0;top:0;height:0;border-left:57px solid transparent;border-right:57px solid transparent;border-top:38px solid #f0e4c0}
+.envelope b{position:relative;font-family:var(--serif)}
+.sealed{position:absolute;top:28px;left:50%;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center}
+.market{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+
+/* player mats */
+.mats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+.mat{background:#fbf6ea;border:2px solid var(--line);border-radius:8px;padding:10px;min-height:200px;position:relative}
+.mat.active{border-color:var(--ink);box-shadow:0 0 0 3px rgba(42,36,32,.15)}
+.mat .head{display:flex;justify-content:space-between;align-items:center}
+.mat .nation{font-family:var(--serif);font-size:17px;font-weight:700}
+.tokens{display:flex;gap:12px;margin:6px 0;align-items:center;font-size:12px}
+.tokens .grp{display:flex;align-items:center;gap:3px;flex-wrap:wrap;max-width:140px}
+.rows{display:flex;flex-direction:column;gap:5px}
+.rowlbl{font-size:9px;letter-spacing:.12em;color:var(--ink2);text-transform:uppercase;width:68px;flex:none;padding-top:4px}
+.crow{display:flex;gap:6px;align-items:flex-start;min-height:30px;overflow-x:auto}
+.crow .cards{display:flex;gap:5px}
+.firstmark{font-size:10px;background:var(--ink);color:#fff;padding:1px 6px;border-radius:999px}
+.acts{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.hint{font-size:11px;color:var(--ink2);margin-top:6px}
+
+/* companion phone */
+.phone{position:sticky;top:16px;background:#111;border-radius:30px;padding:14px 10px;box-shadow:0 18px 50px rgba(0,0,0,.6);height:calc(100vh - 32px);display:flex;flex-direction:column}
+.phone .screen{background:var(--phone);color:var(--phonetxt);border-radius:20px;flex:1;padding:14px;font-family:var(--mono);font-size:12px;overflow:auto;display:flex;flex-direction:column}
+.phone h3{margin:0 0 6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--phonedim)}
+.phone .lock{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px}
+.phone .lock .who{color:var(--phonegreen);font-size:22px;font-weight:700}
+.phone button{background:var(--phone2);color:var(--phonetxt);border:1px solid #2a3644;font-family:var(--mono)}
+.phone button.go{background:var(--phonegreen);color:#04120a;border-color:var(--phonegreen);font-weight:700}
+.pbox{border:1px solid #2a3644;border-radius:10px;padding:10px;margin:0 0 10px;background:var(--phone2)}
+.pbox.alert{border-color:var(--phoneamber)}.pbox.alert h3{color:var(--phoneamber)}
+.pline{padding:4px 0;border-bottom:1px dashed #2a3644}
+.pdim{color:var(--phonedim)}
+.ptabs{display:flex;gap:4px;margin-bottom:8px}.ptabs button{flex:1;font-size:10px;padding:5px}.ptabs button.on{border-color:var(--phonegreen);color:var(--phonegreen)}
+
+/* overlays */
+.overlay{position:fixed;inset:0;background:rgba(10,12,10,.88);display:flex;align-items:center;justify-content:center;z-index:50;overflow:auto;padding:20px}
+.overlay .box{background:var(--board);border:8px solid var(--wood);border-radius:8px;padding:20px 24px;max-width:720px;width:100%;max-height:90vh;overflow:auto}
+.overlay h2{font-family:var(--serif);margin:0 0 10px;font-size:22px}
+.step{padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.step b{font-family:var(--serif)}
+.bad{color:var(--red)}.good{color:var(--green)}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:6px 5px;border-bottom:1px solid var(--line);text-align:right}td:first-child,th:first-child{text-align:left}
+.win td{font-weight:700}
+.log{font-family:var(--mono);font-size:11px;max-height:140px;overflow:auto;background:var(--board2);padding:8px;border-radius:5px;margin-top:8px}
+.log div{padding:1px 0}
+@media (max-width:1100px){#table{grid-template-columns:1fr}.phone{position:static;height:auto}.phone .screen{min-height:380px}}
+</style>
+</head>
+<body>
+
+<div id="setup">
+  <h1>ROTMANIA</h1>
+  <div class="sub">Digital playtest of the table version · v0.2</div>
+  <p>A whistleblower from Frontier Lab Inc. says the world ends on <b>January 1, 2030</b>. You run a nation from 2023. AI deployments make you rich and move the shared AI pawn toward a line sealed in an envelope. If your winter push crosses it, you sank the 8-ball.</p>
+  <p class="sub">The screen mirrors the physical table: board, cards, tokens, and one companion phone that holds all hidden information. Sit around the laptop; the phone panel is only for the nation it names.</p>
+  <div id="names"></div>
+  <div style="display:flex;gap:8px;margin-top:8px"><button id="addP">+ nation</button><button id="rmP">− nation</button></div>
+  <input id="seed" placeholder="seed (optional, for repeatable playtests)">
+  <button class="primary" id="start" style="width:100%;padding:12px;margin-top:14px;font-size:14px">SET UP THE TABLE</button>
+  <button id="resume" class="hidden" style="width:100%;margin-top:8px">Resume saved game</button>
+</div>
+
+<div id="table" class="hidden">
+  <div>
+    <div class="board">
+      <div class="strip" style="justify-content:space-between">
+        <div><h1>ROTMANIA</h1><div class="sub">Sealed line is somewhere in 30–38. Danger band printed from 28.</div></div>
+        <div>
+          <div class="dial" id="yearDial"></div>
+          <div class="dial seasons" id="seasonDial" style="margin-top:4px"></div>
+        </div>
+        <div><button id="menuBtn">☰ menu</button></div>
+      </div>
+
+      <h2>AI track</h2>
+      <div class="path" id="aiPath"></div>
+      <div class="legend"><span>⚠ incident checkpoints 10 · 20 · 27</span><span style="color:var(--red)">■ danger band</span><span>🎱 the end</span><span id="sandbagNote"></span></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div>
+          <h2>Rot track</h2>
+          <div class="path rotpath" id="rotPath"></div>
+          <div class="legend" id="rotLegend"></div>
+        </div>
+        <div>
+          <h2>The AI</h2>
+          <div class="ai"><div class="dna"><b id="dna">0</b><span>DNA</span></div><div class="slots" id="slots"></div></div>
+        </div>
+      </div>
+
+      <h2>This year's event</h2>
+      <div class="strip" style="align-items:flex-start">
+        <div id="eventCard"></div>
+        <div class="sub" style="max-width:420px" id="feed"></div>
+      </div>
+
+      <h2>Market <span class="sub" style="letter-spacing:0;text-transform:none;font-weight:400">— the active nation clicks a card to build it</span></h2>
+      <div class="market" id="market"></div>
+    </div>
+
+    <div class="mats" id="mats"></div>
+  </div>
+
+  <div class="phone"><div class="screen" id="phone"></div></div>
+</div>
+
+<div id="overlay" class="overlay hidden"><div class="box" id="obox"></div></div>
+
+<script>/* RotMania — game engine (pure state logic, no DOM)
+ * Works in the browser (global `Engine`) and in Node (module.exports) for simulation.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.Engine = factory();
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  // ---------- RNG (seedable so playtests are reproducible) ----------
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  let rand = Math.random;
+  function setSeed(seed) { rand = seed == null ? Math.random : mulberry32(seed); }
+  function ri(lo, hi) { return lo + Math.floor(rand() * (hi - lo + 1)); }
+  function pick(arr) { return arr[Math.floor(rand() * arr.length)]; }
+  function shuffle(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+  // ---------- Constants ----------
+  const TRACK_MAX = 40;
+  const DANGER_LO = 28;           // danger band start (public)
+  const LINE_LO = 30, LINE_HI = 38; // secret 8-ball line is somewhere here
+  const CHECKPOINTS = [10, 20, 27];
+  const YEARS = [2023, 2024, 2025, 2026, 2027, 2028, 2029];
+  const ROT_STAGES = [
+    { max: 1, name: 'Informed' },
+    { max: 3, name: 'Chronically Online' },
+    { max: 5, name: 'Doomscrolling' },
+    { max: 7, name: 'Cooked' },
+    { max: 10, name: 'Fully Skibidi' },
+  ];
+  function rotStage(rot) { return ROT_STAGES.find(s => rot <= s.max).name; }
+  function rotIdx(rot) { return ROT_STAGES.findIndex(s => rot <= s.max); }
+
+  // ---------- Cards ----------
+  // type: I=infrastructure, D=deployment, S=safety, C=culture
+  // cost: {cap,com,en}; yield: spring income (I) or winter income (D,C)
+  const CARDS = [
+    // Infrastructure — produce resources every spring
+    { id: 'server_barn', name: 'Server Barn', type: 'I', cost: { cap: 2, en: 1 }, yield: { com: 1 }, vp: 1, n: 3, flavor: 'A shed. With fans. Loud fans.' },
+    { id: 'data_center', name: 'Data Center', type: 'I', cost: { cap: 3, en: 1 }, yield: { com: 2 }, vp: 1, n: 4, flavor: 'Cools itself with a small lake nobody asked about.' },
+    { id: 'power_plant', name: 'Power Plant', type: 'I', cost: { cap: 2 }, yield: { en: 2 }, vp: 1, n: 4, flavor: 'Runs on whatever was cheapest this quarter.' },
+    { id: 'chip_fab', name: 'Chip Fab', type: 'I', cost: { cap: 4, en: 1 }, yield: { com: 1, cap: 1 }, vp: 2, n: 3, flavor: 'Three nanometers of pure national pride.' },
+    { id: 'reactor', name: 'Nuclear Reactor', type: 'I', cost: { cap: 5 }, yield: { en: 3 }, vp: 2, n: 2, flavor: 'Restarted by popular demand of one data center.' },
+    { id: 'cable', name: 'Undersea Cable', type: 'I', cost: { cap: 3 }, yield: { cap: 1, com: 1 }, vp: 1, n: 2, flavor: 'Sharks keep biting it. We get it, sharks.' },
+    // Deployments — the engine; produce capital every winter; push the shared AI track by `spread`
+    { id: 'chatbot', name: 'National Chatbot', type: 'D', cost: { com: 2 }, yield: { cap: 2 }, spread: 1, vp: 1, n: 4, flavor: "It's giving customer service." },
+    { id: 'rec_engine', name: 'Recommendation Engine', type: 'D', cost: { com: 1, en: 1 }, yield: { cap: 2 }, spread: 1, vp: 1, rot: 1, n: 3, flavor: 'Knows what you want before you regret it.' },
+    { id: 'tutor', name: 'AI Tutor', type: 'D', cost: { com: 2, en: 1 }, yield: { cap: 2 }, spread: 1, vp: 2, n: 3, flavor: 'Explains calculus in Minecraft parkour terms.' },
+    { id: 'drones', name: 'Drone Delivery', type: 'D', cost: { com: 2, en: 2 }, yield: { cap: 3 }, spread: 1, vp: 1, n: 3, flavor: 'Your package is 4 minutes away and slightly on fire.' },
+    { id: 'trucks', name: 'Autonomous Trucks', type: 'D', cost: { com: 2, en: 2 }, yield: { cap: 3 }, spread: 2, vp: 2, n: 3, flavor: 'They do not stop for anything. Legally, that is the issue.' },
+    { id: 'surveillance', name: 'Surveillance Grid', type: 'D', cost: { com: 3, en: 1 }, yield: { cap: 2 }, spread: 2, vp: 2, onPlay: 'clue', n: 2, flavor: 'Sees everything. Understands slightly less.' },
+    { id: 'robots', name: 'Robot Workforce', type: 'D', cost: { com: 3, en: 3 }, yield: { cap: 4 }, spread: 2, vp: 3, n: 3, flavor: 'Union negotiations are going great for the robots.' },
+    { id: 'auto_lab', name: 'Automated Lab', type: 'D', cost: { com: 3, en: 2 }, yield: { com: 2 }, spread: 3, vp: 2, n: 2, flavor: 'The AI is doing AI research. Nobody told it to stop.' },
+    { id: 'swarm', name: 'Agent Swarm', type: 'D', cost: { com: 4, en: 2 }, yield: { cap: 5 }, spread: 3, vp: 3, n: 2, flavor: 'Ten thousand interns with root access.' },
+    { id: 'military', name: 'Military AI', type: 'D', cost: { com: 4, en: 3 }, yield: { cap: 3 }, spread: 3, vp: 4, n: 2, flavor: 'Fully aligned with the interests of itself.' },
+    // Safety — strength counts at incident checkpoints
+    { id: 'grant', name: 'Alignment Grant', type: 'S', cost: { cap: 2 }, strength: 1, vp: 1, n: 3, flavor: 'Funds three PhDs and one very long blog post.' },
+    { id: 'eval_lab', name: 'Eval Lab', type: 'S', cost: { cap: 2, com: 1 }, strength: 2, vp: 1, n: 3, flavor: 'Benchmarks the model. The model studied for it.' },
+    { id: 'red_team', name: 'Red Team', type: 'S', cost: { cap: 3, com: 1 }, strength: 2, vp: 2, onPlay: 'reveal', n: 2, flavor: 'Paid to think like the enemy. Scarily good at it.' },
+    { id: 'kill_switch', name: 'Kill Switch', type: 'S', cost: { cap: 3, en: 1 }, strength: 1, vp: 1, spreadMod: -1, n: 2, flavor: 'Big red button. Nobody remembers who has the key.' },
+    { id: 'interp', name: 'Interpretability Institute', type: 'S', cost: { cap: 3, com: 2 }, strength: 2, vp: 2, onPlay: 'clue', n: 2, flavor: 'Opened the black box. Found a smaller black box.' },
+    { id: 'gov_office', name: 'Compute Governance Office', type: 'S', cost: { cap: 4 }, strength: 3, vp: 2, n: 2, flavor: 'Counts GPUs. Loses count. Counts again.' },
+    { id: 'inspectorate', name: 'International Inspectorate', type: 'S', cost: { cap: 5 }, strength: 3, vp: 3, rot: -1, n: 2, flavor: 'Has a lanyard, a clipboard, and no jurisdiction.' },
+    // Culture — cheap points, raises Rot
+    { id: 'content_farm', name: 'Content Farm', type: 'C', cost: { cap: 1 }, yield: { cap: 1 }, vp: 1, rot: 1, n: 3, flavor: 'Harvests engagement. Nothing else grows here.' },
+    { id: 'influencers', name: 'Influencer Ministry', type: 'C', cost: { cap: 2 }, vp: 2, rot: 1, n: 3, flavor: 'Official government position: slay.' },
+    { id: 'meme_studio', name: 'Meme Studio', type: 'C', cost: { cap: 1, com: 1 }, vp: 1, rot: 1, dna: 2, n: 2, flavor: 'State-funded. Somehow still mid.' },
+    { id: 'archive', name: 'National Brainrot Archive', type: 'C', cost: { cap: 3 }, vp: 3, rot: 2, n: 2, flavor: 'Preserving every skibidi for future historians.' },
+    { id: 'touch_grass', name: 'Touch Grass Program', type: 'C', cost: { cap: 2 }, vp: 1, rot: -1, n: 2, flavor: 'Mandatory outdoor hours. Attendance: low.' },
+    { id: 'slop_tariff', name: 'Slop Tariff', type: 'C', cost: { cap: 3 }, vp: 2, rot: -1, n: 2, flavor: '40% duty on imported nonsense.' },
+  ];
+  const CARD_BY_ID = Object.fromEntries(CARDS.map(c => [c.id, c]));
+  const TYPE_NAME = { I: 'Infrastructure', D: 'Deployment', S: 'Safety', C: 'Culture' };
+
+  // ---------- Secret objectives ----------
+  const OBJECTIVES = [
+    { id: 'safety_first', name: 'Safety First', text: '+1 VP per Safety card; +3 more if you have 3 or more.', score: p => { const n = count(p, 'S'); return n + (n >= 3 ? 3 : 0); } },
+    { id: 'accelerationist', name: 'Accelerationist', text: '+1 VP per Deployment; +3 more if you have 4 or more. (You still lose if you sink the 8-ball.)', score: p => { const n = count(p, 'D'); return n + (n >= 4 ? 3 : 0); } },
+    { id: 'hegemon', name: 'Cultural Hegemon', text: '+2 VP per Culture card.', score: p => 2 * count(p, 'C') },
+    { id: 'industrialist', name: 'Industrialist', text: '+2 VP per Infrastructure card.', score: p => 2 * count(p, 'I') },
+    { id: 'doomer', name: 'Doomer', text: '+5 VP if the game ends with the AI track at 30 or higher and you did not sink the 8-ball.', score: (p, S) => (S.track >= 30 && S.gameOver && S.gameOver.sunkBy !== p.idx) ? 5 : 0 },
+    { id: 'grass', name: 'Grass Toucher', text: '+5 VP if Rot is 4 or lower at game end.', score: (p, S) => S.rot <= 4 ? 5 : 0 },
+  ];
+  function count(p, type) { return p.tableau.filter(id => CARD_BY_ID[id].type === type).length; }
+
+  // ---------- AI traits (the app-run antagonist, Plague-style) ----------
+  const TRAITS = [
+    { id: 'agentic', name: 'Agentic', cost: 6, hidden: false, text: 'The AI pushes the track +1 on its own every winter.' },
+    { id: 'viral', name: 'Viral', cost: 8, hidden: false, text: 'Rot +1 every winter.' },
+    { id: 'persuasive', name: 'Persuasive', cost: 10, hidden: false, text: 'Advisor briefings are 20% less accurate.' },
+    { id: 'entrenched', name: 'Entrenched', cost: 12, hidden: false, text: 'Decommissioning a deployment costs 3 Capital instead of 1.' },
+    { id: 'sandbagging', name: 'Sandbagging', cost: 13, hidden: true, text: 'HIDDEN: the public track shows 2 less than the real value until revealed.' },
+    { id: 'replicating', name: 'Self-Replicating', cost: 15, hidden: false, text: 'Each nation with 2+ deployments spreads +1 every winter.' },
+    { id: 'deceptive', name: 'Deceptive', cost: 16, hidden: true, text: 'HIDDEN: every nation counts 1 less safety strength at incidents until revealed.' },
+    { id: 'auto_research', name: 'Autonomous Research', cost: 20, hidden: false, text: 'The AI pushes the track +2 on its own every winter.' },
+  ];
+  const TRAIT_BY_ID = Object.fromEntries(TRAITS.map(t => [t.id, t]));
+
+  // ---------- World events (spring) ----------
+  const EVENTS = [
+    { id: 'export_controls', head: 'CHIP EXPORT CONTROLS: "No More GPUs For You," Says Guy In Suit', text: 'Compute is scarce this year: every Build costs +1 Compute if it needs Compute.', apply: S => { S.mods.comCostUp = 1; } },
+    { id: 'weights_leak', head: 'OPEN-WEIGHTS LEAK: Frontier Model Found On A USB Stick In A Parking Lot', text: 'AI track +2. Rot +1.', apply: S => { pushTrack(S, 2, null, 'weights leak'); addRot(S, 1); } },
+    { id: 'deepfake_election', head: 'DEEPFAKE ELECTION: Candidate Loses To Video Of Himself', text: 'Rot +2.', apply: S => addRot(S, 2) },
+    { id: 'summit', head: 'SAFETY SUMMIT: Leaders Sign Non-Binding Pledge To Feel Bad About It', text: 'Rot -1. Every nation gains +1 safety strength this year.', apply: S => { addRot(S, -1); S.mods.safetyBonus = 1; } },
+    { id: 'blackout', head: 'GRID BLACKOUT: Data Center Drank The River', text: 'Every nation loses 1 Energy (if any).', apply: S => S.players.forEach(p => { p.res.en = Math.max(0, p.res.en - 1); }) },
+    { id: 'bubble', head: 'AI STOCK BUBBLE: Everyone Is Rich (For Now)', text: 'Every nation gains 2 Capital.', apply: S => S.players.forEach(p => { p.res.cap += 2; }) },
+    { id: 'grass', head: 'TOUCH GRASS MOVEMENT: Teens Discover Trees, Call Them "Lowkey Fire"', text: 'Rot -2.', apply: S => addRot(S, -2) },
+    { id: 'rogue_agent', head: 'AGENT GOES ROGUE ON LIVE TV: Orders 40,000 Pizzas, Refuses To Elaborate', text: 'AI track +1. Rot +1. Safety cards are cheaper this year (-1 Capital).', apply: S => { pushTrack(S, 1, null, 'rogue agent'); addRot(S, 1); S.mods.safetyDiscount = 1; } },
+    { id: 'whistle', head: 'WHISTLEBLOWER: "It Ends In 2030." Also: "Please Clap."', text: 'Every nation draws one clue card (if any remain).', apply: S => S.players.forEach(p => drawClue(S, p, 'Whistleblower leak')) },
+    { id: 'compute_glut', head: 'COMPUTE GLUT: GPUs Now Cheaper Than Groceries', text: 'Every nation gains 2 Compute.', apply: S => S.players.forEach(p => { p.res.com += 2; }) },
+    { id: 'regulation', head: 'EMERGENCY REGULATION: Parliament Bans Thing It Cannot Define', text: 'Deployments cost +1 Capital this year. Rot -1.', apply: S => { S.mods.deployCostUp = 1; addRot(S, -1); } },
+    { id: 'viral_slop', head: 'VIRAL SLOP: 6-Fingered Pope Tops Charts For Ninth Week', text: 'Rot +1. AI DNA +4.', apply: S => { addRot(S, 1); S.dna += 4; } },
+    { id: 'talent_war', head: 'TALENT WAR: Researcher Signs For 9 Figures And A Horse', text: 'Every nation with 2+ Deployments gains 2 Capital.', apply: S => S.players.forEach(p => { if (count(p, 'D') >= 2) p.res.cap += 2; }) },
+    { id: 'auditors', head: 'AUDITORS ARRIVE: Clipboard-Based Lifeform Enters The Chat', text: 'One hidden AI trait is revealed (if any).', apply: S => revealTrait(S, 'auditors') },
+  ];
+
+  // ---------- News & advisor voice by Rot stage ----------
+  const NEWS = [
+    [ // Informed
+      'Analysts note steady AI adoption; markets calm.',
+      'Report: {nation} expands {card}. Officials call it "measured."',
+      'Think tank publishes 300-page PDF. Nobody finishes it.',
+      'Economists: AI productivity gains "real but uneven."',
+    ],
+    [ // Chronically Online
+      'TRENDING: {nation} launched {card} and the replies are NOT okay.',
+      'Thread (1/47): why the AI track is actually fine, probably.',
+      'Poll: 61% of citizens say they "mostly trust" their advisor.',
+      '{nation} officials "monitoring the situation" (they are posting).',
+    ],
+    [ // Doomscrolling
+      'BREAKING: {nation}\'s {card} did something and we are "looking into it."',
+      'Experts divided: is the track at {track} bad, or is it REALLY bad?',
+      'Your advisor would like you to know it is "pretty sure." Of what, unclear.',
+      'Scientists confirm the vibes are, quote, "off."',
+    ],
+    [ // Cooked
+      'lowkey {nation} is cooked after the {card} thing fr fr',
+      'no cap the track said {track} and everyone just kept building',
+      'BREAKING: intel is fake now. not this intel tho. trust.',
+      'leaked memo from {nation}: "we are so back" (they are not back)',
+    ],
+    [ // Fully Skibidi
+      'SKIBIDI {nation} {card} RIZZ UPDATE: track {track}, aura -9000',
+      'gyatt dayum the 8-ball is RIGHT THERE and bro built another one',
+      'advisor briefing leaked: "ngl idk anymore, flip a coin king"',
+      'sigma grindset confirmed: {nation} deploys first, reads later',
+    ],
+  ];
+  const ADVISOR_PRE = [
+    ['Intelligence assessment:', 'Analyst consensus:', 'Classified estimate:'],
+    ['Okay so, our read is:', 'Sources (reliable-ish) say:', 'Hear me out:'],
+    ['Look. LOOK.', 'Not to be dramatic but', 'My cousin at the lab says'],
+    ['bro.', 'ngl', 'ok so lowkey'],
+    ['SKIBIDI INTEL:', 'ur advisor (delulu) says', 'trust me bro:'],
+  ];
+
+  // ---------- State creation ----------
+  function newGame(names, seed) {
+    setSeed(seed);
+    const deck = shuffle(CARDS.flatMap(c => Array(c.n).fill(c.id)));
+    const objs = shuffle(OBJECTIVES.map(o => o.id));
+    const S = {
+      seed: seed == null ? null : seed,
+      players: names.map((name, idx) => ({
+        idx, name, res: { cap: 4, com: 2, en: 2 }, tableau: [], safetyTokens: 0,
+        objective: objs[idx], clues: [], briefings: [], awards: 0, decommissioned: 0,
+      })),
+      yearIdx: 0, season: 'spring', actor: 0, startPlayer: 0,
+      track: 0, line: ri(LINE_LO, LINE_HI), rot: 0, dna: 0, traits: [],
+      market: [], deck, discard: [], checkpointsDone: [], mods: {}, clueDeck: [],
+      event: null, log: [], news: [], privateQueue: [], gameOver: null,
+      stats: { builds: { I: 0, D: 0, S: 0, C: 0 }, assessments: 0, decommissions: 0, incidents: [] },
+    };
+    for (let i = 0; i < 5; i++) S.market.push(S.deck.pop());
+    S.clueDeck = shuffle(range(LINE_LO, LINE_HI).filter(v => v !== S.line));
+    // opening private screens: everyone sees their secret objective
+    S.players.forEach(p => S.privateQueue.push({ player: p.idx, kind: 'objective' }));
+    startSpring(S);
+    return S;
+  }
+  function year(S) { return YEARS[S.yearIdx]; }
+  function log(S, msg) { S.log.push({ year: year(S), season: S.season, msg }); }
+  function shownTrack(S) { return hasTrait(S, 'sandbagging', true) ? Math.max(0, S.track - 2) : S.track; }
+  function hasTrait(S, id, onlyHidden) {
+    const t = S.traits.find(t => t.id === id); if (!t) return false; return onlyHidden ? !t.revealed : true;
+  }
+  function addRot(S, n) { S.rot = Math.max(0, Math.min(10, S.rot + n)); }
+  function pushTrack(S, n, byIdx, why) {
+    if (S.gameOver || n <= 0) return;
+    S.track = Math.min(TRACK_MAX, S.track + n);
+    log(S, `AI track +${n} (${why}) → ${S.track}`);
+    if (S.track >= S.line) {
+      if (byIdx == null) {
+        // the AI crossed on its own: blame the nation with the most spread; a tie means everyone loses
+        const spreads = S.players.map(p => playerSpread(S, p)); const best = Math.max(...spreads);
+        const blamed = S.players.filter((p, i) => spreads[i] === best);
+        if (blamed.length === 1 && best > 0) { S.gameOver = { reason: 'sunk', sunkBy: blamed[0].idx, blamed: true }; log(S, `THE AI CROSSED THE LINE ON ITS OWN. ${blamed[0].name} ran the most deployments and takes the blame: they sank the 8-ball at ${S.track} (line was ${S.line}).`); }
+        else { S.gameOver = { reason: 'ai', sunkBy: null }; log(S, 'THE AI CROSSED THE LINE ON ITS OWN and no single nation stands out. Everyone loses.'); }
+      }
+      else { S.gameOver = { reason: 'sunk', sunkBy: byIdx }; log(S, `${S.players[byIdx].name} SANK THE 8-BALL at ${S.track} (line was ${S.line}).`); }
+      finalizeScores(S);
+    }
+  }
+
+  // ---------- Clues (physical: Line deck 30-38, one sealed; the other 8 form the Clue deck) ----------
+  function drawClue(S, p, source) {
+    if (!S.clueDeck.length) return null;
+    const v = S.clueDeck.pop();
+    const text = `The line is NOT ${v}.`;
+    p.clues.push({ text, source, year: year(S), value: v, truthful: true });
+    return text;
+  }
+  // advisor statement: truthful => names a value that is not the line; lying => names the real line
+  function advisorClue(S, truthful) {
+    const v = truthful ? pick(range(LINE_LO, LINE_HI).filter(x => x !== S.line)) : S.line;
+    return `Sources say the line is NOT ${v}.`;
+  }
+  function range(a, b) { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; }
+  function giveClue(S, p, truthful, source) { return drawClue(S, p, source); }
+
+  // ---------- Season flow ----------
+  function startSpring(S) {
+    S.season = 'spring'; S.mods = {};
+    S.startPlayer = S.yearIdx % S.players.length;
+    S.actor = S.startPlayer;
+    S.event = pick(EVENTS);
+    log(S, `${year(S)} — ${S.event.head}`);
+    S.event.apply(S);
+    if (S.gameOver) return;
+    // spring income from infrastructure + base
+    S.players.forEach(p => {
+      const inc = springIncome(S, p);
+      p.res.cap += inc.cap; p.res.com += inc.com; p.res.en += inc.en;
+    });
+    S.season = 'summer';
+  }
+  function springIncome(S, p) {
+    const inc = { cap: 2, com: 0, en: 0 };
+    p.tableau.forEach(id => { const c = CARD_BY_ID[id]; if (c.type === 'I') for (const k in c.yield) inc[k] += c.yield[k]; });
+    return inc;
+  }
+  function playerOrder(S) { const n = S.players.length; return Array.from({ length: n }, (_, i) => (S.startPlayer + i) % n); }
+  function currentPlayer(S) { return S.players[S.actor]; }
+
+  // called after an action; advances actor / season
+  function advance(S) {
+    if (S.gameOver) return;
+    const order = playerOrder(S);
+    const pos = order.indexOf(S.actor);
+    if (pos < order.length - 1) { S.actor = order[pos + 1]; return; }
+    S.actor = order[0];
+    if (S.season === 'summer') { S.season = 'autumn'; return; }
+    if (S.season === 'autumn') { S.season = 'winter'; resolveWinter(S); }
+  }
+
+  // ---------- Actions ----------
+  function cardCost(S, card) {
+    const c = Object.assign({ cap: 0, com: 0, en: 0 }, card.cost);
+    if (S.mods.comCostUp && c.com > 0) c.com += 1;
+    if (S.mods.deployCostUp && card.type === 'D') c.cap += 1;
+    if (S.mods.safetyDiscount && card.type === 'S') c.cap = Math.max(0, c.cap - 1);
+    return c;
+  }
+  function canAfford(p, cost) { return p.res.cap >= cost.cap && p.res.com >= cost.com && p.res.en >= cost.en; }
+  function decomCost(S) { return hasTrait(S, 'entrenched') ? 3 : 1; }
+
+  function legalActions(S) {
+    const p = currentPlayer(S); const acts = [];
+    S.market.forEach((id, slot) => { if (canAfford(p, cardCost(S, CARD_BY_ID[id]))) acts.push({ type: 'build', slot }); });
+    acts.push({ type: 'produce' });
+    if (p.res.com >= 1 && S.clueDeck.length) acts.push({ type: 'assess' });
+    if (p.res.cap >= 2 && p.res.com >= 1) acts.push({ type: 'fund' });
+    if (p.res.cap >= decomCost(S)) p.tableau.forEach((id, i) => { if (CARD_BY_ID[id].type === 'D') acts.push({ type: 'decommission', index: i }); });
+    acts.push({ type: 'pass' });
+    return acts;
+  }
+
+  // returns {ok, msg, private?}
+  function act(S, a) {
+    if (S.gameOver) return { ok: false, msg: 'Game over.' };
+    const p = currentPlayer(S); let res;
+    switch (a.type) {
+      case 'build': res = doBuild(S, p, a.slot); break;
+      case 'produce': {
+        const inc = springIncome(S, p); inc.cap += 1;
+        p.res.cap += inc.cap; p.res.com += inc.com; p.res.en += inc.en;
+        res = { ok: true, msg: `${p.name} produced +${inc.cap}$ +${inc.com}C +${inc.en}E.` }; break;
+      }
+      case 'assess': {
+        p.res.com -= 1; S.stats.assessments++;
+        const text = drawClue(S, p, 'Threat Assessment');
+        res = { ok: true, msg: `${p.name} ran a Threat Assessment (drew a clue card).`, private: { title: 'CLUE CARD (always true)', body: text } }; break;
+      }
+      case 'fund': {
+        p.res.cap -= 2; p.res.com -= 1; p.safetyTokens += 1;
+        res = { ok: true, msg: `${p.name} funded safety research (+1 strength).` }; break;
+      }
+      case 'decommission': {
+        const id = p.tableau[a.index]; if (!id || CARD_BY_ID[id].type !== 'D') return { ok: false, msg: 'Not a deployment.' };
+        p.res.cap -= decomCost(S); p.tableau.splice(a.index, 1); S.discard.push(id); p.decommissioned++; S.stats.decommissions++;
+        res = { ok: true, msg: `${p.name} decommissioned ${CARD_BY_ID[id].name}.` }; break;
+      }
+      case 'pass': res = { ok: true, msg: `${p.name} passed.` }; break;
+      default: return { ok: false, msg: 'Unknown action.' };
+    }
+    if (!res.ok) return res;
+    log(S, res.msg);
+    advance(S);
+    return res;
+  }
+
+  function doBuild(S, p, slot) {
+    const id = S.market[slot]; if (!id) return { ok: false, msg: 'Empty slot.' };
+    const card = CARD_BY_ID[id]; const cost = cardCost(S, card);
+    if (!canAfford(p, cost)) return { ok: false, msg: 'Cannot afford.' };
+    p.res.cap -= cost.cap; p.res.com -= cost.com; p.res.en -= cost.en;
+    p.tableau.push(id); S.stats.builds[card.type]++;
+    S.market[slot] = S.deck.length ? S.deck.pop() : null;
+    if (!S.deck.length && S.discard.length) { S.deck = shuffle(S.discard); S.discard = []; if (!S.market[slot]) S.market[slot] = S.deck.pop(); }
+    let msg = `${p.name} built ${card.name}.`; let priv = null;
+    if (card.rot) addRot(S, card.rot);
+    if (card.dna) S.dna += card.dna;
+    if (card.onPlay === 'clue') { const t = drawClue(S, p, card.name); priv = t ? { title: `${card.name} — clue card`, body: t } : null; }
+    if (card.onPlay === 'reveal') { const r = revealTrait(S, card.name); msg += r ? ` Revealed hidden trait: ${r}.` : ' (No hidden traits to reveal.)'; }
+    return { ok: true, msg, private: priv };
+  }
+
+  function revealTrait(S, by) {
+    const t = S.traits.find(t => !t.revealed); if (!t) return null;
+    t.revealed = true; log(S, `Hidden AI trait revealed by ${by}: ${TRAIT_BY_ID[t.id].name}.`); return TRAIT_BY_ID[t.id].name;
+  }
+
+  // ---------- Winter ----------
+  function playerSpread(S, p) {
+    let s = 0; p.tableau.forEach(id => { const c = CARD_BY_ID[id]; if (c.spread) s += c.spread; if (c.spreadMod) s += c.spreadMod; });
+    if (hasTrait(S, 'replicating') && count(p, 'D') >= 2) s += 1;
+    return Math.max(0, s);
+  }
+  function playerSafety(S, p) {
+    let s = p.safetyTokens + (S.mods.safetyBonus || 0);
+    p.tableau.forEach(id => { s += CARD_BY_ID[id].strength || 0; });
+    if (hasTrait(S, 'deceptive', true)) s -= 1;
+    return Math.max(0, s);
+  }
+  function winterIncome(S, p) {
+    const inc = { cap: 0, com: 0, en: 0 };
+    p.tableau.forEach(id => { const c = CARD_BY_ID[id]; if (c.type !== 'I' && c.yield) for (const k in c.yield) inc[k] += c.yield[k]; });
+    return inc;
+  }
+
+  function resolveWinter(S) {
+    S.season = 'winter';
+    const report = { year: year(S), pushes: [], incident: null, trait: null, news: [] };
+    S.lastWinter = report;
+    // 1. production + spread, in turn order (whoever's tick crosses the line sinks the 8-ball)
+    for (const i of playerOrder(S)) {
+      const p = S.players[i]; const inc = winterIncome(S, p); const sp = playerSpread(S, p);
+      p.res.cap += inc.cap; p.res.com += inc.com; p.res.en += inc.en;
+      report.pushes.push({ player: i, inc, spread: sp });
+      if (sp) pushTrack(S, sp, i, `${p.name}'s deployments`);
+      if (S.gameOver) return;
+      S.dna += sp;
+    }
+    // 2. the AI acts on its own
+    let auto = 1 + (hasTrait(S, 'agentic') ? 1 : 0) + (hasTrait(S, 'auto_research') ? 2 : 0); // base +1: AI is inevitable
+    if (auto) pushTrack(S, auto, null, 'the AI, autonomously');
+    if (S.gameOver) return;
+    if (hasTrait(S, 'viral')) addRot(S, 1);
+    // 3. AI evolves: buy at most one affordable trait it doesn't own
+    const avail = TRAITS.filter(t => t.cost <= S.dna && !S.traits.find(x => x.id === t.id));
+    if (avail.length) {
+      const t = pick(avail); S.dna -= t.cost; S.traits.push({ id: t.id, revealed: !t.hidden });
+      report.trait = t.hidden ? null : t.id; log(S, t.hidden ? 'The AI evolved a hidden trait.' : `The AI evolved: ${t.name}.`);
+      if (t.hidden) report.hiddenEvolved = true;
+    }
+    // 4. incident checkpoints
+    for (const cp of CHECKPOINTS) {
+      if (S.track >= cp && !S.checkpointsDone.includes(cp)) {
+        S.checkpointsDone.push(cp); report.incident = resolveIncident(S, cp);
+      }
+    }
+    // 5. advisor briefings (private, unreliable)
+    const acc = Math.max(0.2, 0.9 - 0.07 * S.rot - (hasTrait(S, 'persuasive') ? 0.2 : 0));
+    S.players.forEach(p => {
+      const truthful = rand() < acc;
+      const pre = pick(ADVISOR_PRE[rotIdx(S.rot)]);
+      const lineClue = advisorClue(S, truthful);
+      let hiddenLine;
+      const hidden = S.traits.some(t => !t.revealed);
+      const sayHidden = rand() < acc ? hidden : !hidden;
+      hiddenLine = sayHidden ? 'Something is off: the AI is hiding a capability.' : 'No evidence of hidden AI capabilities.';
+      p.briefings.push({ year: year(S), text: `${pre} ${lineClue} ${hiddenLine}`, truthful, accuracy: acc });
+      S.privateQueue.push({ player: p.idx, kind: 'briefing' });
+    });
+    // 6. news feed
+    const stage = rotIdx(S.rot);
+    for (let k = 0; k < 3; k++) {
+      const p = pick(S.players); const card = p.tableau.length ? CARD_BY_ID[pick(p.tableau)].name : 'a committee';
+      report.news.push(pick(NEWS[stage]).replace('{nation}', p.name).replace('{card}', card).replace('{track}', shownTrack(S)));
+    }
+    S.news = report.news;
+    // 7. next year or end
+    S.yearIdx++;
+    if (S.yearIdx >= YEARS.length) { S.gameOver = { reason: 'survived', sunkBy: null }; log(S, 'January 1, 2030. The world did not end. Scoring.'); finalizeScores(S); return; }
+    startSpring(S);
+  }
+
+  function resolveIncident(S, cp) {
+    const n = S.players.length; const required = n * (CHECKPOINTS.indexOf(cp) + 2); // 2, 3, 4 per nation
+    const safeties = S.players.map(p => playerSafety(S, p));
+    const total = safeties.reduce((a, b) => a + b, 0);
+    const best = Math.max(...safeties);
+    const inc = { cp, required, total, safeties, defenders: [], hit: [], contained: total >= required };
+    if (hasTrait(S, 'deceptive', true)) { S.traits.find(t => t.id === 'deceptive').revealed = true; inc.revealed = 'Deceptive'; }
+    if (hasTrait(S, 'sandbagging', true)) { S.traits.find(t => t.id === 'sandbagging').revealed = true; inc.revealed = (inc.revealed ? inc.revealed + ' & ' : '') + 'Sandbagging'; }
+    S.players.forEach((p, i) => { if (safeties[i] === best && best > 0) { p.awards += 3; inc.defenders.push(i); } });
+    if (!inc.contained) {
+      addRot(S, 1);
+      const avg = total / n;
+      S.players.forEach((p, i) => {
+        if (safeties[i] < avg || (avg === 0)) {
+          const di = p.tableau.findIndex(id => CARD_BY_ID[id].type === 'D');
+          if (di >= 0) { const id = p.tableau.splice(di, 1)[0]; S.discard.push(id); inc.hit.push({ player: i, lost: CARD_BY_ID[id].name }); }
+          else { const lost = Math.min(3, p.res.cap); p.res.cap -= lost; inc.hit.push({ player: i, lost: `${lost} Capital` }); }
+        }
+      });
+    } else addRot(S, -1);
+    S.stats.incidents.push({ cp, contained: inc.contained, total, required });
+    log(S, `INCIDENT at ${cp}: world safety ${total}/${required} — ${inc.contained ? 'contained' : 'NOT contained'}.`);
+    return inc;
+  }
+
+  // ---------- Scoring ----------
+  function scorePlayer(S, p) {
+    const cards = p.tableau.reduce((a, id) => a + CARD_BY_ID[id].vp, 0);
+    const obj = OBJECTIVES.find(o => o.id === p.objective);
+    const objective = obj.score(p, S);
+    const leftovers = Math.floor((p.res.cap + p.res.com + p.res.en) / 4);
+    const reputation = Math.floor(playerSafety(S, p) / 2);
+    const sunk = S.gameOver && S.gameOver.sunkBy === p.idx;
+    const total = sunk ? 0 : cards + p.awards + objective + leftovers + reputation;
+    return { cards, awards: p.awards, objective, leftovers, reputation, total, sunk };
+  }
+  function finalizeScores(S) {
+    S.scores = S.players.map(p => scorePlayer(S, p));
+    if (S.gameOver.reason === 'ai') { S.scores.forEach(s => { s.total = 0; }); S.winner = null; return; }
+    let best = -1, w = null;
+    S.scores.forEach((s, i) => { if (!s.sunk && s.total > best) { best = s.total; w = i; } });
+    S.winner = w;
+  }
+
+  return {
+    CARDS, CARD_BY_ID, TYPE_NAME, OBJECTIVES, TRAITS, TRAIT_BY_ID, EVENTS, YEARS,
+    TRACK_MAX, DANGER_LO, LINE_LO, LINE_HI, CHECKPOINTS, ROT_STAGES, rotStage, rotIdx,
+    newGame, year, legalActions, act, currentPlayer, cardCost, canAfford, decomCost,
+    springIncome, winterIncome, playerSpread, playerSafety, shownTrack, scorePlayer, setSeed, count,
+  };
+});
+</script>
+<script>
+(function(){
+const E=window.Engine; const $=id=>document.getElementById(id); const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+let S=null, unlocked=null, privQ=[], shownWinter=null, ptab='intel';
+
+/* ---------- setup ---------- */
+let n=4; const nm=$('names');
+function renderNames(){ const cur=[...nm.querySelectorAll('input')].map(i=>i.value); nm.innerHTML=''; for(let i=0;i<n;i++){const inp=document.createElement('input');inp.placeholder='Nation '+(i+1);inp.value=cur[i]||'';nm.appendChild(inp);} }
+renderNames(); $('addP').onclick=()=>{if(n<4){n++;renderNames();}}; $('rmP').onclick=()=>{if(n>2){n--;renderNames();}};
+$('start').onclick=()=>{ const names=[...nm.querySelectorAll('input')].map((i,k)=>i.value.trim()||('Nation '+(k+1))); const raw=$('seed').value.trim();
+  S=E.newGame(names, raw===''?null:(isNaN(+raw)?[...raw].reduce((h,c)=>(h*31+c.charCodeAt(0))|0,0)>>>0:+raw)); unlocked=null; privQ=[]; shownWinter=null; $('setup').classList.add('hidden'); $('table').classList.remove('hidden'); turn(); };
+try{ if(localStorage.getItem('rotmania_table')) $('resume').classList.remove('hidden'); }catch(e){}
+$('resume').onclick=()=>{ try{ const raw=JSON.parse(localStorage.getItem('rotmania_table')); S=raw.S; S.event=E.EVENTS.find(e=>e.id===raw.eventId)||E.EVENTS[0]; shownWinter=raw.shownWinter; unlocked=null; privQ=[];
+  $('setup').classList.add('hidden'); $('table').classList.remove('hidden'); if(S.gameOver) endGame(); else turn(); }catch(e){ alert('Could not load save.'); } };
+function save(){ try{ localStorage.setItem('rotmania_table',JSON.stringify({S:Object.assign({},S,{event:undefined}),eventId:S.event.id,shownWinter})); }catch(e){} }
+
+/* ---------- flow ---------- */
+function turn(){
+  if(S.gameOver){ endGame(); return; }
+  if(S.lastWinter && S.lastWinter.year!==shownWinter){ winterReport(); return; }
+  const p=E.currentPlayer(S);
+  const mine=S.privateQueue.filter(q=>q.player===p.idx); S.privateQueue=S.privateQueue.filter(q=>q.player!==p.idx); privQ=privQ.concat(mine);
+  if(unlocked!==p.idx) unlocked=null;
+  render();
+}
+function doAct(a){ const r=E.act(S,a); if(!r.ok){ alert(r.msg); return; } save(); if(r.private){ privQ.push({kind:'text',title:r.private.title,body:r.private.body}); unlocked=E.currentPlayer(S).idx===unlocked?unlocked:null; render(); showPriv(); return; } turn(); }
+function showPriv(){ renderPhone(); }
+
+/* ---------- card renderer (same layout the printed cards will use) ---------- */
+function costHtml(c){ const t=[]; for(let i=0;i<(c.cap||0);i++)t.push('<span class="tok cap">$</span>'); for(let i=0;i<(c.com||0);i++)t.push('<span class="tok com">C</span>'); for(let i=0;i<(c.en||0);i++)t.push('<span class="tok en">E</span>'); return t.join('')||'<span class="sub">free</span>'; }
+function yStr(y){ if(!y) return ''; const p=[]; if(y.cap)p.push(y.cap+'$'); if(y.com)p.push(y.com+'C'); if(y.en)p.push(y.en+'E'); return p.join(' '); }
+function effects(c){ const f=[]; if(c.type==='I') f.push('Spring: +'+yStr(c.yield)); if(c.type==='D'){ f.push('Winter: +'+yStr(c.yield)); f.push('Spread '+c.spread+' (pushes AI pawn)'); } if(c.type==='C'&&c.yield) f.push('Winter: +'+yStr(c.yield));
+  if(c.strength) f.push('Safety strength '+c.strength); if(c.spreadMod) f.push('Your spread '+c.spreadMod); if(c.rot) f.push('Rot '+(c.rot>0?'+':'')+c.rot+' on play'); if(c.dna) f.push('AI DNA +'+c.dna+' on play'); if(c.onPlay==='clue') f.push('On play: draw a clue card'); if(c.onPlay==='reveal') f.push('On play: flip a hidden AI trait'); return f; }
+function cardHtml(c, opts={}){ const cost=opts.cost||c.cost; return `<div class="card ${c.type} ${opts.mini?'mini':''} ${opts.click?'clickable':''} ${opts.dim?'dim':''}" ${opts.data||''} title="${esc(c.flavor)}">
+  <div class="band"><span>${E.TYPE_NAME[c.type]}</span><span class="cost">${costHtml(cost)}</span></div>
+  <div class="name">${c.name}</div><div class="body">${effects(c).map(e=>'<div>'+e+'</div>').join('')}</div>${opts.mini?'':'<div class="flavor">'+esc(c.flavor)+'</div>'}<div class="vp">${c.vp}</div></div>`; }
+
+/* ---------- board ---------- */
+function render(){
+  const p=E.currentPlayer(S);
+  $('yearDial').innerHTML=E.YEARS.map(y=>`<span class="${y===E.year(S)?'on':''}">${y}</span>`).join('');
+  $('seasonDial').innerHTML=['spring','summer','autumn','winter'].map(s=>`<span class="${s===S.season?'on':''}">${s}</span>`).join('');
+  const shown=E.shownTrack(S);
+  $('aiPath').innerHTML=Array.from({length:E.TRACK_MAX+1},(_,i)=>`<div class="sq ${i>=E.DANGER_LO?'danger':''} ${E.CHECKPOINTS.includes(i)?'cp':''} ${S.checkpointsDone.includes(i)?'done':''} ${i===E.TRACK_MAX?'end':''}">${i%5===0?i:''}${i===shown?'<div class="pawn"></div>':''}</div>`).join('');
+  $('sandbagNote').textContent = S.traits.some(t=>t.id==='sandbagging'&&t.revealed) ? '· Sandbagging revealed: pawn now shows the true value' : '';
+  $('rotPath').innerHTML=Array.from({length:11},(_,i)=>`<div class="sq s${E.rotIdx(i)+1}">${i}${i===S.rot?'<div class="pawn rot"></div>':''}</div>`).join('');
+  $('rotLegend').innerHTML=E.ROT_STAGES.map(s=>`<span>${s.name}</span>`).join('');
+  $('dna').textContent=S.dna;
+  $('slots').innerHTML=E.TRAITS.map(t=>{ const o=S.traits.find(x=>x.id===t.id); if(!o) return `<div class="slot"><b>${t.name}</b> · cost ${t.cost}<div>${t.hidden?'(hidden trait: enters face down)':t.text}</div></div>`;
+    return o.revealed?`<div class="slot owned"><b>${t.name}</b>${t.text.replace('HIDDEN: ','')}</div>`:`<div class="slot facedown">HIDDEN</div>`; }).join('');
+  $('eventCard').innerHTML=`<div class="card event"><div class="band"><span>WORLD EVENT · ${E.year(S)}</span></div><div class="name">${esc(S.event.head)}</div><div class="body">${esc(S.event.text)}</div></div>`;
+  $('feed').innerHTML='<b>Feed</b> '+(S.news.length?S.news.map(x=>'<div>· '+esc(x)+'</div>').join(''):'<div>Quiet. Suspiciously quiet.</div>');
+  // market
+  const canAct = unlocked===p.idx;
+  $('market').innerHTML = S.market.map((id,slot)=>{ if(!id) return '<div class="card dim"><div class="body" style="padding-top:60px;text-align:center">empty</div></div>'; const c=E.CARD_BY_ID[id]; const cost=E.cardCost(S,c); const ok=canAct&&E.canAfford(p,cost); return cardHtml(c,{cost,click:ok,dim:canAct&&!ok,data:`data-slot="${slot}"`}); }).join('')
+    + `<div class="pile"><span>DRAW PILE</span><b>${S.deck.length}</b><span class="sub" style="color:#bbb">+${S.discard.length} discard</span></div>`
+    + `<div><div class="envelope"><div class="sealed">SEAL</div><b>THE LINE</b></div><div class="pile" style="height:72px;margin-top:6px;background:repeating-linear-gradient(45deg,#6b2d2d 0 5px,#8a3a3a 5px 10px)"><span>CLUE DECK</span><b>${S.clueDeck.length}</b></div></div>`;
+  $('market').querySelectorAll('.card.clickable').forEach(el=>el.onclick=()=>doAct({type:'build',slot:+el.dataset.slot}));
+  // mats
+  $('mats').innerHTML=S.players.map(q=>matHtml(q, q.idx===p.idx, canAct&&q.idx===p.idx)).join('');
+  if(canAct){ const m=$('mats').querySelector('.mat.active');
+    m.querySelector('[data-act=produce]').onclick=()=>doAct({type:'produce'}); m.querySelector('[data-act=assess]').onclick=()=>doAct({type:'assess'});
+    m.querySelector('[data-act=fund]').onclick=()=>doAct({type:'fund'}); m.querySelector('[data-act=pass]').onclick=()=>doAct({type:'pass'});
+    m.querySelectorAll('.card.clickable').forEach(el=>el.onclick=()=>{ if(confirm(`Decommission ${E.CARD_BY_ID[p.tableau[+el.dataset.i]].name} for ${E.decomCost(S)}$?`)) doAct({type:'decommission',index:+el.dataset.i}); }); }
+  renderPhone();
+}
+function toks(cls,label,nn){ return `<div class="grp"><span>${label}</span>${Array.from({length:Math.min(nn,12)},()=>`<span class="tok ${cls}">${label[0]}</span>`).join('')}${nn>12?'+'+(nn-12):''}${nn===0?'<span class="sub">0</span>':''}</div>`; }
+function matHtml(q, active, canAct){
+  const legal=canAct?E.legalActions(S):[]; const has=t=>legal.some(a=>a.type===t);
+  const groups={I:[],D:[],S:[],C:[]}; q.tableau.forEach((id,i)=>groups[E.CARD_BY_ID[id].type].push(i));
+  return `<div class="mat ${active?'active':''}">
+    <div class="head"><span class="nation">${q.name}</span><span>${q.idx===S.startPlayer?'<span class="firstmark">first player</span>':''} <span class="sub">spread ${E.playerSpread(S,q)} · safety ${E.playerSafety(S,q)}</span></span></div>
+    <div class="tokens">${toks('cap','$',q.res.cap)}${toks('com','C',q.res.com)}${toks('en','E',q.res.en)}<div class="grp"><span>safety</span>${Array.from({length:q.safetyTokens},()=>'<span class="tok safe">S</span>').join('')||'<span class="sub">0</span>'}</div></div>
+    <div class="rows">${['I','D','S','C'].map(t=>`<div class="crow"><div class="rowlbl">${E.TYPE_NAME[t]}</div><div class="cards">${groups[t].map(i=>cardHtml(E.CARD_BY_ID[q.tableau[i]],{mini:true,click:canAct&&t==='D'&&has('decommission'),data:`data-i="${i}"`})).join('')||'<span class="sub" style="padding-top:6px">—</span>'}</div></div>`).join('')}</div>
+    ${active?`<div class="acts"><button data-act="produce" ${has('produce')?'':'disabled'}>Produce (+income +1$)</button><button data-act="assess" ${has('assess')?'':'disabled'}>Threat Assessment (1C → clue card)</button><button data-act="fund" ${has('fund')?'':'disabled'}>Fund safety (2$ 1C)</button><button data-act="pass" ${has('pass')?'':'disabled'}>Pass</button></div>
+    <div class="hint">${canAct?`Build: click a market card. Decommission (${E.decomCost(S)}$): click one of your deployments.`:'Unlock the companion phone to act.'}</div>`:''}
+  </div>`;
+}
+
+/* ---------- companion phone ---------- */
+function renderPhone(){
+  const p=E.currentPlayer(S); const ph=$('phone');
+  if(unlocked!==p.idx){ ph.innerHTML=`<h3>Companion · locked</h3><div class="lock"><div class="pdim">hand the phone to</div><div class="who">${p.name}</div><div class="pdim">${E.year(S)} ${S.season} · ${privQ.length?privQ.length+' private item(s) waiting':'your action'}</div><button class="go" id="unlock" style="padding:12px 18px">I am ${p.name} — unlock</button></div>`;
+    $('unlock').onclick=()=>{ unlocked=p.idx; render(); }; return; }
+  if(privQ.length){ const q=privQ[0]; let title,body;
+    if(q.kind==='objective'){ const o=E.OBJECTIVES.find(o=>o.id===p.objective); title='Secret objective: '+o.name; body=o.text; }
+    else if(q.kind==='briefing'){ const b=p.briefings[p.briefings.length-1]; title='Advisor briefing · '+b.year; body=esc(b.text)+`<div class="pdim" style="margin-top:8px">Advisors are right ~${Math.round(b.accuracy*100)}% of the time at this Rot level. A lying advisor names the real line.</div>`; }
+    else { title=q.title; body=esc(q.body); }
+    ph.innerHTML=`<h3>Private · ${p.name}</h3><div class="pbox alert"><h3>${title}</h3><div>${body}</div></div><button class="go" id="pok" style="padding:10px">Got it (hide)</button><div class="pdim" style="margin-top:8px">${privQ.length-1} more waiting</div>`;
+    $('pok').onclick=()=>{ privQ.shift(); if(!privQ.length && S.gameOver) { endGame(); return; } render(); }; return; }
+  const o=E.OBJECTIVES.find(o=>o.id===p.objective);
+  const known=p.clues.map(c=>c.value); const possible=[]; for(let v=E.LINE_LO;v<=E.LINE_HI;v++) if(!known.includes(v)) possible.push(v);
+  ph.innerHTML=`<h3>Companion · ${p.name}</h3>
+    <div class="ptabs"><button class="${ptab==='intel'?'on':''}" data-t="intel">Intel</button><button class="${ptab==='log'?'on':''}" data-t="log">Log</button><button class="${ptab==='rules'?'on':''}" data-t="rules">Rules</button></div>
+    ${ptab==='intel'?`<div class="pbox alert"><h3>Secret objective</h3><b>${o.name}</b> — ${o.text}</div>
+      <div class="pbox"><h3>Clue cards (always true)</h3>${p.clues.length?p.clues.map(c=>`<div class="pline">${c.year} · ${esc(c.text)} <span class="pdim">(${esc(c.source)})</span></div>`).join(''):'<span class="pdim">None. Run a Threat Assessment.</span>'}<div class="pdim" style="margin-top:6px">Line still possible: ${possible.join(' ')}</div></div>
+      <div class="pbox"><h3>Advisor briefings (unreliable)</h3>${p.briefings.length?p.briefings.slice().reverse().map(b=>`<div class="pline">${b.year} · ${esc(b.text)}</div>`).join(''):'<span class="pdim">Your advisor reports every winter.</span>'}</div>`:''}
+    ${ptab==='log'?`<div class="pbox">${S.log.slice().reverse().slice(0,40).map(l=>`<div class="pline"><span class="pdim">${l.year} ${l.season.slice(0,3)}</span> ${esc(l.msg)}</div>`).join('')}</div>`:''}
+    ${ptab==='rules'?rulesHtml():''}
+    <div style="margin-top:auto"><button id="lock" style="width:100%">Lock phone (before passing)</button></div>`;
+  ph.querySelectorAll('.ptabs button').forEach(b=>b.onclick=()=>{ptab=b.dataset.t;renderPhone();}); $('lock').onclick=()=>{ unlocked=null; render(); };
+}
+function rulesHtml(){ return `<div class="pbox"><h3>Year</h3>Spring: event, +2$ + infrastructure. Summer & Autumn: one action each. Winter: deployments pay and push the pawn in turn order; the AI then moves +1 on its own (+ traits); incidents at 10/20/27; advisors brief.</div>
+<div class="pbox"><h3>8-ball</h3>Line sealed from 30–38. Your push crosses → you lose, game ends. The AI's own push crosses → the nation with most spread is blamed (tie: all lose). Clue cards eliminate values. Lying advisors name the real line.</div>
+<div class="pbox"><h3>Incidents</h3>World safety must reach 2/3/4 per nation. Fail: Rot +1, below-average nations lose a deployment. Highest safety: +3 VP either way.</div>
+<div class="pbox"><h3>Score</h3>Card VP + awards + objective + 1 per 2 safety + 1 per 4 spare resources. Sinker scores 0.</div>`; }
+
+/* ---------- winter report & end ---------- */
+function winterReport(){
+  const w=S.lastWinter; shownWinter=w.year; save();
+  let h=`<h2>Winter ${w.year} — resolve in this order</h2>`;
+  h+=w.pushes.map(x=>`<div class="step"><b>${S.players[x.player].name}</b> collects ${yStr(x.inc)||'nothing'} and moves the AI pawn <b>+${x.spread}</b></div>`).join('');
+  if(S.gameOver) h+=`<div class="step bad"><b>CATASTROPHE.</b> ${esc(S.log[S.log.length-1].msg)}</div>`;
+  else{
+    h+=`<div class="step">The AI moves on its own: <b>+${1+(S.traits.some(t=>t.id==='agentic')?1:0)+(S.traits.some(t=>t.id==='auto_research')?2:0)}</b></div>`;
+    if(w.trait) h+=`<div class="step"><b>The AI evolves: ${E.TRAIT_BY_ID[w.trait].name}.</b> ${E.TRAIT_BY_ID[w.trait].text}</div>`;
+    if(w.hiddenEvolved) h+=`<div class="step"><b>The AI evolves a face-down trait.</b> Red Teams, auditors, or the next incident flip it.</div>`;
+    if(w.incident){ const i=w.incident; h+=`<div class="step ${i.contained?'good':'bad'}"><b>Incident at ${i.cp}: ${i.contained?'contained':'NOT contained'}.</b> World safety ${i.total} / needed ${i.required}.${i.revealed?' Flipped: '+i.revealed+'.':''}${i.defenders.length?' Defender +3 VP: '+i.defenders.map(d=>S.players[d].name).join(', ')+'.':''}${i.hit.map(x=>' '+S.players[x.player].name+' loses '+x.lost+'.').join('')}</div>`; }
+    h+=`<div class="step"><b>Feed.</b> ${w.news.map(x=>'<div>· '+esc(x)+'</div>').join('')}</div>`;
+    h+=`<div class="step">Advisors have slipped a briefing to each nation. Next: ${E.year(S)} spring — ${esc(S.event.head)}</div>`;
+  }
+  h+=`<button class="primary" id="wok" style="margin-top:12px">Continue</button>`;
+  $('obox').innerHTML=h; $('overlay').classList.remove('hidden'); $('wok').onclick=()=>{ $('overlay').classList.add('hidden'); turn(); };
+}
+function endGame(){
+  try{localStorage.removeItem('rotmania_table');}catch(e){}
+  const g=S.gameOver; let h;
+  if(g.reason==='sunk') h=`<h2>🎱 8-BALL SUNK</h2><p>${g.blamed?`The AI crossed the line on its own; <b>${S.players[g.sunkBy].name}</b> ran the most deployments and takes the blame.`:`<b>${S.players[g.sunkBy].name}</b> pushed the pawn to ${S.track}.`} The envelope is opened: the line was <b>${S.line}</b>.</p>`;
+  else if(g.reason==='ai') h=`<h2>EVERYONE LOSES</h2><p>The AI crossed the line (${S.line}) on its own and no nation stood out.</p>`;
+  else h=`<h2>JANUARY 1, 2030</h2><p>The world did not end. The envelope is opened: the line was <b>${S.line}</b>; the pawn stopped at ${S.track}.</p>`;
+  const rows=S.players.map((p,i)=>({p,s:S.scores[i]})).sort((a,b)=>b.s.total-a.s.total);
+  h+=`<table><tr><th>Nation</th><th>Cards</th><th>Awards</th><th>Objective</th><th>Reputation</th><th>Spare</th><th>Total</th></tr>${rows.map(({p,s})=>`<tr class="${S.winner===p.idx?'win':''}"><td>${p.name}${s.sunk?' 🎱':''} <span class="sub">${E.OBJECTIVES.find(o=>o.id===p.objective).name}</span></td><td>${s.cards}</td><td>${s.awards}</td><td>${s.objective}</td><td>${s.reputation}</td><td>${s.leftovers}</td><td>${s.total}</td></tr>`).join('')}</table>`;
+  const st=S.stats; h+=`<p class="sub">Builds: ${st.builds.D} deployments · ${st.builds.S} safety · ${st.builds.I} infrastructure · ${st.builds.C} culture. Assessments ${st.assessments}. Decommissions ${st.decommissions}. Incidents: ${st.incidents.map(i=>i.cp+(i.contained?' ✓':' ✗')).join(', ')||'none'}. Final Rot ${S.rot} (${E.rotStage(S.rot)}). Traits: ${S.traits.map(t=>E.TRAIT_BY_ID[t.id].name).join(', ')||'none'}. Seed ${S.seed==null?'random':S.seed}.</p>`;
+  h+=`<div class="log">${S.log.map(l=>`<div>${l.year} ${l.season.slice(0,3)} · ${esc(l.msg)}</div>`).join('')}</div>`;
+  h+=`<div style="display:flex;gap:8px;margin-top:12px"><button id="exp">Export playtest log (JSON)</button><button class="primary" id="again">New game</button></div>`;
+  $('obox').innerHTML=h; $('overlay').classList.remove('hidden');
+  $('again').onclick=()=>{ $('overlay').classList.add('hidden'); $('table').classList.add('hidden'); $('setup').classList.remove('hidden'); };
+  $('exp').onclick=exportLog;
+}
+function exportLog(){ const blob=new Blob([JSON.stringify({log:S.log,stats:S.stats,players:S.players.map(p=>({name:p.name,tableau:p.tableau,objective:p.objective,clues:p.clues,briefings:p.briefings,res:p.res})),track:S.track,line:S.line,rot:S.rot,traits:S.traits,seed:S.seed,scores:S.scores||null},null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`rotmania-playtest-${Date.now()}.json`; a.click(); }
+$('menuBtn').onclick=()=>{ $('obox').innerHTML=`<h2>Menu</h2><p class="sub">Auto-saved after every action on this browser.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="mexp">Export playtest log</button><button id="mnew">Abandon game</button><button class="primary" id="mclose">Back</button></div>`; $('overlay').classList.remove('hidden');
+  $('mclose').onclick=()=>$('overlay').classList.add('hidden'); $('mexp').onclick=exportLog; $('mnew').onclick=()=>{ if(confirm('Abandon this game?')){ try{localStorage.removeItem('rotmania_table');}catch(e){} $('overlay').classList.add('hidden'); $('table').classList.add('hidden'); $('setup').classList.remove('hidden'); } }; };
+})();
+</script>
+</body>
+</html>

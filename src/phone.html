@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RotMania</title>
+<style>
+:root{
+  --bg:#070a0f;--panel:#0d131b;--panel2:#121a24;--line:#1e2a38;--txt:#d7e1ec;--dim:#7d8da0;
+  --green:#39d98a;--amber:#f5b942;--red:#ff5c5c;--blue:#5aa9ff;--pink:#ff6bd6;--purple:#b48cff;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--mono);font-size:14px;line-height:1.4}
+body{display:flex;justify-content:center;min-height:100vh}
+#app{width:100%;max-width:430px;min-height:100vh;background:var(--bg);position:relative;padding-bottom:84px}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:.04em}
+h1{font-size:28px}h2{font-size:15px;text-transform:uppercase;color:var(--dim);letter-spacing:.12em}h3{font-size:14px}
+button{font-family:var(--mono);font-size:13px;border:1px solid var(--line);background:var(--panel2);color:var(--txt);border-radius:8px;padding:10px 12px;cursor:pointer}
+button:disabled{opacity:.35;cursor:default}
+button.primary{background:var(--green);color:#04120a;border-color:var(--green);font-weight:700}
+button.danger{border-color:var(--red);color:var(--red)}
+button.small{padding:6px 9px;font-size:12px;border-radius:6px}
+input{font-family:var(--mono);font-size:14px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:10px;width:100%}
+.screen{display:none;padding:14px 16px}.screen.on{display:block}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.row{display:flex;gap:8px;align-items:center}.row.between{justify-content:space-between}.wrap{flex-wrap:wrap}
+.dim{color:var(--dim)}.small{font-size:12px}.tiny{font-size:11px}
+.tag{display:inline-block;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:11px;color:var(--dim)}
+.tag.I{color:var(--blue);border-color:var(--blue)}.tag.D{color:var(--amber);border-color:var(--amber)}.tag.S{color:var(--green);border-color:var(--green)}.tag.C{color:var(--pink);border-color:var(--pink)}
+.res{display:flex;gap:10px}.res b{font-size:16px}
+.cap{color:var(--amber)}.com{color:var(--blue)}.en{color:var(--green)}
+/* track */
+.track{position:relative;height:22px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);overflow:hidden;margin:6px 0}
+.track .danger{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(135deg,rgba(255,92,92,.18) 0 6px,rgba(255,92,92,.06) 6px 12px)}
+.track .fill{position:absolute;top:0;bottom:0;left:0;background:linear-gradient(90deg,var(--blue),var(--amber),var(--red));transition:width .5s}
+.track .cp{position:absolute;top:0;bottom:0;width:2px;background:var(--amber);opacity:.8}
+.track .cp.done{opacity:.25}
+.track .eight{position:absolute;right:4px;top:2px;font-size:15px}
+.scale{display:flex;justify-content:space-between;font-size:10px;color:var(--dim)}
+.meter{height:8px;border-radius:4px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter .fill{height:100%;background:var(--purple);transition:width .5s}
+/* cards */
+.card{border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin:6px 0;background:var(--panel2)}
+.card .name{font-weight:700}.card .cost{font-size:12px}
+.card .fx{font-size:12px;color:var(--dim);margin-top:3px}.card .flavor{font-size:11px;color:var(--dim);font-style:italic;margin-top:3px}
+.card.unaffordable{opacity:.55}
+.tableau .card{padding:6px 10px}
+.tabs{display:flex;gap:4px;margin:8px 0}.tabs button{flex:1;padding:8px 4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.tabs button.on{border-color:var(--green);color:var(--green)}
+.tab{display:none}.tab.on{display:block}
+/* action bar */
+#actions{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:430px;background:rgba(7,10,15,.96);border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:none;gap:6px;flex-wrap:wrap;backdrop-filter:blur(6px)}
+#actions.on{display:flex}#actions button{flex:1 1 30%}
+/* overlays */
+.overlay{position:fixed;inset:0;background:rgba(3,5,8,.97);display:none;justify-content:center;z-index:50;overflow:auto}
+.overlay.on{display:flex}.overlay .inner{width:100%;max-width:430px;padding:28px 20px;display:flex;flex-direction:column;justify-content:center;min-height:100vh}
+.pass{text-align:center}.pass h1{font-size:22px;margin:16px 0}.pass .who{font-size:34px;color:var(--green);font-weight:700}
+.private{border:1px solid var(--amber);border-radius:12px;padding:14px;background:#140f05}
+.private h3{color:var(--amber);margin-bottom:6px}
+.logline{font-size:12px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.news{font-size:12px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.trait{display:inline-block;border:1px solid var(--purple);color:var(--purple);border-radius:5px;padding:2px 6px;font-size:11px;margin:2px 2px 0 0}
+.trait.hidden{border-style:dashed;color:var(--dim);border-color:var(--dim)}
+table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:5px 4px;border-bottom:1px solid var(--line);text-align:right}td:first-child,th:first-child{text-align:left}
+.score-win{color:var(--green);font-weight:700}
+.glitch{animation:gl 2.4s infinite}@keyframes gl{0%,96%,100%{transform:none}97%{transform:translateX(2px) skewX(4deg)}98%{transform:translateX(-2px)}}
+.rot4 body,.rot4 #app{filter:hue-rotate(10deg)}
+.badge{font-size:11px;padding:2px 7px;border-radius:999px;background:var(--panel2);border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- SETUP -->
+<section id="setup" class="screen on">
+  <div style="padding:18px 0 6px">
+    <h1 class="glitch">ROTMANIA</h1>
+    <div class="dim small">A hot-seat strategy game about building the thing that ends you.</div>
+  </div>
+  <div class="panel">
+    <h2>Premise</h2>
+    <p class="small">A whistleblower from Frontier Lab Inc. says the world ends on <b>January 1, 2030</b>. You run a nation. AI deployments make you rich and push a shared track toward a hidden line. Cross it and you sank the 8-ball: you lose, the game ends, everyone else scores.</p>
+    <p class="small dim">Years 2023–2029. Each year: an event, two actions per nation, then winter production (which spreads the AI). Pass the phone when told. Keep your intel to yourself.</p>
+  </div>
+  <div class="panel">
+    <h2>Nations</h2>
+    <div id="names"></div>
+    <div class="row" style="margin-top:8px"><button class="small" id="addPlayer">+ nation</button><button class="small" id="rmPlayer">− nation</button></div>
+    <div class="row" style="margin-top:10px"><input id="seed" placeholder="seed (optional, for repeatable playtests)"></div>
+  </div>
+  <button class="primary" style="width:100%;padding:14px" id="start">START THE CLOCK</button>
+  <div id="resumeWrap" style="margin-top:10px;display:none"><button style="width:100%" id="resume">Resume saved game</button></div>
+  <p class="tiny dim" style="margin-top:14px">Prototype v0.1 · Responsible AI final project · humor baseline rises with Rot.</p>
+</section>
+
+<!-- GAME -->
+<section id="game" class="screen">
+  <div class="row between" style="padding-top:6px">
+    <div><span id="yearLabel" style="font-size:20px;font-weight:700"></span> <span id="seasonLabel" class="badge"></span></div>
+    <div class="row"><span class="badge" id="playerBadge"></span><button class="small" id="menuBtn">☰</button></div>
+  </div>
+
+  <div class="panel" id="worldPanel">
+    <div class="row between"><h2>AI track</h2><span class="small"><b id="trackVal"></b>/40 <span class="dim">· danger ≥28</span></span></div>
+    <div class="track"><div class="danger" id="dangerBand"></div><div class="fill" id="trackFill"></div><span class="eight">🎱</span><div id="cps"></div></div>
+    <div class="scale"><span>0</span><span>10</span><span>20</span><span>27</span><span>40</span></div>
+    <div class="row between" style="margin-top:8px"><h2>Rot</h2><span class="small"><b id="rotStage"></b> <span class="dim" id="rotVal"></span></span></div>
+    <div class="meter"><div class="fill" id="rotFill"></div></div>
+    <div class="row between" style="margin-top:8px"><h2>The AI</h2><span class="small dim">DNA <b id="dna" style="color:var(--purple)"></b></span></div>
+    <div id="traits" class="small"></div>
+  </div>
+
+  <div class="tabs">
+    <button data-tab="nation" class="on">Nation</button><button data-tab="market">Market</button><button data-tab="intel">Intel</button><button data-tab="world">World</button><button data-tab="log">Log</button>
+  </div>
+
+  <div class="tab on" id="tab-nation">
+    <div class="panel">
+      <div class="row between"><h3 id="nationName"></h3><span class="small dim" id="nationStats"></span></div>
+      <div class="res" style="margin:8px 0"><span class="cap">$ <b id="rCap"></b></span><span class="com">C <b id="rCom"></b></span><span class="en">E <b id="rEn"></b></span></div>
+      <div class="tiny dim">$ Capital · C Compute · E Energy. Spring income: <span id="incomePreview"></span></div>
+    </div>
+    <div class="tableau" id="tableau"></div>
+  </div>
+  <div class="tab" id="tab-market">
+    <div class="tiny dim" style="margin:4px 0 6px">Build takes your action. Costs shown include this year's event.</div>
+    <div id="market"></div>
+  </div>
+  <div class="tab" id="tab-intel">
+    <div class="panel private"><h3>Secret objective</h3><div id="objective" class="small"></div></div>
+    <div class="panel"><h3>True clues <span class="tiny dim">(Threat Assessments, intel cards)</span></h3><div id="clues" class="small"></div></div>
+    <div class="panel"><h3>Advisor briefings <span class="tiny dim">(unreliable; accuracy falls with Rot)</span></h3><div id="briefings" class="small"></div></div>
+  </div>
+  <div class="tab" id="tab-world">
+    <div class="panel"><h3 id="eventHead"></h3><div class="small dim" id="eventText"></div></div>
+    <div class="panel"><h3>Feed</h3><div id="news"></div></div>
+    <div class="panel"><h3>Nations</h3><div id="nations"></div></div>
+  </div>
+  <div class="tab" id="tab-log"><div class="panel" id="log"></div></div>
+</section>
+
+<!-- END -->
+<section id="end" class="screen">
+  <h1 id="endTitle" style="padding-top:18px"></h1>
+  <p id="endText" class="small"></p>
+  <div class="panel"><table id="scoreTable"></table></div>
+  <div class="panel small" id="endStats"></div>
+  <button class="primary" style="width:100%" id="again">New game</button>
+</section>
+</div>
+
+<!-- ACTION BAR -->
+<div id="actions">
+  <button id="aBuild">Build…</button>
+  <button id="aProduce">Produce</button>
+  <button id="aAssess">Assess (1C)</button>
+  <button id="aFund">Fund safety (2$ 1C)</button>
+  <button id="aDecom">Decommission…</button>
+  <button id="aPass" class="small">Pass</button>
+</div>
+
+<!-- OVERLAYS -->
+<div class="overlay" id="passOverlay"><div class="inner pass">
+  <div class="dim small">PASS THE PHONE TO</div><div class="who" id="passWho"></div>
+  <h1 id="passWhy" class="dim" style="font-size:14px;font-weight:400"></h1>
+  <button class="primary" style="padding:16px" id="passOk">I'm here</button>
+</div></div>
+
+<div class="overlay" id="privOverlay"><div class="inner">
+  <div class="private"><h3 id="privTitle"></h3><div id="privBody" class="small"></div></div>
+  <button class="primary" style="margin-top:14px;padding:14px" id="privOk">Got it (hide)</button>
+</div></div>
+
+<div class="overlay" id="winterOverlay"><div class="inner">
+  <h2 style="color:var(--txt)">Winter report · <span id="wYear"></span></h2>
+  <div id="wBody"></div>
+  <button class="primary" style="margin-top:14px;padding:14px" id="wOk">Continue</button>
+</div></div>
+
+<div class="overlay" id="pickOverlay"><div class="inner">
+  <h3 id="pickTitle"></h3><div id="pickBody"></div>
+  <button style="margin-top:12px" id="pickCancel">Cancel</button>
+</div></div>
+
+<div class="overlay" id="menuOverlay"><div class="inner">
+  <div class="panel"><h3>Menu</h3>
+    <p class="small dim">Game is auto-saved on this device after every action.</p>
+    <button style="width:100%;margin:6px 0" id="menuRules">Rules recap</button>
+    <button style="width:100%;margin:6px 0" id="menuExport">Export playtest log (JSON)</button>
+    <button class="danger" style="width:100%;margin:6px 0" id="menuNew">Abandon game</button>
+    <button class="primary" style="width:100%;margin:6px 0" id="menuClose">Back</button>
+  </div>
+  <div class="panel small" id="rulesBox" style="display:none"></div>
+</div></div>
+
+<script>/*ENGINE*/</script>
+<script>
+(function(){
+const E = window.Engine;
+let S = null, pendingPrivate = [], shownWinterYear = null, lastActor = null;
+const $ = id => document.getElementById(id);
+const on = (id, fn) => $(id).addEventListener('click', fn);
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+// ---------- setup ----------
+let n = 4;
+function renderNames(){ const d=$('names'); const cur=[...d.querySelectorAll('input')].map(i=>i.value);
+  d.innerHTML=''; for(let i=0;i<n;i++){ const inp=document.createElement('input'); inp.placeholder='Nation '+(i+1); inp.value=cur[i]||''; inp.style.marginTop='6px'; d.appendChild(inp);} }
+renderNames();
+on('addPlayer',()=>{ if(n<4){n++;renderNames();} }); on('rmPlayer',()=>{ if(n>2){n--;renderNames();} });
+on('start',()=>{ const names=[...$('names').querySelectorAll('input')].map((i,k)=>i.value.trim()||('Nation '+(k+1)));
+  const seedRaw=$('seed').value.trim(); const seed=seedRaw===''?null:(isNaN(+seedRaw)?hash(seedRaw):+seedRaw);
+  S=E.newGame(names, seed); pendingPrivate=[]; shownWinterYear=null; lastActor=null; show('game'); beginTurn(); });
+function hash(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return Math.abs(h);}
+try{ if(localStorage.getItem('rotmania_save')) $('resumeWrap').style.display='block'; }catch(e){}
+on('resume',()=>{ try{ const raw=JSON.parse(localStorage.getItem('rotmania_save')); S=raw.S; S.event=E.EVENTS.find(e=>e.id===raw.eventId)||E.EVENTS[0];
+  shownWinterYear=raw.shownWinterYear; lastActor=null; pendingPrivate=[]; show('game'); if(S.gameOver) showEnd(); else beginTurn(); }catch(e){ alert('Could not load save.'); } });
+function save(){ try{ localStorage.setItem('rotmania_save', JSON.stringify({S:Object.assign({},S,{event:undefined}), eventId:S.event.id, shownWinterYear})); }catch(e){} }
+
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on', s.id===id)); $('actions').classList.toggle('on', id==='game'); window.scrollTo(0,0); }
+function overlay(id, onOff){ $(id).classList.toggle('on', !!onOff); }
+
+// ---------- turn flow ----------
+function beginTurn(){
+  if(S.gameOver){ showEnd(); return; }
+  // winter report first (public), once per year
+  if(S.lastWinter && S.lastWinter.year!==shownWinterYear){ showWinter(); return; }
+  const p=E.currentPlayer(S);
+  pendingPrivate = S.privateQueue.filter(q=>q.player===p.idx); S.privateQueue=S.privateQueue.filter(q=>q.player!==p.idx);
+  if(lastActor!==p.idx){ $('passWho').textContent=p.name; $('passWhy').textContent=`${E.year(S)} ${S.season} · ${pendingPrivate.length?'you have private intel':'your action'}`; overlay('passOverlay',true); }
+  else drainPrivate();
+}
+on('passOk',()=>{ overlay('passOverlay',false); lastActor=E.currentPlayer(S).idx; drainPrivate(); });
+function drainPrivate(){
+  const q=pendingPrivate.shift();
+  if(!q){ render(); return; }
+  const p=S.players[q.player];
+  if(q.kind==='objective'){ const o=E.OBJECTIVES.find(o=>o.id===p.objective); showPrivate('Your secret objective: '+o.name, o.text+'<br><br><span class="dim">Only you see this. Everyone else got a different one.</span>'); }
+  else if(q.kind==='briefing'){ const b=p.briefings[p.briefings.length-1]; showPrivate('Advisor briefing · '+b.year, esc(b.text)+'<br><br><span class="dim">Your advisor is right about '+Math.round(b.accuracy*100)+'% of the time at the current Rot level. Which half is this?</span>'); }
+}
+function showPrivate(title, html){ $('privTitle').textContent=title; $('privBody').innerHTML=html; overlay('privOverlay',true); }
+on('privOk',()=>{ overlay('privOverlay',false); if(pendingPrivate.length) drainPrivate(); else render(); });
+
+function afterAction(res){
+  save();
+  if(res.private){ showPrivate(res.private.title, esc(res.private.body)); pendingPrivate=[]; // after closing, continue
+    $('privOk').onclick=null; const h=()=>{ $('privOk').removeEventListener('click',h); setTimeout(beginTurn,0); }; $('privOk').addEventListener('click',h); return; }
+  beginTurn();
+}
+
+// ---------- actions ----------
+on('aProduce',()=>doAct({type:'produce'}));
+on('aAssess',()=>doAct({type:'assess'}));
+on('aFund',()=>doAct({type:'fund'}));
+on('aPass',()=>doAct({type:'pass'}));
+on('aBuild',()=>{ setTab('market'); });
+on('aDecom',()=>{ const p=E.currentPlayer(S); const body=$('pickBody'); body.innerHTML='';
+  p.tableau.forEach((id,i)=>{ const c=E.CARD_BY_ID[id]; if(c.type!=='D') return; const b=document.createElement('button'); b.style.cssText='width:100%;margin:5px 0;text-align:left';
+    b.innerHTML=`<b>${c.name}</b> <span class="dim small">spread ${c.spread} · yields ${yieldStr(c.yield)}</span>`; b.onclick=()=>{ overlay('pickOverlay',false); doAct({type:'decommission',index:i}); }; body.appendChild(b); });
+  $('pickTitle').textContent=`Decommission (costs ${E.decomCost(S)}$)`; overlay('pickOverlay',true); });
+on('pickCancel',()=>overlay('pickOverlay',false));
+function doAct(a){ const r=E.act(S,a); if(!r.ok){ alert(r.msg); return; } afterAction(r); }
+
+// ---------- render ----------
+function setTab(name){ document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===name)); document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.id==='tab-'+name)); }
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+function costStr(c){ const parts=[]; if(c.cap)parts.push(`<span class="cap">${c.cap}$</span>`); if(c.com)parts.push(`<span class="com">${c.com}C</span>`); if(c.en)parts.push(`<span class="en">${c.en}E</span>`); return parts.join(' ')||'free'; }
+function yieldStr(y){ if(!y) return '—'; const parts=[]; if(y.cap)parts.push(y.cap+'$'); if(y.com)parts.push(y.com+'C'); if(y.en)parts.push(y.en+'E'); return parts.join(' '); }
+function fx(c){ const f=[]; if(c.type==='I') f.push('spring: +'+yieldStr(c.yield)); if(c.type==='D'){ f.push('winter: +'+yieldStr(c.yield)); f.push('spread '+c.spread);} if(c.type==='C'&&c.yield) f.push('winter: +'+yieldStr(c.yield));
+  if(c.strength) f.push('safety '+c.strength); if(c.spreadMod) f.push('your spread '+c.spreadMod); if(c.rot) f.push('Rot '+(c.rot>0?'+':'')+c.rot); if(c.dna) f.push('AI DNA +'+c.dna);
+  if(c.onPlay==='clue') f.push('on play: true clue'); if(c.onPlay==='reveal') f.push('on play: reveal hidden trait'); f.push(c.vp+' VP'); return f.join(' · '); }
+
+function render(){
+  const p=E.currentPlayer(S);
+  $('yearLabel').textContent=E.year(S); $('seasonLabel').textContent=S.season.toUpperCase(); $('playerBadge').textContent=p.name;
+  // world
+  const shown=E.shownTrack(S); $('trackVal').textContent=shown; $('trackFill').style.width=(shown/E.TRACK_MAX*100)+'%';
+  $('dangerBand').style.left=(E.DANGER_LO/E.TRACK_MAX*100)+'%'; $('dangerBand').style.right='0';
+  $('cps').innerHTML=E.CHECKPOINTS.map(c=>`<div class="cp ${S.checkpointsDone.includes(c)?'done':''}" style="left:${c/E.TRACK_MAX*100}%"></div>`).join('');
+  $('rotStage').textContent=E.rotStage(S.rot); $('rotVal').textContent=S.rot+'/10'; $('rotFill').style.width=(S.rot*10)+'%';
+  $('dna').textContent=S.dna;
+  $('traits').innerHTML = S.traits.length ? S.traits.map(t=>t.revealed?`<span class="trait" title="${esc(E.TRAIT_BY_ID[t.id].text)}">${E.TRAIT_BY_ID[t.id].name}</span>`:`<span class="trait hidden">??? hidden</span>`).join('') + '<div class="tiny dim" style="margin-top:4px">'+S.traits.filter(t=>t.revealed).map(t=>E.TRAIT_BY_ID[t.id].name+': '+E.TRAIT_BY_ID[t.id].text).join(' · ')+'</div>' : '<span class="dim">Dormant. Every deployment feeds it.</span>';
+  // nation
+  $('nationName').textContent=p.name; $('rCap').textContent=p.res.cap; $('rCom').textContent=p.res.com; $('rEn').textContent=p.res.en;
+  $('nationStats').textContent=`spread ${E.playerSpread(S,p)} · safety ${E.playerSafety(S,p)}`;
+  const inc=E.springIncome(S,p); $('incomePreview').textContent=yieldStr(inc);
+  const groups={I:[],D:[],S:[],C:[]}; p.tableau.forEach((id,i)=>groups[E.CARD_BY_ID[id].type].push(id));
+  $('tableau').innerHTML = p.tableau.length ? Object.keys(groups).filter(t=>groups[t].length).map(t=>`<div class="tiny dim" style="margin-top:8px">${E.TYPE_NAME[t].toUpperCase()}</div>`+groups[t].map(id=>{const c=E.CARD_BY_ID[id];return `<div class="card"><div class="row between"><span class="name">${c.name}</span><span class="tag ${c.type}">${c.type}</span></div><div class="fx">${fx(c)}</div></div>`;}).join('')).join('') : '<div class="panel dim small">No buildings yet. Everything starts with a Server Barn and a dream.</div>';
+  // market
+  $('market').innerHTML = S.market.map((id,slot)=>{ if(!id) return '<div class="card dim">— empty —</div>'; const c=E.CARD_BY_ID[id]; const cost=E.cardCost(S,c); const ok=E.canAfford(p,cost);
+    return `<div class="card ${ok?'':'unaffordable'}"><div class="row between"><span class="name">${c.name}</span><span class="tag ${c.type}">${E.TYPE_NAME[c.type]}</span></div><div class="row between" style="margin-top:4px"><span class="cost">${costStr(cost)}</span><button class="small ${ok?'primary':''}" data-slot="${slot}" ${ok?'':'disabled'}>Build</button></div><div class="fx">${fx(c)}</div><div class="flavor">${esc(c.flavor)}</div></div>`; }).join('');
+  $('market').querySelectorAll('button[data-slot]').forEach(b=>b.addEventListener('click',()=>{ setTab('nation'); doAct({type:'build',slot:+b.dataset.slot}); }));
+  // intel
+  const o=E.OBJECTIVES.find(o=>o.id===p.objective); $('objective').innerHTML=`<b>${o.name}</b> — ${o.text}`;
+  $('clues').innerHTML = p.clues.length ? p.clues.map(c=>`<div class="logline">${c.year} · ${esc(c.text)} <span class="dim">(${esc(c.source)})</span></div>`).join('') : '<span class="dim">None yet. Run a Threat Assessment.</span>';
+  $('briefings').innerHTML = p.briefings.length ? p.briefings.slice().reverse().map(b=>`<div class="logline">${b.year} · ${esc(b.text)}</div>`).join('') : '<span class="dim">Your advisor reports every winter.</span>';
+  // world tab
+  $('eventHead').textContent=S.event.head; $('eventText').textContent=S.event.text;
+  $('news').innerHTML = S.news.length ? S.news.map(x=>`<div class="news">${esc(x)}</div>`).join('') : '<span class="dim small">Quiet. Suspiciously quiet.</span>';
+  $('nations').innerHTML = S.players.map(q=>`<div class="row between small" style="padding:4px 0;border-bottom:1px dashed var(--line)"><span>${q.name}${q.idx===S.startPlayer?' <span class="tiny dim">(first)</span>':''}</span><span class="dim">${E.count(q,'D')}D ${E.count(q,'S')}S ${E.count(q,'I')}I ${E.count(q,'C')}C · spread ${E.playerSpread(S,q)} · safety ${E.playerSafety(S,q)}</span></div>`).join('');
+  $('log').innerHTML = S.log.slice().reverse().slice(0,60).map(l=>`<div class="logline"><span class="dim">${l.year} ${l.season.slice(0,3)}</span> ${esc(l.msg)}</div>`).join('');
+  // actions
+  const legal=E.legalActions(S); const has=t=>legal.some(a=>a.type===t);
+  $('aBuild').disabled=!has('build'); $('aAssess').disabled=!has('assess'); $('aFund').disabled=!has('fund'); $('aDecom').disabled=!has('decommission');
+  $('aDecom').textContent=`Decommission (${E.decomCost(S)}$)`;
+  document.documentElement.className = 'rot'+E.rotIdx(S.rot);
+}
+
+// ---------- winter ----------
+function showWinter(){
+  const w=S.lastWinter; shownWinterYear=w.year; save();
+  let h='<div class="panel"><h3>Production & spread</h3>'+w.pushes.map(x=>`<div class="logline">${S.players[x.player].name}: +${yieldStr(x.inc)||'0'} · track +${x.spread}</div>`).join('')+'</div>';
+  if(S.gameOver){ h+=`<div class="panel" style="border-color:var(--red)"><h3 style="color:var(--red)">CATASTROPHE</h3><div class="small">${esc(S.log[S.log.length-1].msg)}</div></div>`; }
+  else {
+    if(w.trait) h+=`<div class="panel"><h3 style="color:var(--purple)">The AI evolved: ${E.TRAIT_BY_ID[w.trait].name}</h3><div class="small dim">${E.TRAIT_BY_ID[w.trait].text}</div></div>`;
+    if(w.hiddenEvolved) h+=`<div class="panel"><h3 style="color:var(--purple)">The AI evolved… something.</h3><div class="small dim">A hidden trait. Red Teams and auditors can reveal it.</div></div>`;
+    if(w.incident){ const i=w.incident; h+=`<div class="panel" style="border-color:${i.contained?'var(--green)':'var(--red)'}"><h3>Incident at ${i.cp}: ${i.contained?'CONTAINED':'NOT CONTAINED'}</h3><div class="small">World safety ${i.total} / needed ${i.required}.${i.revealed?' Hidden trait revealed: '+i.revealed+'.':''}</div>`+
+      (i.defenders.length?`<div class="small">Defender award (+3 VP): ${i.defenders.map(d=>S.players[d].name).join(', ')}</div>`:'')+(i.hit.length?`<div class="small" style="color:var(--red)">${i.hit.map(x=>S.players[x.player].name+' lost '+x.lost).join(' · ')}</div>`:'')+`</div>`; }
+    h+='<div class="panel"><h3>Feed</h3>'+w.news.map(x=>`<div class="news">${esc(x)}</div>`).join('')+'</div>';
+    h+=`<div class="tiny dim">Next: ${E.year(S)}. Advisors have sent private briefings; each nation sees theirs when the phone reaches them.</div>`;
+  }
+  $('wYear').textContent=w.year; $('wBody').innerHTML=h; overlay('winterOverlay',true);
+}
+on('wOk',()=>{ overlay('winterOverlay',false); beginTurn(); });
+
+// ---------- end ----------
+function showEnd(){
+  show('end'); $('actions').classList.remove('on'); try{ localStorage.removeItem('rotmania_save'); }catch(e){}
+  const g=S.gameOver;
+  if(g.reason==='sunk'){ $('endTitle').textContent='8-BALL SUNK'; $('endText').innerHTML=g.blamed?`The AI crossed the line on its own, and <b>${S.players[g.sunkBy].name}</b> ran the most deployments, so they take the blame. The line was <b>${S.line}</b>. They lose; everyone else scores.`:`<b>${S.players[g.sunkBy].name}</b> pushed the track to ${S.track}. The line was <b>${S.line}</b>. They lose; everyone else scores.`; }
+  else if(g.reason==='ai'){ $('endTitle').textContent='EVERYONE LOSES'; $('endText').innerHTML=`The AI crossed the line (${S.line}) on its own. Nobody was holding the cue.`; }
+  else { $('endTitle').textContent='JANUARY 1, 2030'; $('endText').innerHTML=`The world did not end. The line was <b>${S.line}</b>; the track stopped at ${S.track}.`; }
+  const rows=S.players.map((p,i)=>({p,s:S.scores[i]})).sort((a,b)=>b.s.total-a.s.total);
+  $('scoreTable').innerHTML='<tr><th>Nation</th><th>Cards</th><th>Awards</th><th>Objective</th><th>Rep</th><th>Spare</th><th>Total</th></tr>'+rows.map(({p,s})=>`<tr class="${S.winner===p.idx?'score-win':''}"><td>${p.name}${s.sunk?' 🎱':''}<div class="tiny dim">${E.OBJECTIVES.find(o=>o.id===p.objective).name}</div></td><td>${s.cards}</td><td>${s.awards}</td><td>${s.objective}</td><td>${s.reputation}</td><td>${s.leftovers}</td><td>${s.total}</td></tr>`).join('');
+  const st=S.stats; $('endStats').innerHTML=`<b>Playtest stats</b><br>Builds: ${st.builds.D} deployments, ${st.builds.S} safety, ${st.builds.I} infrastructure, ${st.builds.C} culture · Threat assessments: ${st.assessments} · Decommissions: ${st.decommissions}<br>Incidents: ${st.incidents.map(i=>i.cp+' '+(i.contained?'✓':'✗')).join(', ')||'none'} · Final Rot: ${S.rot} (${E.rotStage(S.rot)}) · AI traits: ${S.traits.map(t=>E.TRAIT_BY_ID[t.id].name).join(', ')||'none'}<br>Seed: ${S.seed==null?'random':S.seed}`;
+}
+on('again',()=>{ S=null; show('setup'); });
+
+// ---------- menu ----------
+on('menuBtn',()=>overlay('menuOverlay',true)); on('menuClose',()=>{ overlay('menuOverlay',false); $('rulesBox').style.display='none'; });
+on('menuNew',()=>{ if(confirm('Abandon this game?')){ try{localStorage.removeItem('rotmania_save');}catch(e){} overlay('menuOverlay',false); S=null; show('setup'); } });
+on('menuExport',()=>{ const blob=new Blob([JSON.stringify({log:S.log,stats:S.stats,players:S.players.map(p=>({name:p.name,tableau:p.tableau,objective:p.objective,clues:p.clues,briefings:p.briefings})),track:S.track,line:S.line,rot:S.rot,traits:S.traits,seed:S.seed},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`rotmania-playtest-${Date.now()}.json`; a.click(); });
+on('menuRules',()=>{ const b=$('rulesBox'); b.style.display=b.style.display==='none'?'block':'none'; b.innerHTML=`
+<b>Goal.</b> Highest score on Jan 1, 2030 without sinking the 8-ball.<br><br>
+<b>Year.</b> Spring: world event + income (1$ + infrastructure). Summer and Autumn: one action each per nation. Winter: deployments pay out AND push the shared AI track, in turn order; then the AI acts (+1 on its own, more with traits); incidents trigger at 10/20/27; advisors brief you privately.<br><br>
+<b>8-ball.</b> A secret line sits between 30 and 38. If YOUR winter push crosses it, you lose instantly and the game ends. If the AI's own push crosses it, everyone loses. Threat Assessments give true clues; advisors give clues that are wrong more often as Rot rises.<br><br>
+<b>Incidents.</b> World safety (cards + funded tokens) must reach 2/3/4 per nation. If not, nations below average lose a deployment; highest safety earns +3 VP either way.<br><br>
+<b>Rot.</b> Culture and events raise it. It makes advisors less reliable and the feed more unhinged. Grass Toucher objective rewards low Rot.<br><br>
+<b>Scoring.</b> Card VP + Defender awards + secret objective + 1 per 2 safety strength + 1 per 4 leftover resources.`; });
+})();
+</script>
+</body>
+</html>

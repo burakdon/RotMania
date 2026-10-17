@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RotMania: Reclamation</title>
+<style>
+:root{--wood:#3a2a1c;--board:#efe6d2;--board2:#e2d7bd;--ink:#2a2420;--ink2:#6b625a;--line:#bfb39a;--slop:#5a3a8a;--slop2:#3b2560;
+ --phone:#0b0f14;--phone2:#141b24;--phonetxt:#d7e1ec;--phonedim:#7d8da0;--phonegreen:#39d98a;--phoneamber:#f5b942;
+ --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;--mono:ui-monospace,Menlo,Consolas,monospace;--sans:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at center,#2a3a31,#141c18 70%);color:var(--ink);font-family:var(--sans);font-size:13px;min-height:100vh}
+button{font-family:var(--sans);font-size:12px;border:1px solid var(--line);background:#fffaf0;color:var(--ink);border-radius:6px;padding:7px 10px;cursor:pointer}
+button:disabled{opacity:.4;cursor:default}button.primary{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.hidden{display:none !important}
+#setup{max-width:580px;margin:50px auto;background:var(--board);border-radius:10px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#setup h1{font-family:var(--serif);font-size:36px;margin:0}#setup input{width:100%;padding:9px;border:1px solid var(--line);border-radius:6px;font-size:14px;margin-top:6px;background:#fffdf7}#setup p{line-height:1.5}
+#table{display:grid;grid-template-columns:minmax(560px,1fr) 400px 300px;gap:14px;padding:14px;max-width:1600px;margin:0 auto}
+.board{background:var(--board);border:10px solid var(--wood);border-radius:8px;padding:12px 14px;box-shadow:0 18px 50px rgba(0,0,0,.6)}
+.board h1{font-family:var(--serif);font-size:26px;margin:0}
+h2{font-family:var(--serif);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);margin:10px 0 4px;font-weight:600}
+.sub{color:var(--ink2);font-size:11px}
+svg.map{width:100%;height:auto;display:block}
+.wedge{stroke:#2a2420;stroke-width:1;cursor:default}
+.wedge.sel{stroke:#fff;stroke-width:3}.wedge.can{cursor:pointer}
+.wedge.can:hover{filter:brightness(1.12)}
+.tidepath{display:flex;gap:2px;margin:4px 0}
+.tidepath .sq{flex:1;height:22px;border:1px solid var(--ink2);border-radius:3px;background:#fbf6ea;font-size:9px;text-align:center;color:var(--ink2);position:relative}
+.tidepath .sq.chk{background:#f3d2c9;border-color:#c0392b}.tidepath .sq.end{background:var(--slop);color:#fff}
+.pawn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--slop);border:2px solid #fff}
+.trend{display:flex;gap:8px;align-items:center}
+.tcard{border:2px solid var(--ink);border-radius:8px;padding:8px 10px;background:#fff8e6;min-width:200px}
+.tcard b{font-family:var(--serif);font-size:14px}
+.rs{display:inline-flex;align-items:center;gap:4px;padding:1px 6px;border-radius:999px;font-size:11px;color:#fff;font-weight:700}
+.rs.grass{background:#3c8f3c}.rs.bricks{background:#b5542a}.rs.gpu{background:#2d6f8f}.rs.sourdough{background:#b8891f}.rs.aura{background:#9a3a9a}
+.traits{display:flex;gap:4px;flex-wrap:wrap}.trait{border:1px solid var(--slop);color:var(--slop);border-radius:5px;padding:2px 6px;font-size:10px;background:#efe9fb}
+.trait.off{opacity:.35;border-style:dashed}
+.feed div{font-size:11px;color:var(--ink2);padding:2px 0}
+/* players */
+.pcol{display:flex;flex-direction:column;gap:10px}
+.mat{background:#fbf6ea;border:2px solid var(--line);border-radius:8px;padding:9px;border-left-width:8px}
+.mat.active{box-shadow:0 0 0 3px rgba(42,36,32,.2);border-color:var(--ink)}
+.mat .head{display:flex;justify-content:space-between;align-items:center}.mat .nation{font-family:var(--serif);font-size:16px;font-weight:700}
+.luc{font-family:var(--serif);font-size:18px;font-weight:700}
+.tokens{display:flex;gap:6px;flex-wrap:wrap;margin:5px 0}
+.relic{display:inline-block;border:1px solid #c9a400;background:#fff6cf;border-radius:4px;padding:1px 5px;font-size:10px;margin:2px 2px 0 0}.relic.ai{border-color:#c43f8a;background:#fde3f1}
+.acts{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.acts button{font-size:11px;padding:5px 7px}
+.sel{background:#fff8e6;border:1px solid var(--ink);border-radius:6px;padding:6px 8px;margin-top:6px;font-size:12px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:10px;color:var(--ink2);margin-top:4px;align-items:center}
+.sw{display:inline-block;width:12px;height:12px;border:1px solid #2a2420;vertical-align:middle;margin-right:2px}
+/* phone */
+.phone{position:sticky;top:14px;background:#111;border-radius:30px;padding:14px 10px;box-shadow:0 18px 50px rgba(0,0,0,.6);height:calc(100vh - 28px);display:flex;flex-direction:column}
+.phone .screen{background:var(--phone);color:var(--phonetxt);border-radius:20px;flex:1;padding:14px;font-family:var(--mono);font-size:12px;overflow:auto;display:flex;flex-direction:column}
+.phone h3{margin:0 0 6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--phonedim)}
+.phone .lock{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px}.phone .lock .who{color:var(--phonegreen);font-size:22px;font-weight:700}
+.phone button{background:var(--phone2);color:var(--phonetxt);border:1px solid #2a3644;font-family:var(--mono)}.phone button.go{background:var(--phonegreen);color:#04120a;border-color:var(--phonegreen);font-weight:700}
+.pbox{border:1px solid #2a3644;border-radius:10px;padding:10px;margin:0 0 10px;background:var(--phone2)}.pbox.alert{border-color:var(--phoneamber)}.pbox.alert h3{color:var(--phoneamber)}
+.pline{padding:4px 0;border-bottom:1px dashed #2a3644}.pdim{color:var(--phonedim)}
+.overlay{position:fixed;inset:0;background:rgba(10,12,10,.88);display:flex;align-items:center;justify-content:center;z-index:50;overflow:auto;padding:20px}
+.overlay .box{background:var(--board);border:8px solid var(--wood);border-radius:8px;padding:20px 24px;max-width:760px;width:100%;max-height:90vh;overflow:auto}
+.overlay h2{font-family:var(--serif);margin:0 0 10px;font-size:22px;letter-spacing:0;text-transform:none;color:var(--ink)}
+.step{padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}.bad{color:#c0392b}.good{color:#2e8b57}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:6px 5px;border-bottom:1px solid var(--line);text-align:right}td:first-child,th:first-child{text-align:left}.win td{font-weight:700}
+.log{font-family:var(--mono);font-size:11px;max-height:160px;overflow:auto;background:var(--board2);padding:8px;border-radius:5px;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:60;max-width:760px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+@media (max-width:1300px){#table{grid-template-columns:1fr 1fr}.phone{position:static;height:auto}.phone .screen{min-height:320px}}
+</style>
+</head>
+<body>
+<div id="setup">
+  <h1>ROTMANIA: RECLAMATION</h1>
+  <div class="sub">Digital playtest of the table version · v0.4</div>
+  <p>2041. The internet drowned in slop and the Slop grew a face. Civilization is a few campfires on the rim of the world. Reclaim the rings inward toward the <b>Last Real Thing</b> at the center before the Slop reclaims you.</p>
+  <p class="sub">Each round: a Trend card says what produces. Two actions each: reclaim a tile next to your land, build, touch grass, buy a build card, or trade 3:1. Then the Slop spreads into undefended land and the Tide rises. Win at <b>Lucidity 10</b>, or hold the center through a Slop phase while the world holds.</p>
+  <div id="names"></div>
+  <div style="display:flex;gap:8px;margin-top:8px"><button id="addP">+ survivor</button><button id="rmP">− survivor</button></div>
+  <input id="seed" placeholder="seed (optional, for repeatable playtests)">
+  <button class="primary" id="start" style="width:100%;padding:12px;margin-top:14px;font-size:14px">LIGHT THE CAMPFIRES</button>
+  <button id="resume" class="hidden" style="width:100%;margin-top:8px">Resume saved game</button>
+</div>
+
+<div id="table" class="hidden">
+  <div class="board">
+    <div style="display:flex;justify-content:space-between;align-items:center"><div><h1>ROTMANIA: RECLAMATION</h1><div class="sub" id="roundLabel"></div></div><button id="menuBtn">☰ menu</button></div>
+    <svg class="map" id="map" viewBox="0 0 640 640"></svg>
+    <div class="legend"><span><span class="sw" style="background:#5fb35f"></span>Grass</span><span><span class="sw" style="background:#c9663a"></span>Real Bricks</span><span><span class="sw" style="background:#3d8bb0"></span>Vintage GPUs</span><span><span class="sw" style="background:#d9a63a"></span>Sourdough</span><span><span class="sw" style="background:#b05ab0"></span>Aura</span><span><span class="sw" style="background:#e3c25a"></span>◆ relic site</span><span><span class="sw" style="background:#e05aa8"></span>⚡ AI relic</span><span><span class="sw" style="background:#6a6a3a"></span>slop pit</span><span><span class="sw" style="background:#4a2f73"></span>Rot (? = unexplored)</span><span>▲ camp ⌂ commune ★ capital · dots = grass · ▣ firewall</span></div>
+    <h2>Tide</h2><div class="tidepath" id="tide"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px">
+      <div><h2>Trending</h2><div class="trend" id="trend"></div><h2>The Slop</h2><div class="traits" id="traits"></div></div>
+      <div><h2>Feed</h2><div class="feed" id="feed"></div></div>
+    </div>
+  </div>
+  <div class="pcol" id="mats"></div>
+  <div class="phone"><div class="screen" id="phone"></div></div>
+</div>
+<div id="overlay" class="overlay hidden"><div class="box" id="obox"></div></div>
+<div id="toast" class="toast hidden"></div>
+
+<script>/*ENGINE*/</script>
+<script>
+(function(){
+const E=window.Engine; const $=id=>document.getElementById(id); const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const PCOL=['#c0392b','#2980b9','#27ae60','#e0b64a']; const TCOL={grass:'#5fb35f',bricks:'#c9663a',gpu:'#3d8bb0',sourdough:'#d9a63a',aura:'#b05ab0',S:'#e3c25a',R:'#e05aa8',P:'#6a6a3a',core:'#fff2c4'};
+const TICON={S:'◆',R:'⚡',P:'~',core:'✶'}; const BICON={camp:'▲',commune:'⌂',capital:'★'};
+let S=null, unlocked=null, privQ=[], shownSlop=null, selTile=null, toastT=null, pending=null;
+function hash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+
+/* setup */
+let n=4; const nm=$('names');
+function renderNames(){ const cur=[...nm.querySelectorAll('input')].map(i=>i.value); nm.innerHTML=''; for(let i=0;i<n;i++){const inp=document.createElement('input');inp.placeholder='Survivor '+(i+1);inp.value=cur[i]||'';nm.appendChild(inp);} }
+renderNames(); $('addP').onclick=()=>{if(n<4){n++;renderNames();}}; $('rmP').onclick=()=>{if(n>2){n--;renderNames();}};
+$('start').onclick=()=>{ const names=[...nm.querySelectorAll('input')].map((i,k)=>i.value.trim()||('Survivor '+(k+1))); const raw=$('seed').value.trim(); S=E.newGame(names, raw===''?null:(isNaN(+raw)?hash(raw):+raw)); unlocked=null; privQ=[]; shownSlop=null; selTile=null; $('setup').classList.add('hidden'); $('table').classList.remove('hidden'); turn(); };
+try{ if(localStorage.getItem('rotmania4')) $('resume').classList.remove('hidden'); }catch(e){}
+$('resume').onclick=()=>{ try{ const raw=JSON.parse(localStorage.getItem('rotmania4')); S=raw.S; shownSlop=raw.shownSlop; unlocked=null; privQ=[]; $('setup').classList.add('hidden'); $('table').classList.remove('hidden'); if(S.gameOver) endGame(); else turn(); }catch(e){ alert('Could not load save.'); } };
+function save(){ try{ localStorage.setItem('rotmania4',JSON.stringify({S,shownSlop})); }catch(e){} }
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.remove('hidden'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.add('hidden'),5000); }
+
+/* flow */
+function turn(){ if(S.gameOver){ endGame(); return; } if(S.lastSlop && S.lastSlop.round!==shownSlop){ slopReport(); return; } const p=E.currentPlayer(S); if(unlocked!==p.idx) unlocked=null; selTile=null; render(); }
+function doAct(a){ const actor=E.currentPlayer(S).idx; const r=E.act(S,a); if(!r.ok){ toast(r.msg); return; } save(); toast(r.msg); pending=null; selTile=null;
+  if(r.private&&r.private.length){ r.private.forEach(x=>privQ.push(x)); unlocked=actor; render(); return; } turn(); }
+
+/* geometry */
+const CX=320,CY=320, RAD=[0,46,118,190,255,312];
+function polar(r,deg){ const a=(deg-90)*Math.PI/180; return [CX+r*Math.cos(a), CY+r*Math.sin(a)]; }
+function wedgePath(ring,idx){ if(ring===0) return `M ${CX-RAD[1]} ${CY} a ${RAD[1]} ${RAD[1]} 0 1 0 ${2*RAD[1]} 0 a ${RAD[1]} ${RAD[1]} 0 1 0 ${-2*RAD[1]} 0`;
+  const nn=E.RINGS[ring], a0=idx*360/nn, a1=(idx+1)*360/nn, r0=RAD[ring], r1=RAD[ring+1]; const [x0,y0]=polar(r1,a0),[x1,y1]=polar(r1,a1),[x2,y2]=polar(r0,a1),[x3,y3]=polar(r0,a0); const big=(a1-a0)>180?1:0;
+  return `M ${x0} ${y0} A ${r1} ${r1} 0 ${big} 1 ${x1} ${y1} L ${x2} ${y2} A ${r0} ${r0} 0 ${big} 0 ${x3} ${y3} Z`; }
+function wedgeCenter(ring,idx){ if(ring===0) return [CX,CY]; const nn=E.RINGS[ring]; return polar((RAD[ring]+RAD[ring+1])/2,(idx+0.5)*360/nn); }
+
+/* render */
+function render(){
+  const p=E.currentPlayer(S); const canAct=unlocked===p.idx && privQ.length===0; const legal=canAct?E.legalActions(S):[];
+  $('roundLabel').textContent=`Round ${S.round} · ${p.name}'s turn · ${S.actionsLeft} action${S.actionsLeft===1?'':'s'} left · Tide ${S.tide}/${E.TIDE_MAX}`;
+  // map
+  let svg=`<defs><pattern id="slop" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#4a2f73"/><rect width="4" height="8" fill="#3b2560"/></pattern></defs>`;
+  const reclaimable=new Set(legal.filter(a=>a.type==='reclaim').map(a=>a.tile)); const mine=new Set(legal.filter(a=>a.type==='build'||a.type==='touch_grass').map(a=>a.tile));
+  Object.values(S.tiles).forEach(t=>{ const fill=t.rotted?'url(#slop)':TCOL[t.type]; const can=reclaimable.has(t.id)||mine.has(t.id); const sel=selTile===t.id;
+    svg+=`<path class="wedge ${can?'can':''} ${sel?'sel':''}" d="${wedgePath(t.ring,t.idx)}" fill="${fill}" data-tile="${t.id}" ${t.owner!=null&&!t.rotted?`stroke="${PCOL[t.owner]}" stroke-width="4"`:''} ${t.fresh===S.round&&!t.rotted?'stroke-dasharray="4 3"':''}/>`;
+    const [cx,cy]=wedgeCenter(t.ring,t.idx); const fs=t.ring===0?22:t.ring===1?13:12;
+    if(t.rotted){ if(t.revealed){ const lbl=TICON[t.type]||E.RES_NAME[t.type][0]; svg+=`<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="${fs}" fill="#d9c7ff" opacity=".85" font-family="serif">${lbl}</text>`; } else svg+=`<text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="${fs+2}" fill="#b9a3e6" font-weight="700">?</text>`;
+      const sc=p.scouting.filter(s=>s.tile===t.id).slice(-1)[0]; if(sc&&canAct&&!t.revealed) svg+=`<text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="7" fill="#f5b942">${esc(sc.said)}</text>`; }
+    else { const lbl=TICON[t.type]||''; if(lbl) svg+=`<text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="${fs}" fill="#2a2420" font-weight="700">${lbl}</text>`;
+      if(t.building) svg+=`<text x="${cx}" y="${cy+6}" text-anchor="middle" font-size="${fs+4}" fill="#1a1410" font-weight="700" stroke="#fff" stroke-width=".6">${BICON[t.building]}</text>`;
+      if(t.grass) svg+=Array.from({length:t.grass},(_,i)=>`<circle cx="${cx-8+i*6}" cy="${cy+14}" r="2.5" fill="#1f6b1f" stroke="#fff" stroke-width=".6"/>`).join('');
+      if(t.firewall) svg+=`<text x="${cx+9}" y="${cy+16}" font-size="9" fill="#1a1410">▣</text>`;
+      if(t.ring===0) svg+=`<text x="${cx}" y="${cy+22}" text-anchor="middle" font-size="7" fill="#2a2420">LAST REAL THING</text>`; }
+  });
+  // home markers
+  S.players.forEach(q=>{ const t=S.tiles[q.home]; const [cx,cy]=wedgeCenter(t.ring,t.idx); svg+=`<text x="${cx}" y="${cy-14}" text-anchor="middle" font-size="8" fill="${PCOL[q.idx]}" font-weight="700">${esc(q.name.slice(0,10))}</text>`; });
+  if(S.tiles['0-0'].rotted) svg+=`<text x="${CX}" y="${CY+5}" text-anchor="middle" font-size="9" fill="#d9c7ff">THE LAST REAL THING</text>`;
+  $('map').innerHTML=svg;
+  $('map').querySelectorAll('.wedge.can').forEach(el=>el.onclick=()=>{ selTile=el.dataset.tile; render(); });
+  // tide
+  $('tide').innerHTML=Array.from({length:E.TIDE_MAX+1},(_,i)=>`<div class="sq ${E.TIDE_CHECK.includes(i)?'chk':''} ${i===E.TIDE_MAX?'end':''}">${i%5===0?i:''}${i===S.tide?'<div class="pawn"></div>':''}</div>`).join('');
+  $('trend').innerHTML=S.trend.slop?`<div class="tcard"><b>SLOP IS TRENDING</b><div class="sub">Nothing produces. Tide +${S.traits.includes('viral')?2:1}. The Slop spreads one extra tile.</div></div>`:`<div class="tcard"><b>Trending now</b><div style="margin-top:4px">${S.trend.res.map(r=>`<span class="rs ${r}">${E.RES_NAME[r]}</span>`).join(' ')}</div><div class="sub">Reclaimed tiles of these types produced 1 (+1 with a building).</div></div>`;
+  $('traits').innerHTML=E.TRAITS.map(t=>`<span class="trait ${S.traits.includes(t.id)?'':'off'}" title="${esc(t.text)}">${t.name}</span>`).join('')+`<div class="sub" style="width:100%;margin-top:3px">Spreads ${1+(E.tideStage(S)>=2?1:0)+(S.traits.includes('memetic')?1:0)+(S.trend.slop?1:0)} undefended tile(s) per round · breaks defense below ${E.spreadPower(S)} · next Tide needs world Grass ≥ ${E.tideNeed(S)} (now ${E.worldGrass(S)})</div>`;
+  $('feed').innerHTML=(S.feed.length?S.feed.map(x=>'<div>· '+esc(x)+'</div>').join(''):'<div>Quiet. Suspiciously quiet.</div>');
+  // mats
+  $('mats').innerHTML=S.players.map(q=>matHtml(q,q.idx===p.idx,canAct&&q.idx===p.idx,legal)).join('');
+  if(canAct){ const m=$('mats').querySelector('.mat.active'); m.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{ const a=JSON.parse(b.dataset.act); if(a.type==='trade_pick'){ pending=a; render(); return; } doAct(a); }); }
+  renderPhone();
+}
+function tok(r,nn){ return `<span class="rs ${r}" title="${E.RES_NAME[r]}">${E.RES_NAME[r].split(' ').pop()[0]} ${nn}</span>`; }
+function matHtml(q,active,canAct,legal){
+  const sel=selTile?S.tiles[selTile]:null;
+  let selHtml='';
+  if(active&&canAct&&sel){ const opts=legal.filter(a=>a.tile===sel.id); selHtml=`<div class="sel"><b>${esc(E.tileName(S,sel))}</b> ${sel.rotted?'':'· defense '+E.tileDefense(S,sel)}<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">${opts.map(a=>`<button data-act='${JSON.stringify(a)}'>${a.type==='reclaim'?'Reclaim ('+Object.entries(E.RECLAIM_COST[sel.ring]).map(([k,v])=>v+' '+E.RES_NAME[k]).join(', ')+')':a.type==='build'?'Build '+a.what+' ('+Object.entries(E.BUILD_COST[a.what]).map(([k,v])=>v+' '+E.RES_NAME[k]).join(', ')+')':'Touch grass (1 Grass → +1 defense this round)'}</button>`).join('')||'<span class="sub">nothing to do here</span>'}</div></div>`; }
+  let tradeHtml='';
+  if(active&&canAct&&pending){ tradeHtml=`<div class="sel">Trade 3 ${E.RES_NAME[pending.give]} for 1: ${E.RES.filter(r=>r!==pending.give).map(r=>`<button data-act='${JSON.stringify({type:'trade',give:pending.give,get:r})}'>${E.RES_NAME[r]}</button>`).join(' ')}</div>`; }
+  const has=t=>legal.some(a=>a.type===t);
+  return `<div class="mat ${active?'active':''}" style="border-left-color:${PCOL[q.idx]}">
+    <div class="head"><span class="nation">${esc(q.name)}</span><span class="luc" title="Lucidity">✦ ${E.lucidity(S,q)}/${E.WIN_LUCIDITY}</span></div>
+    <div class="sub">${E.ownedTiles(S,q).length} tiles · Grass strength ${E.playerGrass(S,q)} · signals ${q.signals}${q.deepfakeDebt?' · deepfake debt '+q.deepfakeDebt:''}</div>
+    <div class="tokens">${E.RES.map(r=>tok(r,q.res[r])).join('')}</div>
+    <div>${q.relics.map(id=>{const r=E.RELIC_BY_ID[id];return `<span class="relic ${E.RELICS.ai.some(x=>x.id===id)?'ai':''}" title="${esc(r.text)}">${r.name}</span>`;}).join('')}${q.cards.length?` <span class="sub">· ${q.cards.length} build card${q.cards.length>1?'s':''}</span>`:''}</div>
+    ${active?`<div class="acts">
+      ${legal.filter(a=>a.type==='use_relic').map(a=>`<button data-act='${JSON.stringify(a)}' style="border-color:#c43f8a">Use ${E.RELIC_BY_ID[a.relic].name}</button>`).join('')}
+      ${legal.filter(a=>a.type==='play_card').map(a=>`<button data-act='${JSON.stringify(a)}' style="border-color:#2d6f8f">Play ${E.BUILD_BY_ID[q.cards[a.index]].name}</button>`).join('')}
+      <button data-act='{"type":"buy_card"}' ${has('buy_card')?'':'disabled'}>Buy build card (1 GPU, 1 Aura, 1 Sourdough)</button>
+      ${E.RES.filter(r=>q.res[r]>=3&&canAct&&S.actionsLeft>0).map(r=>`<button data-act='${JSON.stringify({type:'trade_pick',give:r})}'>Trade 3 ${E.RES_NAME[r]}</button>`).join('')}
+      <button class="primary" data-act='{"type":"end_turn"}' ${canAct?'':'disabled'}>End turn</button></div>
+      ${selHtml}${tradeHtml}
+      <div class="sub" style="margin-top:5px">${canAct?'Click a highlighted tile on the map to reclaim it, build on it, or touch grass.':'Unlock the companion phone to act.'}</div>`:''}
+  </div>`;
+}
+
+/* phone */
+function renderPhone(){
+  const p=E.currentPlayer(S); const ph=$('phone');
+  if(unlocked!==p.idx){ ph.innerHTML=`<h3>Companion · locked</h3><div class="lock"><div class="pdim">hand the phone to</div><div class="who">${esc(p.name)}</div><div class="pdim">round ${S.round}${privQ.length?' · '+privQ.length+' private item(s)':''}</div><button class="go" id="unlock" style="padding:12px 18px">I am ${esc(p.name)} — unlock</button></div>`; $('unlock').onclick=()=>{ unlocked=p.idx; render(); }; return; }
+  if(privQ.length){ const q=privQ[0]; ph.innerHTML=`<h3>Private · ${esc(p.name)}</h3><div class="pbox alert"><h3>${esc(q.title)}</h3><div>${esc(q.body)}</div></div><button class="go" id="pok" style="padding:10px">Got it (hide)</button><div class="pdim" style="margin-top:8px">${privQ.length-1} more waiting</div>`;
+    $('pok').onclick=()=>{ privQ.shift(); if(!privQ.length){ if(S.gameOver){ endGame(); return; } if(E.currentPlayer(S).idx!==p.idx){ turn(); return; } } render(); }; return; }
+  ph.innerHTML=`<h3>Companion · ${esc(p.name)}</h3>
+    <div class="pbox"><h3>Build cards in hand</h3>${p.cards.length?p.cards.map(id=>`<div class="pline"><b>${E.BUILD_BY_ID[id].name}</b> — ${E.BUILD_BY_ID[id].text}</div>`).join(''):'<span class="pdim">none</span>'}</div>
+    <div class="pbox"><h3>Scouting reports</h3>${p.scouting.length?p.scouting.slice().reverse().slice(0,12).map(s=>`<div class="pline">r${s.round} · tile ${s.tile}: ${esc(s.said)}</div>`).join(''):'<span class="pdim">Relics and radio towers reveal rotted tiles. If the Slop is Persuasive, reports may lie.</span>'}</div>
+    <div class="pbox"><h3>Relics</h3>${p.relics.length?p.relics.map(id=>`<div class="pline"><b>${E.RELIC_BY_ID[id].name}</b> — ${E.RELIC_BY_ID[id].text}</div>`).join(''):'<span class="pdim">Relic sites (◆ safe, ⚡ AI) are buried in the inner rings.</span>'}</div>
+    <div class="pbox pdim"><h3>Rules</h3>Reclaim: a rotted tile touching your land. Costs rise inward. Buildings defend their tile and neighbors (camp 1 / commune 2 / capital 3, +1/+1/+2 to neighbors). The Slop takes undefended frontier tiles. Slop die on AI relics: 1–2 nothing, 3–4 Tide +1, 5 it takes a tile of yours, 6 it evolves. Lucidity: ring 3 = 1, ring 2 = 2, ring 1 = 3, center = 4, commune +1, capital +2, restored relic site +1, signals +1.</div>
+    <div style="margin-top:auto"><button id="lock" style="width:100%">Lock phone (before passing)</button></div>`;
+  $('lock').onclick=()=>{ unlocked=null; render(); };
+}
+
+/* slop report & end */
+function slopReport(){
+  const w=S.lastSlop; shownSlop=w.round; save();
+  let h=`<h2>The Slop moves · end of round ${w.round}</h2>`;
+  h+=`<div class="step">Tide ${w.tideBefore} → <b>${S.tide}</b></div>`;
+  h+=w.rotted.length?`<div class="step bad"><b>The Slop spreads:</b> ${w.rotted.map(x=>S.players[x.owner].name+"'s "+x.name).join('; ')}.</div>`:`<div class="step good">The Slop found no undefended frontier. It is furious.</div>`;
+  if(w.coreHeld) h+=`<div class="step ${S.gameOver?'good':''}"><b>${S.players[w.coreHeld.player].name} holds the Last Real Thing.</b> World Grass ${w.coreHeld.worldGrass} vs needed ${w.coreHeld.need}. ${S.gameOver?'PRE-ROT SANITY RESTORED.':'Not enough. Hold on.'}</div>`;
+  if(w.tide){ const t=w.tide; h+=`<div class="step ${t.held?'good':'bad'}"><b>TIDE at ${t.at}: ${t.held?'HELD':'BROKE'}.</b> World Grass ${t.worldGrass} vs ${t.need}.${t.defender?' Clean Signal (+1 Lucidity): '+t.defender+'.':''}${t.losers.map(l=>' '+l+'.').join('')}${t.evolved?' The Slop evolves: '+E.TRAIT_BY_ID[t.evolved].name+' — '+E.TRAIT_BY_ID[t.evolved].text:''}</div>`; }
+  h+=`<div class="step"><b>Feed.</b> ${w.feed.map(x=>'<div>· '+esc(x)+'</div>').join('')}</div>`;
+  if(!S.gameOver) h+=`<div class="step">Round ${S.round}: ${S.trend.slop?'<b>SLOP IS TRENDING</b>':'trending '+S.trend.res.map(r=>E.RES_NAME[r]).join(' & ')}.</div>`;
+  h+=`<button class="primary" id="wok" style="margin-top:12px">Continue</button>`;
+  $('obox').innerHTML=h; $('overlay').classList.remove('hidden'); $('wok').onclick=()=>{ $('overlay').classList.add('hidden'); turn(); };
+}
+function endGame(){
+  try{localStorage.removeItem('rotmania4');}catch(e){}
+  const g=S.gameOver; const w=S.players[g.winner]; let h;
+  if(g.reason==='sanity') h=`<h2>✶ PRE-ROT SANITY RESTORED</h2><p><b>${esc(w.name)}</b> held the Last Real Thing while the world held the line.</p>`;
+  else if(g.reason==='lucidity') h=`<h2>✦ LUCIDITY ${E.WIN_LUCIDITY}</h2><p><b>${esc(w.name)}</b> remembered what real was first.</p>`;
+  else h=`<h2>THE SLOP TAKES THE WORLD</h2><p>The Tide reached ${E.TIDE_MAX}. <b>${esc(w.name)}</b> was the last lucid survivor and wins by default. The Slop would like to thank everyone for their engagement.</p>`;
+  h+=`<table><tr><th>Survivor</th><th>Tiles</th><th>Grass</th><th>Relics</th><th>Signals</th><th>Lucidity</th></tr>${S.players.slice().sort((a,b)=>E.lucidity(S,b)-E.lucidity(S,a)).map(q=>`<tr class="${q.idx===g.winner?'win':''}"><td>${esc(q.name)}</td><td>${E.ownedTiles(S,q).length}</td><td>${E.playerGrass(S,q)}</td><td>${q.relics.map(id=>E.RELIC_BY_ID[id].name).join(', ')||'—'}</td><td>${q.signals}</td><td>${E.lucidity(S,q)}</td></tr>`).join('')}</table>`;
+  const st=S.stats; h+=`<p class="sub">Rounds ${S.round} · Tide ${S.tide} · reclaims ${st.reclaims} · tiles lost to rot ${st.rotLost} · relic uses ${st.relicUses} (AI relics ${st.aiRelicUses}) · tides ${st.tides.map(t=>t.at+(t.held?' ✓':' ✗')).join(', ')||'none'} · Slop traits: ${S.traits.map(t=>E.TRAIT_BY_ID[t].name).join(', ')||'none'} · seed ${S.seed==null?'random':S.seed}</p>`;
+  h+=`<div class="log">${S.log.map(l=>`<div>r${l.round} · ${esc(l.msg)}</div>`).join('')}</div>`;
+  h+=`<div style="display:flex;gap:8px;margin-top:12px"><button id="exp">Export playtest log (JSON)</button><button class="primary" id="again">New game</button></div>`;
+  $('obox').innerHTML=h; $('overlay').classList.remove('hidden');
+  $('again').onclick=()=>{ $('overlay').classList.add('hidden'); $('table').classList.add('hidden'); $('setup').classList.remove('hidden'); }; $('exp').onclick=exportLog;
+}
+function exportLog(){ const blob=new Blob([JSON.stringify({version:4,log:S.log,stats:S.stats,slopDie:S.slopDieLog,players:S.players.map(p=>({name:p.name,lucidity:E.lucidity(S,p),relics:p.relics,signals:p.signals,res:p.res})),tide:S.tide,traits:S.traits,round:S.round,seed:S.seed,gameOver:S.gameOver},null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`reclamation-playtest-${Date.now()}.json`; a.click(); }
+$('menuBtn').onclick=()=>{ $('obox').innerHTML=`<h2>Menu</h2><p class="sub">Auto-saved after every action on this browser.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="mexp">Export playtest log</button><button id="mnew">Abandon game</button><button class="primary" id="mclose">Back</button></div>`; $('overlay').classList.remove('hidden');
+  $('mclose').onclick=()=>$('overlay').classList.add('hidden'); $('mexp').onclick=exportLog; $('mnew').onclick=()=>{ if(confirm('Abandon this game?')){ try{localStorage.removeItem('rotmania4');}catch(e){} $('overlay').classList.add('hidden'); $('table').classList.add('hidden'); $('setup').classList.remove('hidden'); } }; };
+})();
+</script>
+</body>
+</html>

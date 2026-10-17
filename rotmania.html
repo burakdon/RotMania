@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RotMania: Reclamation</title>
+<style>
+:root{--wood:#3a2a1c;--board:#efe6d2;--board2:#e2d7bd;--ink:#2a2420;--ink2:#6b625a;--line:#bfb39a;--slop:#5a3a8a;--slop2:#3b2560;
+ --phone:#0b0f14;--phone2:#141b24;--phonetxt:#d7e1ec;--phonedim:#7d8da0;--phonegreen:#39d98a;--phoneamber:#f5b942;
+ --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;--mono:ui-monospace,Menlo,Consolas,monospace;--sans:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at center,#2a3a31,#141c18 70%);color:var(--ink);font-family:var(--sans);font-size:13px;min-height:100vh}
+button{font-family:var(--sans);font-size:12px;border:1px solid var(--line);background:#fffaf0;color:var(--ink);border-radius:6px;padding:7px 10px;cursor:pointer}
+button:disabled{opacity:.4;cursor:default}button.primary{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.hidden{display:none !important}
+#setup{max-width:580px;margin:50px auto;background:var(--board);border-radius:10px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#setup h1{font-family:var(--serif);font-size:36px;margin:0}#setup input{width:100%;padding:9px;border:1px solid var(--line);border-radius:6px;font-size:14px;margin-top:6px;background:#fffdf7}#setup p{line-height:1.5}
+#table{display:grid;grid-template-columns:minmax(560px,1fr) 400px 300px;gap:14px;padding:14px;max-width:1600px;margin:0 auto}
+.board{background:var(--board);border:10px solid var(--wood);border-radius:8px;padding:12px 14px;box-shadow:0 18px 50px rgba(0,0,0,.6)}
+.board h1{font-family:var(--serif);font-size:26px;margin:0}
+h2{font-family:var(--serif);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);margin:10px 0 4px;font-weight:600}
+.sub{color:var(--ink2);font-size:11px}
+svg.map{width:100%;height:auto;display:block}
+.wedge{stroke:#2a2420;stroke-width:1;cursor:default}
+.wedge.sel{stroke:#fff;stroke-width:3}.wedge.can{cursor:pointer}
+.wedge.can:hover{filter:brightness(1.12)}
+.tidepath{display:flex;gap:2px;margin:4px 0}
+.tidepath .sq{flex:1;height:22px;border:1px solid var(--ink2);border-radius:3px;background:#fbf6ea;font-size:9px;text-align:center;color:var(--ink2);position:relative}
+.tidepath .sq.chk{background:#f3d2c9;border-color:#c0392b}.tidepath .sq.end{background:var(--slop);color:#fff}
+.pawn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--slop);border:2px solid #fff}
+.trend{display:flex;gap:8px;align-items:center}
+.tcard{border:2px solid var(--ink);border-radius:8px;padding:8px 10px;background:#fff8e6;min-width:200px}
+.tcard b{font-family:var(--serif);font-size:14px}
+.rs{display:inline-flex;align-items:center;gap:4px;padding:1px 6px;border-radius:999px;font-size:11px;color:#fff;font-weight:700}
+.rs.grass{background:#3c8f3c}.rs.bricks{background:#b5542a}.rs.gpu{background:#2d6f8f}.rs.sourdough{background:#b8891f}.rs.aura{background:#9a3a9a}
+.traits{display:flex;gap:4px;flex-wrap:wrap}.trait{border:1px solid var(--slop);color:var(--slop);border-radius:5px;padding:2px 6px;font-size:10px;background:#efe9fb}
+.trait.off{opacity:.35;border-style:dashed}
+.feed div{font-size:11px;color:var(--ink2);padding:2px 0}
+/* players */
+.pcol{display:flex;flex-direction:column;gap:10px}
+.mat{background:#fbf6ea;border:2px solid var(--line);border-radius:8px;padding:9px;border-left-width:8px}
+.mat.active{box-shadow:0 0 0 3px rgba(42,36,32,.2);border-color:var(--ink)}
+.mat .head{display:flex;justify-content:space-between;align-items:center}.mat .nation{font-family:var(--serif);font-size:16px;font-weight:700}
+.luc{font-family:var(--serif);font-size:18px;font-weight:700}
+.tokens{display:flex;gap:6px;flex-wrap:wrap;margin:5px 0}
+.relic{display:inline-block;border:1px solid #c9a400;background:#fff6cf;border-radius:4px;padding:1px 5px;font-size:10px;margin:2px 2px 0 0}.relic.ai{border-color:#c43f8a;background:#fde3f1}
+.acts{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.acts button{font-size:11px;padding:5px 7px}
+.sel{background:#fff8e6;border:1px solid var(--ink);border-radius:6px;padding:6px 8px;margin-top:6px;font-size:12px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:10px;color:var(--ink2);margin-top:4px;align-items:center}
+.sw{display:inline-block;width:12px;height:12px;border:1px solid #2a2420;vertical-align:middle;margin-right:2px}
+/* phone */
+.phone{position:sticky;top:14px;background:#111;border-radius:30px;padding:14px 10px;box-shadow:0 18px 50px rgba(0,0,0,.6);height:calc(100vh - 28px);display:flex;flex-direction:column}
+.phone .screen{background:var(--phone);color:var(--phonetxt);border-radius:20px;flex:1;padding:14px;font-family:var(--mono);font-size:12px;overflow:auto;display:flex;flex-direction:column}
+.phone h3{margin:0 0 6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--phonedim)}
+.phone .lock{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px}.phone .lock .who{color:var(--phonegreen);font-size:22px;font-weight:700}
+.phone button{background:var(--phone2);color:var(--phonetxt);border:1px solid #2a3644;font-family:var(--mono)}.phone button.go{background:var(--phonegreen);color:#04120a;border-color:var(--phonegreen);font-weight:700}
+.pbox{border:1px solid #2a3644;border-radius:10px;padding:10px;margin:0 0 10px;background:var(--phone2)}.pbox.alert{border-color:var(--phoneamber)}.pbox.alert h3{color:var(--phoneamber)}
+.pline{padding:4px 0;border-bottom:1px dashed #2a3644}.pdim{color:var(--phonedim)}
+.overlay{position:fixed;inset:0;background:rgba(10,12,10,.88);display:flex;align-items:center;justify-content:center;z-index:50;overflow:auto;padding:20px}
+.overlay .box{background:var(--board);border:8px solid var(--wood);border-radius:8px;padding:20px 24px;max-width:760px;width:100%;max-height:90vh;overflow:auto}
+.overlay h2{font-family:var(--serif);margin:0 0 10px;font-size:22px;letter-spacing:0;text-transform:none;color:var(--ink)}
+.step{padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}.bad{color:#c0392b}.good{color:#2e8b57}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:6px 5px;border-bottom:1px solid var(--line);text-align:right}td:first-child,th:first-child{text-align:left}.win td{font-weight:700}
+.log{font-family:var(--mono);font-size:11px;max-height:160px;overflow:auto;background:var(--board2);padding:8px;border-radius:5px;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:60;max-width:760px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+@media (max-width:1300px){#table{grid-template-columns:1fr 1fr}.phone{position:static;height:auto}.phone .screen{min-height:320px}}
+</style>
+</head>
+<body>
+<div id="setup">
+  <h1>ROTMANIA: RECLAMATION</h1>
+  <div class="sub">Digital playtest of the table version · v0.4</div>
+  <p>2041. The internet drowned in slop and the Slop grew a face. Civilization is a few campfires on the rim of the world. Reclaim the rings inward toward the <b>Last Real Thing</b> at the center before the Slop reclaims you.</p>
+  <p class="sub">Each round: a Trend card says what produces. Two actions each: reclaim a tile next to your land, build, touch grass, buy a build card, or trade 3:1. Then the Slop spreads into undefended land and the Tide rises. Win at <b>Lucidity 10</b>, or hold the center through a Slop phase while the world holds.</p>
+  <div id="names"></div>
+  <div style="display:flex;gap:8px;margin-top:8px"><button id="addP">+ survivor</button><button id="rmP">− survivor</button></div>
+  <input id="seed" placeholder="seed (optional, for repeatable playtests)">
+  <button class="primary" id="start" style="width:100%;padding:12px;margin-top:14px;font-size:14px">LIGHT THE CAMPFIRES</button>
+  <button id="resume" class="hidden" style="width:100%;margin-top:8px">Resume saved game</button>
+</div>
+
+<div id="table" class="hidden">
+  <div class="board">
+    <div style="display:flex;justify-content:space-between;align-items:center"><div><h1>ROTMANIA: RECLAMATION</h1><div class="sub" id="roundLabel"></div></div><button id="menuBtn">☰ menu</button></div>
+    <svg class="map" id="map" viewBox="0 0 640 640"></svg>
+    <div class="legend"><span><span class="sw" style="background:#5fb35f"></span>Grass</span><span><span class="sw" style="background:#c9663a"></span>Real Bricks</span><span><span class="sw" style="background:#3d8bb0"></span>Vintage GPUs</span><span><span class="sw" style="background:#d9a63a"></span>Sourdough</span><span><span class="sw" style="background:#b05ab0"></span>Aura</span><span><span class="sw" style="background:#e3c25a"></span>◆ relic site</span><span><span class="sw" style="background:#e05aa8"></span>⚡ AI relic</span><span><span class="sw" style="background:#6a6a3a"></span>slop pit</span><span><span class="sw" style="background:#4a2f73"></span>Rot (? = unexplored)</span><span>▲ camp ⌂ commune ★ capital · dots = grass · ▣ firewall</span></div>
+    <h2>Tide</h2><div class="tidepath" id="tide"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px">
+      <div><h2>Trending</h2><div class="trend" id="trend"></div><h2>The Slop</h2><div class="traits" id="traits"></div></div>
+      <div><h2>Feed</h2><div class="feed" id="feed"></div></div>
+    </div>
+  </div>
+  <div class="pcol" id="mats"></div>
+  <div class="phone"><div class="screen" id="phone"></div></div>
+</div>
+<div id="overlay" class="overlay hidden"><div class="box" id="obox"></div></div>
+<div id="toast" class="toast hidden"></div>
+
+<script>/* RotMania: Reclamation — engine v0.4 (pure state, no DOM). Browser: window.Engine. Node: module.exports. */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.Engine = factory();
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+  function mulberry32(a) { return function () { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  let rand = Math.random;
+  function setSeed(seed) { rand = seed == null ? Math.random : mulberry32(seed); }
+  function ri(lo, hi) { return lo + Math.floor(rand() * (hi - lo + 1)); }
+  function pick(arr) { return arr[Math.floor(rand() * arr.length)]; }
+  function shuffle(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+  // ---------- Constants ----------
+  const RES = ['grass', 'bricks', 'gpu', 'sourdough', 'aura'];
+  const RES_NAME = { grass: 'Grass', bricks: 'Real Bricks', gpu: 'Vintage GPUs', sourdough: 'Sourdough', aura: 'Aura' };
+  const RINGS = [1, 6, 8, 10, 12];              // ring 0 = center (Last Real Thing), ring 4 = rim (homes)
+  const WIN_LUCIDITY = 10, TIDE_MAX = 20, TIDE_CHECK = [5, 10, 15];
+  const RECLAIM_COST = { 4: { grass: 1 }, 3: { grass: 1, bricks: 1 }, 2: { grass: 1, bricks: 1, gpu: 1 }, 1: { grass: 2, bricks: 1, gpu: 1, aura: 1 }, 0: { grass: 2, gpu: 2, aura: 2 } };
+  const BUILD_COST = { camp: { bricks: 1, sourdough: 1 }, commune: { gpu: 1, aura: 1 }, capital: { bricks: 2, gpu: 1, aura: 1, sourdough: 1 } };
+  const DEFENSE = { camp: 1, commune: 2, capital: 3 };
+  const LUCIDITY_BUILDING = { camp: 0, commune: 1, capital: 2 };
+  const RING_LUCIDITY = { 4: 0, 3: 1, 2: 2, 1: 3, 0: 4 };
+  const CARD_COST = { gpu: 1, aura: 1, sourdough: 1 };
+  const ACTIONS_PER_TURN = 2;
+
+  // Tile bag per ring: resource tiles, relic sites (R = AI relic, S = safe relic), slop pits (P)
+  const BAG = {
+    4: 'grass,grass,grass,bricks,bricks,sourdough,sourdough,sourdough,aura,gpu,grass,bricks'.split(','),
+    3: 'grass,grass,bricks,bricks,sourdough,aura,aura,gpu,S,P'.split(','),
+    2: 'grass,bricks,sourdough,aura,gpu,gpu,S,R'.split(','),
+    1: 'aura,gpu,sourdough,R,R,S'.split(','),
+    0: ['core'],
+  };
+  const RELICS = {
+    safe: [
+      { id: 'seed_vault', name: 'Seed Vault', text: 'Each Trend round: +1 Sourdough.', passive: 'sourdough' },
+      { id: 'printing_press', name: 'Printing Press', text: '+1 Lucidity.', lucidity: 1 },
+      { id: 'ham_radio', name: 'Ham Radio Net', text: 'Use (free): reveal 3 rotted tiles.', use: 'reveal3' },
+      { id: 'analog_library', name: 'Analog Library', text: '+1 Lucidity. Each Trend round: +1 Grass.', lucidity: 1, passive: 'grass' },
+      { id: 'water_filter', name: 'Water Filter', text: 'Your Camps count as defense 2.', campDef: 2 },
+    ],
+    ai: [
+      { id: 'oracle', name: 'Oracle Server', text: 'Use: reveal every tile in one ring. Roll the Slop die.', use: 'revealRing' },
+      { id: 'drone_depot', name: 'Autonomous Drone Depot', text: 'Use: reclaim one adjacent rotted tile for free. Roll the Slop die.', use: 'freeReclaim' },
+      { id: 'recommender', name: 'Still-Running Recommender', text: 'Use: gain 3 of a trending resource. Roll the Slop die.', use: 'trend3' },
+      { id: 'auto_factory', name: 'Auto-Factory', text: 'Use: build a Camp for free. Roll the Slop die.', use: 'freeCamp' },
+      { id: 'deepfake_studio', name: 'Deepfake Studio', text: 'Use: gain 2 Aura and 1 Lucidity... minus 1 Lucidity at the next Tide. Roll the Slop die.', use: 'deepfake' },
+    ],
+  };
+  const RELIC_BY_ID = Object.fromEntries([...RELICS.safe, ...RELICS.ai].map(r => [r.id, r]));
+  const BUILD_CARDS = [
+    { id: 'library', name: 'Library of Verified Facts', text: '+1 Lucidity.', n: 3, fx: 'lucidity' },
+    { id: 'radio_tower', name: 'Analog Radio Tower', text: 'Reveal 2 rotted tiles.', n: 2, fx: 'reveal2' },
+    { id: 'goat_coop', name: 'Goat Fiber Co-op', text: '+2 resources of one kind.', n: 2, fx: 'any2' },
+    { id: 'firewall', name: 'Firewall Collective', text: '+1 permanent defense on one of your tiles.', n: 2, fx: 'firewall' },
+    { id: 'retreat', name: 'Grass-Touching Retreat', text: 'World Grass +2 at the next Tide.', n: 2, fx: 'tideBonus' },
+    { id: 'fact_checkers', name: 'Fact-Checker Militia', text: 'Cleanse: reclaim an adjacent rotted tile for free (no relic draw).', n: 2, fx: 'cleanse' },
+    { id: 'modem', name: 'Vintage Modem', text: '+2 Vintage GPUs.', n: 2, fx: 'gpu2' },
+  ];
+  const BUILD_BY_ID = Object.fromEntries(BUILD_CARDS.map(c => [c.id, c]));
+  const TRAITS = [
+    { id: 'memetic', name: 'Memetic', text: 'The Slop rots one extra tile each round.' },
+    { id: 'hungry', name: 'Hungry', text: 'The Slop breaks through defense 1.' },
+    { id: 'persuasive', name: 'Persuasive', text: 'Scouting reports lie half the time.' },
+    { id: 'viral', name: 'Viral', text: '"Slop is trending" also pushes the Tide +2.' },
+  ];
+  const TRAIT_BY_ID = Object.fromEntries(TRAITS.map(t => [t.id, t]));
+  const FEED = [
+    ['The Slop is quiet. Analysts call it "digesting."', 'Local commune reports a tomato. A real one.', 'Survivors agree: the ring was always this size.'],
+    ['The Slop posted a 40-minute apology video. It is also an ad.', 'Trending: {res}. Nobody knows why. The Slop knows why.', 'Reclaimed tile found to contain 400 identical cats.'],
+    ['The Slop has learned the word "lowkey." Experts are concerned.', 'Breaking: ring {ring} is cooked fr. Sources: the Slop.', 'Your scouts report the tile is "probably sourdough (trust)."'],
+    ['SKIBIDI TIDE INCOMING. GRASS LEVELS: CRITICAL.', 'The Slop would like to remind you that it is inevitable and also a girlboss.', 'gyatt the core is RIGHT THERE and bro built a radio tower'],
+  ];
+
+  // ---------- Geometry ----------
+  function tileSpan(ring, idx) { const n = RINGS[ring]; return [idx * 360 / n, (idx + 1) * 360 / n]; }
+  function overlaps(a, b) { return a[0] < b[1] - 1e-6 && b[0] < a[1] - 1e-6; }
+  function buildAdjacency() {
+    const tiles = []; const id = (r, i) => `${r}-${i}`;
+    for (let r = 0; r < RINGS.length; r++) for (let i = 0; i < RINGS[r]; i++) tiles.push({ id: id(r, i), ring: r, idx: i });
+    const adj = {};
+    tiles.forEach(t => {
+      const a = new Set();
+      if (t.ring === 0) { for (let i = 0; i < RINGS[1]; i++) a.add(id(1, i)); }
+      else {
+        const n = RINGS[t.ring]; a.add(id(t.ring, (t.idx + 1) % n)); a.add(id(t.ring, (t.idx + n - 1) % n));
+        const span = tileSpan(t.ring, t.idx);
+        for (const r2 of [t.ring - 1, t.ring + 1]) { if (r2 < 0 || r2 >= RINGS.length) continue; if (r2 === 0) { a.add('0-0'); continue; } for (let j = 0; j < RINGS[r2]; j++) if (overlaps(span, tileSpan(r2, j))) a.add(id(r2, j)); }
+      }
+      adj[t.id] = [...a];
+    });
+    return { tiles, adj };
+  }
+  const GEO = buildAdjacency();
+
+  // ---------- State ----------
+  function newGame(names, seed) {
+    setSeed(seed);
+    const S = {
+      version: 4, seed: seed == null ? null : seed, players: [], tiles: {}, round: 1, actor: 0, startPlayer: 0, actionsLeft: ACTIONS_PER_TURN,
+      tide: 0, traits: [], trend: null, trendDeck: [], trendDiscard: [], buildDeck: [], slopDieLog: [], tideBonus: 0,
+      log: [], feed: [], gameOver: null, lastSlop: null, privateQueue: [], stats: { reclaims: 0, relicUses: 0, aiRelicUses: 0, rotLost: 0, tides: [] },
+    };
+    // tiles
+    for (let r = 0; r < RINGS.length; r++) { const bag = shuffle(BAG[r]); for (let i = 0; i < RINGS[r]; i++) { const t = bag[i % bag.length]; S.tiles[`${r}-${i}`] = { id: `${r}-${i}`, ring: r, idx: i, type: t, owner: null, rotted: true, revealed: r === 4, building: null, grass: 0, firewall: 0, relic: null, restored: false }; } }
+    // relic sites get a relic id
+    const safe = shuffle(RELICS.safe.map(r => r.id)), ai = shuffle(RELICS.ai.map(r => r.id));
+    Object.values(S.tiles).forEach(t => { if (t.type === 'S') t.relic = safe.pop() || pick(RELICS.safe).id; if (t.type === 'R') t.relic = ai.pop() || pick(RELICS.ai).id; });
+    // players on the rim, evenly spaced
+    const n = names.length; const spacing = Math.floor(RINGS[4] / n);
+    names.forEach((name, idx) => {
+      const home = S.tiles[`4-${idx * spacing}`]; home.owner = idx; home.rotted = false; home.revealed = true; home.building = 'camp'; if (home.type === 'P') home.type = 'grass';
+      S.players.push({ idx, name, res: { grass: 2, bricks: 1, gpu: 0, sourdough: 1, aura: 0 }, relics: [], cards: [], lucidityBonus: 0, signals: 0, deepfakeDebt: 0, home: home.id, scouting: [] });
+    });
+    S.trendDeck = shuffle(makeTrendDeck());
+    S.buildDeck = shuffle(BUILD_CARDS.flatMap(c => Array(c.n).fill(c.id)));
+    startRound(S);
+    return S;
+  }
+  function makeTrendDeck() { const d = []; for (let i = 0; i < RES.length; i++) for (let j = i + 1; j < RES.length; j++) d.push({ res: [RES[i], RES[j]] }); for (let k = 0; k < 3; k++) d.push({ slop: true }); return d; }
+  function log(S, msg) { S.log.push({ round: S.round, msg }); }
+  function hasTrait(S, id) { return S.traits.includes(id); }
+  function tideStage(S) { return TIDE_CHECK.filter(c => S.tide >= c).length; }
+  function spreadPower(S) { return hasTrait(S, 'hungry') ? 2 : 1; }
+
+  // ---------- Round flow ----------
+  function startRound(S) {
+    S.startPlayer = (S.round - 1) % S.players.length; S.actor = S.startPlayer; S.actionsLeft = ACTIONS_PER_TURN;
+    if (!S.trendDeck.length) { S.trendDeck = shuffle(S.trendDiscard); S.trendDiscard = []; }
+    S.trend = S.trendDeck.pop(); S.trendDiscard.push(S.trend);
+    if (S.trend.slop) { log(S, `Round ${S.round}: SLOP IS TRENDING.`); S.tide += hasTrait(S, 'viral') ? 2 : 1; }
+    else {
+      log(S, `Round ${S.round}: trending — ${S.trend.res.map(r => RES_NAME[r]).join(' & ')}.`);
+      Object.values(S.tiles).forEach(t => { if (t.owner != null && !t.rotted && S.trend.res.includes(t.type)) { const p = S.players[t.owner]; p.res[t.type] += 1 + (t.building ? 1 : 0); } });
+    }
+    S.players.forEach(p => { p.res.grass += 1; const h = S.tiles[p.home]; if (RES.includes(h.type) && !(S.trend.res || []).includes(h.type)) p.res[h.type] += 1; p.relics.forEach(id => { const r = RELIC_BY_ID[id]; if (r.passive) p.res[r.passive] += 1; }); });
+  }
+  function currentPlayer(S) { return S.players[S.actor]; }
+  function endTurn(S) {
+    const order = S.players.length; const next = (S.actor + 1) % order;
+    if (next === S.startPlayer) { slopPhase(S); if (S.gameOver) return; S.round++; startRound(S); }
+    else { S.actor = next; S.actionsLeft = ACTIONS_PER_TURN; }
+  }
+
+  // ---------- Helpers ----------
+  function canAfford(p, cost) { return Object.keys(cost).every(k => p.res[k] >= cost[k]); }
+  function pay(p, cost) { Object.keys(cost).forEach(k => { p.res[k] -= cost[k]; }); }
+  function ownedTiles(S, p) { return Object.values(S.tiles).filter(t => t.owner === p.idx && !t.rotted); }
+  function frontierFor(S, p) { const set = new Set(); ownedTiles(S, p).forEach(t => GEO.adj[t.id].forEach(a => { if (S.tiles[a].rotted) set.add(a); })); return [...set]; }
+  function tileDefense(S, t) {
+    let d = t.grass + t.firewall;
+    if (t.building) { d += DEFENSE[t.building]; if (t.building === 'camp' && t.owner != null && S.players[t.owner].relics.includes('water_filter')) d += 1; }
+    GEO.adj[t.id].forEach(a => { const u = S.tiles[a]; if (u.owner === t.owner && !u.rotted && u.building) d += u.building === 'capital' ? 2 : 1; });
+    return d;
+  }
+  function lucidity(S, p) {
+    let l = p.lucidityBonus + p.signals - p.deepfakeDebt;
+    ownedTiles(S, p).forEach(t => { l += RING_LUCIDITY[t.ring]; if (t.building) l += LUCIDITY_BUILDING[t.building]; if (t.restored) l += 1; });
+    p.relics.forEach(id => { l += RELIC_BY_ID[id].lucidity || 0; });
+    return l;
+  }
+  function tideNeed(S) { return Math.ceil(S.tide * S.players.length * 0.6); }
+  function worldGrass(S) { let g = S.tideBonus; Object.values(S.tiles).forEach(t => { if (t.owner != null && !t.rotted) g += tileDefense(S, t); }); return g; }
+  function playerGrass(S, p) { let g = 0; ownedTiles(S, p).forEach(t => { g += tileDefense(S, t); }); return g; }
+
+  // ---------- Legal actions ----------
+  function legalActions(S) {
+    const p = currentPlayer(S); const acts = [];
+    if (S.actionsLeft > 0) {
+      frontierFor(S, p).forEach(id => { const t = S.tiles[id]; if (canAfford(p, RECLAIM_COST[t.ring])) acts.push({ type: 'reclaim', tile: id }); });
+      ownedTiles(S, p).forEach(t => {
+        if (!t.building && canAfford(p, BUILD_COST.camp)) acts.push({ type: 'build', tile: t.id, what: 'camp' });
+        if (t.building === 'camp' && canAfford(p, BUILD_COST.commune)) acts.push({ type: 'build', tile: t.id, what: 'commune' });
+        if (t.building === 'commune' && canAfford(p, BUILD_COST.capital)) acts.push({ type: 'build', tile: t.id, what: 'capital' });
+        if (p.res.grass >= 1) acts.push({ type: 'touch_grass', tile: t.id });
+      });
+      if (canAfford(p, CARD_COST) && S.buildDeck.length) acts.push({ type: 'buy_card' });
+      for (const a of RES) for (const b of RES) if (a !== b && p.res[a] >= 3) acts.push({ type: 'trade', give: a, get: b });
+    }
+    // free: use relics (once per round each) and play cards
+    p.relics.forEach(id => { const r = RELIC_BY_ID[id]; if (r.use && !(p.usedRelics || []).includes(id)) acts.push({ type: 'use_relic', relic: id }); });
+    p.cards.forEach((id, i) => acts.push({ type: 'play_card', index: i }));
+    acts.push({ type: 'end_turn' });
+    return acts;
+  }
+
+  // ---------- Act ----------
+  function act(S, a) {
+    if (S.gameOver) return { ok: false, msg: 'Game over.' };
+    const p = currentPlayer(S); const priv = []; let msg; let spend = true;
+    switch (a.type) {
+      case 'reclaim': { const t = S.tiles[a.tile]; if (!t || !t.rotted || !frontierFor(S, p).includes(a.tile)) return { ok: false, msg: 'Not reclaimable.' }; if (!canAfford(p, RECLAIM_COST[t.ring])) return { ok: false, msg: 'Cannot afford.' }; pay(p, RECLAIM_COST[t.ring]); msg = reclaimTile(S, p, t, priv); break; }
+      case 'build': { const t = S.tiles[a.tile]; if (!t || t.owner !== p.idx || t.rotted) return { ok: false, msg: 'Not your tile.' }; const need = a.what === 'camp' ? !t.building : a.what === 'commune' ? t.building === 'camp' : t.building === 'commune'; if (!need || !canAfford(p, BUILD_COST[a.what])) return { ok: false, msg: 'Cannot build that here.' }; pay(p, BUILD_COST[a.what]); t.building = a.what; msg = `${p.name} built a ${a.what} on ${tileName(S, t)}.`; break; }
+      case 'touch_grass': { const t = S.tiles[a.tile]; if (!t || t.owner !== p.idx || t.rotted || p.res.grass < 1) return { ok: false, msg: 'No.' }; p.res.grass--; t.grass++; msg = `${p.name} touched grass on ${tileName(S, t)} (+1 defense this round).`; break; }
+      case 'buy_card': { if (!canAfford(p, CARD_COST) || !S.buildDeck.length) return { ok: false, msg: 'Cannot buy.' }; pay(p, CARD_COST); const id = S.buildDeck.pop(); p.cards.push(id); priv.push({ title: 'Build card drawn', body: BUILD_BY_ID[id].name + ' — ' + BUILD_BY_ID[id].text }); msg = `${p.name} bought a build card.`; break; }
+      case 'trade': { if (p.res[a.give] < 3) return { ok: false, msg: 'Need 3.' }; p.res[a.give] -= 3; p.res[a.get] += 1; msg = `${p.name} traded 3 ${RES_NAME[a.give]} for 1 ${RES_NAME[a.get]}.`; break; }
+      case 'use_relic': { spend = false; const r = RELIC_BY_ID[a.relic]; if (!p.relics.includes(a.relic) || !r.use || (p.usedRelics || []).includes(a.relic)) return { ok: false, msg: 'Cannot use.' }; p.usedRelics = (p.usedRelics || []).concat(a.relic); msg = useRelic(S, p, r, a, priv); if (msg === null) return { ok: false, msg: 'No valid target.' }; break; }
+      case 'play_card': { spend = false; const id = p.cards[a.index]; if (!id) return { ok: false, msg: 'No card.' }; const res = playCard(S, p, BUILD_BY_ID[id], a, priv); if (res === null) return { ok: false, msg: 'No valid target for that card.' }; p.cards.splice(a.index, 1); msg = res; break; }
+      case 'end_turn': { spend = false; msg = `${p.name} ends turn.`; log(S, msg); checkWin(S, p); if (S.gameOver) return { ok: true, msg, private: priv }; p.usedRelics = []; endTurn(S); return { ok: true, msg, private: priv }; }
+      default: return { ok: false, msg: 'Unknown action.' };
+    }
+    if (spend) S.actionsLeft--;
+    log(S, msg); checkWin(S, p);
+    if (!S.gameOver && S.actionsLeft <= 0 && !legalActions(S).some(x => x.type === 'use_relic' || x.type === 'play_card')) { p.usedRelics = []; endTurn(S); }
+    return { ok: true, msg, private: priv };
+  }
+  function tileName(S, t) { return t.ring === 0 ? 'the Last Real Thing' : `ring ${t.ring} tile ${t.idx + 1}${t.revealed ? ' (' + (RES_NAME[t.type] || typeLabel(t.type)) + ')' : ''}`; }
+  function typeLabel(ty) { return { S: 'relic site', R: 'AI relic site', P: 'slop pit', core: 'the Last Real Thing' }[ty] || ty; }
+  function reclaimTile(S, p, t, priv) {
+    t.rotted = false; t.owner = p.idx; t.revealed = true; t.grass = 0; t.fresh = S.round; S.stats.reclaims++;
+    let msg = `${p.name} reclaimed ${tileName(S, t)}.`;
+    if (t.type === 'P') msg += ' It is a slop pit: it produces nothing, but it holds the line.';
+    if ((t.type === 'S' || t.type === 'R') && t.relic && !t.restored) { const r = RELIC_BY_ID[t.relic]; p.relics.push(t.relic); t.restored = true; msg += ` Found ${t.type === 'R' ? 'an AI relic' : 'a relic'}: ${r.name} (${r.text})`; }
+    if (t.ring === 0) msg += ' THE LAST REAL THING IS IN THEIR HANDS. Hold it through one Slop phase while the world holds.';
+    return msg;
+  }
+  function slopDie(S, p, ev) {
+    const d = ri(1, 6); S.stats.aiRelicUses++; let out;
+    if (d <= 2) out = 'nothing happens';
+    else if (d <= 4) { S.tide += 1; out = 'Tide +1'; }
+    else if (d === 5) { const cand = ownedTiles(S, p).filter(t => tileDefense(S, t) < spreadPower(S) && t.ring !== 4 || (ownedTiles(S, p).length > 1 && t.id !== p.home && tileDefense(S, t) === 0)); const t = cand.length ? pick(cand) : null; if (t) { rotTile(S, t); out = `the Slop takes ${tileName(S, t)}`; } else { S.tide += 1; out = 'Tide +1'; } }
+    else { evolve(S); out = 'the Slop evolves'; }
+    S.slopDieLog.push({ round: S.round, player: p.idx, die: d, out }); return `Slop die ${d}: ${out}.`;
+  }
+  function useRelic(S, p, r, a, priv) {
+    S.stats.relicUses++; let msg = `${p.name} uses ${r.name}: `;
+    switch (r.use) {
+      case 'reveal3': msg += reveal(S, p, 3, priv); break;
+      case 'revealRing': { const ring = a.ring != null ? a.ring : (ownedTiles(S, p).reduce((m, t) => Math.min(m, t.ring), 4) - 1); const rr = Math.max(0, ring); const lines = []; Object.values(S.tiles).filter(t => t.ring === rr && t.rotted).forEach(t => { const truth = RES_NAME[t.type] || typeLabel(t.type); const lie = hasTrait(S, 'persuasive') && rand() < 0.5; const said = lie ? (RES_NAME[pick(RES)]) : truth; p.scouting.push({ tile: t.id, said, round: S.round }); lines.push(`${t.id}: ${said}`); }); priv.push({ title: `Oracle Server — ring ${rr}`, body: lines.join(' · ') || 'nothing rotted there' }); msg += `scanned ring ${rr}. ` + slopDie(S, p); break; }
+      case 'freeReclaim': { const f = frontierFor(S, p); const id = a.tile && f.includes(a.tile) ? a.tile : f.sort((x, y) => S.tiles[x].ring - S.tiles[y].ring)[0]; if (!id) return null; msg += reclaimTile(S, p, S.tiles[id], priv) + ' ' + slopDie(S, p); break; }
+      case 'trend3': { const res = S.trend && !S.trend.slop ? (a.res && S.trend.res.includes(a.res) ? a.res : S.trend.res[0]) : 'sourdough'; p.res[res] += 3; msg += `+3 ${RES_NAME[res]}. ` + slopDie(S, p); break; }
+      case 'freeCamp': { const t = a.tile ? S.tiles[a.tile] : ownedTiles(S, p).find(t => !t.building); if (!t || t.owner !== p.idx || t.building || t.rotted) return null; t.building = 'camp'; msg += `free camp on ${tileName(S, t)}. ` + slopDie(S, p); break; }
+      case 'deepfake': p.res.aura += 2; p.lucidityBonus += 1; p.deepfakeDebt += 1; msg += '+2 Aura, +1 Lucidity now, −1 at the next Tide. ' + slopDie(S, p); break;
+    }
+    return msg;
+  }
+  function reveal(S, p, n, priv) {
+    const cand = Object.values(S.tiles).filter(t => t.rotted && !t.revealed); const chosen = shuffle(cand).slice(0, n); const lines = [];
+    chosen.forEach(t => { const truth = RES_NAME[t.type] || typeLabel(t.type); const lie = hasTrait(S, 'persuasive') && rand() < 0.5; const said = lie ? RES_NAME[pick(RES)] : truth; p.scouting.push({ tile: t.id, said, round: S.round }); lines.push(`ring ${t.ring} tile ${t.idx + 1}: ${said}`); });
+    priv.push({ title: 'Scouting report' + (hasTrait(S, 'persuasive') ? ' (the Slop is Persuasive: may lie)' : ''), body: lines.join(' · ') || 'nothing left to reveal' });
+    return `scouted ${chosen.length} tiles.`;
+  }
+  function playCard(S, p, c, a, priv) {
+    let msg = `${p.name} plays ${c.name}: `;
+    switch (c.fx) {
+      case 'lucidity': p.lucidityBonus += 1; msg += '+1 Lucidity.'; break;
+      case 'reveal2': msg += reveal(S, p, 2, priv); break;
+      case 'any2': { const r = a.res || RES.reduce((b, k) => p.res[k] < p.res[b] ? k : b, 'grass'); p.res[r] += 2; msg += `+2 ${RES_NAME[r]}.`; break; }
+      case 'firewall': { const t = a.tile ? S.tiles[a.tile] : ownedTiles(S, p).sort((x, y) => tileDefense(S, x) - tileDefense(S, y))[0]; if (!t || t.owner !== p.idx) return null; t.firewall += 1; msg += `firewall on ${tileName(S, t)}.`; break; }
+      case 'tideBonus': S.tideBonus += 2; msg += 'world Grass +2 at the next Tide.'; break;
+      case 'cleanse': { const f = frontierFor(S, p); const id = a.tile && f.includes(a.tile) ? a.tile : f.sort((x, y) => S.tiles[x].ring - S.tiles[y].ring)[0]; if (!id) return null; const t = S.tiles[id]; t.rotted = false; t.owner = p.idx; t.revealed = true; t.fresh = S.round; S.stats.reclaims++; msg += `cleansed ${tileName(S, t)}.`; break; }
+      case 'gpu2': p.res.gpu += 2; msg += '+2 Vintage GPUs.'; break;
+    }
+    return msg;
+  }
+
+  // ---------- Slop phase ----------
+  function rotTile(S, t) { t.rotted = true; t.building = null; t.grass = 0; t.firewall = 0; t.owner = null; S.stats.rotLost++; }
+  function evolve(S) { const avail = TRAITS.filter(t => !S.traits.includes(t.id)); if (!avail.length) return null; const t = pick(avail); S.traits.push(t.id); log(S, `The Slop evolves: ${t.name}.`); return t.id; }
+  function slopPhase(S) {
+    const rep = { round: S.round, tideBefore: S.tide, rotted: [], tide: null, evolved: null, feed: [], coreHeld: null };
+    S.lastSlop = rep;
+    S.tide += 1;
+    // rot spreads: frontier tiles (reclaimed, adjacent to rot) with defense < power; the Slop chooses up to N
+    const power = spreadPower(S); const N = 1 + (tideStage(S) >= 2 ? 1 : 0) + (hasTrait(S, 'memetic') ? 1 : 0) + (S.trend && S.trend.slop ? 1 : 0);
+    const cand = Object.values(S.tiles).filter(t => t.owner != null && !t.rotted && t.id !== S.players[t.owner].home && t.fresh !== S.round && GEO.adj[t.id].some(a => S.tiles[a].rotted) && tileDefense(S, t) < power);
+    shuffle(cand).slice(0, N).forEach(t => { rep.rotted.push({ tile: t.id, owner: t.owner, name: tileName(S, t) }); rotTile(S, t); });
+    if (rep.rotted.length) log(S, `The Slop spreads: ${rep.rotted.map(x => S.players[x.owner].name + "'s " + x.name).join(', ')}.`);
+    // core hold check: a player who still owns the core after the spread wins if the world holds
+    const core = S.tiles['0-0'];
+    if (core.owner != null && !core.rotted) { const wg = worldGrass(S); rep.coreHeld = { player: core.owner, worldGrass: wg, tide: S.tide, need: tideNeed(S) }; if (wg >= tideNeed(S)) { S.gameOver = { reason: 'sanity', winner: core.owner }; log(S, `${S.players[core.owner].name} held the Last Real Thing while the world held (Grass ${wg} ≥ Tide ${S.tide}). PRE-ROT SANITY RESTORED.`); } }
+    // grass tokens expire
+    Object.values(S.tiles).forEach(t => { t.grass = 0; });
+    // tide check
+    for (const c of TIDE_CHECK) if (S.tide >= c && !S.stats.tides.some(x => x.at === c)) {
+      const wg = worldGrass(S); const need = tideNeed(S); const held = wg >= need; const tideRep = { at: c, worldGrass: wg, tide: S.tide, need, held, defender: null, losers: [] };
+      const pg = S.players.map(p => playerGrass(S, p)); const best = Math.max(...pg);
+      if (held) { S.players.forEach((p, i) => { if (pg[i] === best && best > 0) { p.signals += 1; tideRep.defender = (tideRep.defender ? tideRep.defender + ', ' : '') + p.name; } }); }
+      else { const avg = pg.reduce((a, b) => a + b, 0) / pg.length; S.players.forEach((p, i) => { if (pg[i] < avg || avg === 0) { const outer = ownedTiles(S, p).filter(t => t.id !== p.home).sort((x, y) => tileDefense(S, x) - tileDefense(S, y))[0]; if (outer) { rotTile(S, outer); tideRep.losers.push(p.name + ' lost ' + tileName(S, outer)); } } }); }
+      S.players.forEach(p => { if (p.deepfakeDebt) { p.lucidityBonus -= 0; } }); // debt already subtracted in lucidity(); keep as flag
+      tideRep.evolved = evolve(S); S.tideBonus = 0; S.stats.tides.push(tideRep); rep.tide = tideRep;
+      log(S, `TIDE at ${c}: world Grass ${wg} vs Tide strength ${need} — ${held ? 'HELD' : 'BROKE'}.`);
+    }
+    // feed
+    const stage = Math.min(3, tideStage(S)); for (let k = 0; k < 2; k++) rep.feed.push(pick(FEED[stage]).replace('{res}', RES_NAME[pick(RES)]).replace('{ring}', ri(1, 4)));
+    S.feed = rep.feed;
+    if (S.gameOver) return;
+    if (S.tide >= TIDE_MAX) { const best = S.players.map(p => lucidity(S, p)); const w = best.indexOf(Math.max(...best)); S.gameOver = { reason: 'tide', winner: w }; log(S, `The Tide reached ${TIDE_MAX}. The Slop takes the world. ${S.players[w].name} was the last lucid one.`); }
+  }
+  function checkWin(S, p) { if (lucidity(S, p) >= WIN_LUCIDITY) { S.gameOver = { reason: 'lucidity', winner: p.idx }; log(S, `${p.name} reached Lucidity ${WIN_LUCIDITY}. Pre-rot sanity achieved.`); } }
+
+  return { RES, RES_NAME, RINGS, GEO, WIN_LUCIDITY, TIDE_MAX, TIDE_CHECK, RECLAIM_COST, BUILD_COST, CARD_COST, DEFENSE, RELICS, RELIC_BY_ID, BUILD_CARDS, BUILD_BY_ID, TRAITS, TRAIT_BY_ID, ACTIONS_PER_TURN,
+    newGame, setSeed, currentPlayer, legalActions, act, lucidity, worldGrass, tideNeed, playerGrass, tileDefense, frontierFor, ownedTiles, tideStage, spreadPower, typeLabel, tileName, canAfford };
+});
+</script>
+<script>
+(function(){
+const E=window.Engine; const $=id=>document.getElementById(id); const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const PCOL=['#c0392b','#2980b9','#27ae60','#e0b64a']; const TCOL={grass:'#5fb35f',bricks:'#c9663a',gpu:'#3d8bb0',sourdough:'#d9a63a',aura:'#b05ab0',S:'#e3c25a',R:'#e05aa8',P:'#6a6a3a',core:'#fff2c4'};
+const TICON={S:'◆',R:'⚡',P:'~',core:'✶'}; const BICON={camp:'▲',commune:'⌂',capital:'★'};
+let S=null, unlocked=null, privQ=[], shownSlop=null, selTile=null, toastT=null, pending=null;
+function hash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+
+/* setup */
+let n=4; const nm=$('names');
+function renderNames(){ const cur=[...nm.querySelectorAll('input')].map(i=>i.value); nm.innerHTML=''; for(let i=0;i<n;i++){const inp=document.createElement('input');inp.placeholder='Survivor '+(i+1);inp.value=cur[i]||'';nm.appendChild(inp);} }
+renderNames(); $('addP').onclick=()=>{if(n<4){n++;renderNames();}}; $('rmP').onclick=()=>{if(n>2){n--;renderNames();}};
+$('start').onclick=()=>{ const names=[...nm.querySelectorAll('input')].map((i,k)=>i.value.trim()||('Survivor '+(k+1))); const raw=$('seed').value.trim(); S=E.newGame(names, raw===''?null:(isNaN(+raw)?hash(raw):+raw)); unlocked=null; privQ=[]; shownSlop=null; selTile=null; $('setup').classList.add('hidden'); $('table').classList.remove('hidden'); turn(); };
+try{ if(localStorage.getItem('rotmania4')) $('resume').classList.remove('hidden'); }catch(e){}
+$('resume').onclick=()=>{ try{ const raw=JSON.parse(localStorage.getItem('rotmania4')); S=raw.S; shownSlop=raw.shownSlop; unlocked=null; privQ=[]; $('setup').classList.add('hidden'); $('table').classList.remove('hidden'); if(S.gameOver) endGame(); else turn(); }catch(e){ alert('Could not load save.'); } };
+function save(){ try{ localStorage.setItem('rotmania4',JSON.stringify({S,shownSlop})); }catch(e){} }
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.remove('hidden'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.add('hidden'),5000); }
+
+/* flow */
+function turn(){ if(S.gameOver){ endGame(); return; } if(S.lastSlop && S.lastSlop.round!==shownSlop){ slopReport(); return; } const p=E.currentPlayer(S); if(unlocked!==p.idx) unlocked=null; selTile=null; render(); }
+function doAct(a){ const actor=E.currentPlayer(S).idx; const r=E.act(S,a); if(!r.ok){ toast(r.msg); return; } save(); toast(r.msg); pending=null; selTile=null;
+  if(r.private&&r.private.length){ r.private.forEach(x=>privQ.push(x)); unlocked=actor; render(); return; } turn(); }
+
+/* geometry */
+const CX=320,CY=320, RAD=[0,46,118,190,255,312];
+function polar(r,deg){ const a=(deg-90)*Math.PI/180; return [CX+r*Math.cos(a), CY+r*Math.sin(a)]; }
+function wedgePath(ring,idx){ if(ring===0) return `M ${CX-RAD[1]} ${CY} a ${RAD[1]} ${RAD[1]} 0 1 0 ${2*RAD[1]} 0 a ${RAD[1]} ${RAD[1]} 0 1 0 ${-2*RAD[1]} 0`;
+  const nn=E.RINGS[ring], a0=idx*360/nn, a1=(idx+1)*360/nn, r0=RAD[ring], r1=RAD[ring+1]; const [x0,y0]=polar(r1,a0),[x1,y1]=polar(r1,a1),[x2,y2]=polar(r0,a1),[x3,y3]=polar(r0,a0); const big=(a1-a0)>180?1:0;
+  return `M ${x0} ${y0} A ${r1} ${r1} 0 ${big} 1 ${x1} ${y1} L ${x2} ${y2} A ${r0} ${r0} 0 ${big} 0 ${x3} ${y3} Z`; }
+function wedgeCenter(ring,idx){ if(ring===0) return [CX,CY]; const nn=E.RINGS[ring]; return polar((RAD[ring]+RAD[ring+1])/2,(idx+0.5)*360/nn); }
+
+/* render */
+function render(){
+  const p=E.currentPlayer(S); const canAct=unlocked===p.idx && privQ.length===0; const legal=canAct?E.legalActions(S):[];
+  $('roundLabel').textContent=`Round ${S.round} · ${p.name}'s turn · ${S.actionsLeft} action${S.actionsLeft===1?'':'s'} left · Tide ${S.tide}/${E.TIDE_MAX}`;
+  // map
+  let svg=`<defs><pattern id="slop" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#4a2f73"/><rect width="4" height="8" fill="#3b2560"/></pattern></defs>`;
+  const reclaimable=new Set(legal.filter(a=>a.type==='reclaim').map(a=>a.tile)); const mine=new Set(legal.filter(a=>a.type==='build'||a.type==='touch_grass').map(a=>a.tile));
+  Object.values(S.tiles).forEach(t=>{ const fill=t.rotted?'url(#slop)':TCOL[t.type]; const can=reclaimable.has(t.id)||mine.has(t.id); const sel=selTile===t.id;
+    svg+=`<path class="wedge ${can?'can':''} ${sel?'sel':''}" d="${wedgePath(t.ring,t.idx)}" fill="${fill}" data-tile="${t.id}" ${t.owner!=null&&!t.rotted?`stroke="${PCOL[t.owner]}" stroke-width="4"`:''} ${t.fresh===S.round&&!t.rotted?'stroke-dasharray="4 3"':''}/>`;
+    const [cx,cy]=wedgeCenter(t.ring,t.idx); const fs=t.ring===0?22:t.ring===1?13:12;
+    if(t.rotted){ if(t.revealed){ const lbl=TICON[t.type]||E.RES_NAME[t.type][0]; svg+=`<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="${fs}" fill="#d9c7ff" opacity=".85" font-family="serif">${lbl}</text>`; } else svg+=`<text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="${fs+2}" fill="#b9a3e6" font-weight="700">?</text>`;
+      const sc=p.scouting.filter(s=>s.tile===t.id).slice(-1)[0]; if(sc&&canAct&&!t.revealed) svg+=`<text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="7" fill="#f5b942">${esc(sc.said)}</text>`; }
+    else { const lbl=TICON[t.type]||''; if(lbl) svg+=`<text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="${fs}" fill="#2a2420" font-weight="700">${lbl}</text>`;
+      if(t.building) svg+=`<text x="${cx}" y="${cy+6}" text-anchor="middle" font-size="${fs+4}" fill="#1a1410" font-weight="700" stroke="#fff" stroke-width=".6">${BICON[t.building]}</text>`;
+      if(t.grass) svg+=Array.from({length:t.grass},(_,i)=>`<circle cx="${cx-8+i*6}" cy="${cy+14}" r="2.5" fill="#1f6b1f" stroke="#fff" stroke-width=".6"/>`).join('');
+      if(t.firewall) svg+=`<text x="${cx+9}" y="${cy+16}" font-size="9" fill="#1a1410">▣</text>`;
+      if(t.ring===0) svg+=`<text x="${cx}" y="${cy+22}" text-anchor="middle" font-size="7" fill="#2a2420">LAST REAL THING</text>`; }
+  });
+  // home markers
+  S.players.forEach(q=>{ const t=S.tiles[q.home]; const [cx,cy]=wedgeCenter(t.ring,t.idx); svg+=`<text x="${cx}" y="${cy-14}" text-anchor="middle" font-size="8" fill="${PCOL[q.idx]}" font-weight="700">${esc(q.name.slice(0,10))}</text>`; });
+  if(S.tiles['0-0'].rotted) svg+=`<text x="${CX}" y="${CY+5}" text-anchor="middle" font-size="9" fill="#d9c7ff">THE LAST REAL THING</text>`;
+  $('map').innerHTML=svg;
+  $('map').querySelectorAll('.wedge.can').forEach(el=>el.onclick=()=>{ selTile=el.dataset.tile; render(); });
+  // tide
+  $('tide').innerHTML=Array.from({length:E.TIDE_MAX+1},(_,i)=>`<div class="sq ${E.TIDE_CHECK.includes(i)?'chk':''} ${i===E.TIDE_MAX?'end':''}">${i%5===0?i:''}${i===S.tide?'<div class="pawn"></div>':''}</div>`).join('');
+  $('trend').innerHTML=S.trend.slop?`<div class="tcard"><b>SLOP IS TRENDING</b><div class="sub">Nothing produces. Tide +${S.traits.includes('viral')?2:1}. The Slop spreads one extra tile.</div></div>`:`<div class="tcard"><b>Trending now</b><div style="margin-top:4px">${S.trend.res.map(r=>`<span class="rs ${r}">${E.RES_NAME[r]}</span>`).join(' ')}</div><div class="sub">Reclaimed tiles of these types produced 1 (+1 with a building).</div></div>`;
+  $('traits').innerHTML=E.TRAITS.map(t=>`<span class="trait ${S.traits.includes(t.id)?'':'off'}" title="${esc(t.text)}">${t.name}</span>`).join('')+`<div class="sub" style="width:100%;margin-top:3px">Spreads ${1+(E.tideStage(S)>=2?1:0)+(S.traits.includes('memetic')?1:0)+(S.trend.slop?1:0)} undefended tile(s) per round · breaks defense below ${E.spreadPower(S)} · next Tide needs world Grass ≥ ${E.tideNeed(S)} (now ${E.worldGrass(S)})</div>`;
+  $('feed').innerHTML=(S.feed.length?S.feed.map(x=>'<div>· '+esc(x)+'</div>').join(''):'<div>Quiet. Suspiciously quiet.</div>');
+  // mats
+  $('mats').innerHTML=S.players.map(q=>matHtml(q,q.idx===p.idx,canAct&&q.idx===p.idx,legal)).join('');
+  if(canAct){ const m=$('mats').querySelector('.mat.active'); m.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{ const a=JSON.parse(b.dataset.act); if(a.type==='trade_pick'){ pending=a; render(); return; } doAct(a); }); }
+  renderPhone();
+}
+function tok(r,nn){ return `<span class="rs ${r}" title="${E.RES_NAME[r]}">${E.RES_NAME[r].split(' ').pop()[0]} ${nn}</span>`; }
+function matHtml(q,active,canAct,legal){
+  const sel=selTile?S.tiles[selTile]:null;
+  let selHtml='';
+  if(active&&canAct&&sel){ const opts=legal.filter(a=>a.tile===sel.id); selHtml=`<div class="sel"><b>${esc(E.tileName(S,sel))}</b> ${sel.rotted?'':'· defense '+E.tileDefense(S,sel)}<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">${opts.map(a=>`<button data-act='${JSON.stringify(a)}'>${a.type==='reclaim'?'Reclaim ('+Object.entries(E.RECLAIM_COST[sel.ring]).map(([k,v])=>v+' '+E.RES_NAME[k]).join(', ')+')':a.type==='build'?'Build '+a.what+' ('+Object.entries(E.BUILD_COST[a.what]).map(([k,v])=>v+' '+E.RES_NAME[k]).join(', ')+')':'Touch grass (1 Grass → +1 defense this round)'}</button>`).join('')||'<span class="sub">nothing to do here</span>'}</div></div>`; }
+  let tradeHtml='';
+  if(active&&canAct&&pending){ tradeHtml=`<div class="sel">Trade 3 ${E.RES_NAME[pending.give]} for 1: ${E.RES.filter(r=>r!==pending.give).map(r=>`<button data-act='${JSON.stringify({type:'trade',give:pending.give,get:r})}'>${E.RES_NAME[r]}</button>`).join(' ')}</div>`; }
+  const has=t=>legal.some(a=>a.type===t);
+  return `<div class="mat ${active?'active':''}" style="border-left-color:${PCOL[q.idx]}">
+    <div class="head"><span class="nation">${esc(q.name)}</span><span class="luc" title="Lucidity">✦ ${E.lucidity(S,q)}/${E.WIN_LUCIDITY}</span></div>
+    <div class="sub">${E.ownedTiles(S,q).length} tiles · Grass strength ${E.playerGrass(S,q)} · signals ${q.signals}${q.deepfakeDebt?' · deepfake debt '+q.deepfakeDebt:''}</div>
+    <div class="tokens">${E.RES.map(r=>tok(r,q.res[r])).join('')}</div>
+    <div>${q.relics.map(id=>{const r=E.RELIC_BY_ID[id];return `<span class="relic ${E.RELICS.ai.some(x=>x.id===id)?'ai':''}" title="${esc(r.text)}">${r.name}</span>`;}).join('')}${q.cards.length?` <span class="sub">· ${q.cards.length} build card${q.cards.length>1?'s':''}</span>`:''}</div>
+    ${active?`<div class="acts">
+      ${legal.filter(a=>a.type==='use_relic').map(a=>`<button data-act='${JSON.stringify(a)}' style="border-color:#c43f8a">Use ${E.RELIC_BY_ID[a.relic].name}</button>`).join('')}
+      ${legal.filter(a=>a.type==='play_card').map(a=>`<button data-act='${JSON.stringify(a)}' style="border-color:#2d6f8f">Play ${E.BUILD_BY_ID[q.cards[a.index]].name}</button>`).join('')}
+      <button data-act='{"type":"buy_card"}' ${has('buy_card')?'':'disabled'}>Buy build card (1 GPU, 1 Aura, 1 Sourdough)</button>
+      ${E.RES.filter(r=>q.res[r]>=3&&canAct&&S.actionsLeft>0).map(r=>`<button data-act='${JSON.stringify({type:'trade_pick',give:r})}'>Trade 3 ${E.RES_NAME[r]}</button>`).join('')}
+      <button class="primary" data-act='{"type":"end_turn"}' ${canAct?'':'disabled'}>End turn</button></div>
+      ${selHtml}${tradeHtml}
+      <div class="sub" style="margin-top:5px">${canAct?'Click a highlighted tile on the map to reclaim it, build on it, or touch grass.':'Unlock the companion phone to act.'}</div>`:''}
+  </div>`;
+}
+
+/* phone */
+function renderPhone(){
+  const p=E.currentPlayer(S); const ph=$('phone');
+  if(unlocked!==p.idx){ ph.innerHTML=`<h3>Companion · locked</h3><div class="lock"><div class="pdim">hand the phone to</div><div class="who">${esc(p.name)}</div><div class="pdim">round ${S.round}${privQ.length?' · '+privQ.length+' private item(s)':''}</div><button class="go" id="unlock" style="padding:12px 18px">I am ${esc(p.name)} — unlock</button></div>`; $('unlock').onclick=()=>{ unlocked=p.idx; render(); }; return; }
+  if(privQ.length){ const q=privQ[0]; ph.innerHTML=`<h3>Private · ${esc(p.name)}</h3><div class="pbox alert"><h3>${esc(q.title)}</h3><div>${esc(q.body)}</div></div><button class="go" id="pok" style="padding:10px">Got it (hide)</button><div class="pdim" style="margin-top:8px">${privQ.length-1} more waiting</div>`;
+    $('pok').onclick=()=>{ privQ.shift(); if(!privQ.length){ if(S.gameOver){ endGame(); return; } if(E.currentPlayer(S).idx!==p.idx){ turn(); return; } } render(); }; return; }
+  ph.innerHTML=`<h3>Companion · ${esc(p.name)}</h3>
+    <div class="pbox"><h3>Build cards in hand</h3>${p.cards.length?p.cards.map(id=>`<div class="pline"><b>${E.BUILD_BY_ID[id].name}</b> — ${E.BUILD_BY_ID[id].text}</div>`).join(''):'<span class="pdim">none</span>'}</div>
+    <div class="pbox"><h3>Scouting reports</h3>${p.scouting.length?p.scouting.slice().reverse().slice(0,12).map(s=>`<div class="pline">r${s.round} · tile ${s.tile}: ${esc(s.said)}</div>`).join(''):'<span class="pdim">Relics and radio towers reveal rotted tiles. If the Slop is Persuasive, reports may lie.</span>'}</div>
+    <div class="pbox"><h3>Relics</h3>${p.relics.length?p.relics.map(id=>`<div class="pline"><b>${E.RELIC_BY_ID[id].name}</b> — ${E.RELIC_BY_ID[id].text}</div>`).join(''):'<span class="pdim">Relic sites (◆ safe, ⚡ AI) are buried in the inner rings.</span>'}</div>
+    <div class="pbox pdim"><h3>Rules</h3>Reclaim: a rotted tile touching your land. Costs rise inward. Buildings defend their tile and neighbors (camp 1 / commune 2 / capital 3, +1/+1/+2 to neighbors). The Slop takes undefended frontier tiles. Slop die on AI relics: 1–2 nothing, 3–4 Tide +1, 5 it takes a tile of yours, 6 it evolves. Lucidity: ring 3 = 1, ring 2 = 2, ring 1 = 3, center = 4, commune +1, capital +2, restored relic site +1, signals +1.</div>
+    <div style="margin-top:auto"><button id="lock" style="width:100%">Lock phone (before passing)</button></div>`;
+  $('lock').onclick=()=>{ unlocked=null; render(); };
+}
+
+/* slop report & end */
+function slopReport(){
+  const w=S.lastSlop; shownSlop=w.round; save();
+  let h=`<h2>The Slop moves · end of round ${w.round}</h2>`;
+  h+=`<div class="step">Tide ${w.tideBefore} → <b>${S.tide}</b></div>`;
+  h+=w.rotted.length?`<div class="step bad"><b>The Slop spreads:</b> ${w.rotted.map(x=>S.players[x.owner].name+"'s "+x.name).join('; ')}.</div>`:`<div class="step good">The Slop found no undefended frontier. It is furious.</div>`;
+  if(w.coreHeld) h+=`<div class="step ${S.gameOver?'good':''}"><b>${S.players[w.coreHeld.player].name} holds the Last Real Thing.</b> World Grass ${w.coreHeld.worldGrass} vs needed ${w.coreHeld.need}. ${S.gameOver?'PRE-ROT SANITY RESTORED.':'Not enough. Hold on.'}</div>`;
+  if(w.tide){ const t=w.tide; h+=`<div class="step ${t.held?'good':'bad'}"><b>TIDE at ${t.at}: ${t.held?'HELD':'BROKE'}.</b> World Grass ${t.worldGrass} vs ${t.need}.${t.defender?' Clean Signal (+1 Lucidity): '+t.defender+'.':''}${t.losers.map(l=>' '+l+'.').join('')}${t.evolved?' The Slop evolves: '+E.TRAIT_BY_ID[t.evolved].name+' — '+E.TRAIT_BY_ID[t.evolved].text:''}</div>`; }
+  h+=`<div class="step"><b>Feed.</b> ${w.feed.map(x=>'<div>· '+esc(x)+'</div>').join('')}</div>`;
+  if(!S.gameOver) h+=`<div class="step">Round ${S.round}: ${S.trend.slop?'<b>SLOP IS TRENDING</b>':'trending '+S.trend.res.map(r=>E.RES_NAME[r]).join(' & ')}.</div>`;
+  h+=`<button class="primary" id="wok" style="margin-top:12px">Continue</button>`;
+  $('obox').innerHTML=h; $('overlay').classList.remove('hidden'); $('wok').onclick=()=>{ $('overlay').classList.add('hidden'); turn(); };
+}
+function endGame(){
+  try{localStorage.removeItem('rotmania4');}catch(e){}
+  const g=S.gameOver; const w=S.players[g.winner]; let h;
+  if(g.reason==='sanity') h=`<h2>✶ PRE-ROT SANITY RESTORED</h2><p><b>${esc(w.name)}</b> held the Last Real Thing while the world held the line.</p>`;
+  else if(g.reason==='lucidity') h=`<h2>✦ LUCIDITY ${E.WIN_LUCIDITY}</h2><p><b>${esc(w.name)}</b> remembered what real was first.</p>`;
+  else h=`<h2>THE SLOP TAKES THE WORLD</h2><p>The Tide reached ${E.TIDE_MAX}. <b>${esc(w.name)}</b> was the last lucid survivor and wins by default. The Slop would like to thank everyone for their engagement.</p>`;
+  h+=`<table><tr><th>Survivor</th><th>Tiles</th><th>Grass</th><th>Relics</th><th>Signals</th><th>Lucidity</th></tr>${S.players.slice().sort((a,b)=>E.lucidity(S,b)-E.lucidity(S,a)).map(q=>`<tr class="${q.idx===g.winner?'win':''}"><td>${esc(q.name)}</td><td>${E.ownedTiles(S,q).length}</td><td>${E.playerGrass(S,q)}</td><td>${q.relics.map(id=>E.RELIC_BY_ID[id].name).join(', ')||'—'}</td><td>${q.signals}</td><td>${E.lucidity(S,q)}</td></tr>`).join('')}</table>`;
+  const st=S.stats; h+=`<p class="sub">Rounds ${S.round} · Tide ${S.tide} · reclaims ${st.reclaims} · tiles lost to rot ${st.rotLost} · relic uses ${st.relicUses} (AI relics ${st.aiRelicUses}) · tides ${st.tides.map(t=>t.at+(t.held?' ✓':' ✗')).join(', ')||'none'} · Slop traits: ${S.traits.map(t=>E.TRAIT_BY_ID[t].name).join(', ')||'none'} · seed ${S.seed==null?'random':S.seed}</p>`;
+  h+=`<div class="log">${S.log.map(l=>`<div>r${l.round} · ${esc(l.msg)}</div>`).join('')}</div>`;
+  h+=`<div style="display:flex;gap:8px;margin-top:12px"><button id="exp">Export playtest log (JSON)</button><button class="primary" id="again">New game</button></div>`;
+  $('obox').innerHTML=h; $('overlay').classList.remove('hidden');
+  $('again').onclick=()=>{ $('overlay').classList.add('hidden'); $('table').classList.add('hidden'); $('setup').classList.remove('hidden'); }; $('exp').onclick=exportLog;
+}
+function exportLog(){ const blob=new Blob([JSON.stringify({version:4,log:S.log,stats:S.stats,slopDie:S.slopDieLog,players:S.players.map(p=>({name:p.name,lucidity:E.lucidity(S,p),relics:p.relics,signals:p.signals,res:p.res})),tide:S.tide,traits:S.traits,round:S.round,seed:S.seed,gameOver:S.gameOver},null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`reclamation-playtest-${Date.now()}.json`; a.click(); }
+$('menuBtn').onclick=()=>{ $('obox').innerHTML=`<h2>Menu</h2><p class="sub">Auto-saved after every action on this browser.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="mexp">Export playtest log</button><button id="mnew">Abandon game</button><button class="primary" id="mclose">Back</button></div>`; $('overlay').classList.remove('hidden');
+  $('mclose').onclick=()=>$('overlay').classList.add('hidden'); $('mexp').onclick=exportLog; $('mnew').onclick=()=>{ if(confirm('Abandon this game?')){ try{localStorage.removeItem('rotmania4');}catch(e){} $('overlay').classList.add('hidden'); $('table').classList.add('hidden'); $('setup').classList.remove('hidden'); } }; };
+})();
+</script>
+</body>
+</html>
