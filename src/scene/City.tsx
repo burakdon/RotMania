@@ -11,7 +11,7 @@ import { RES } from '../game/types';
 import { NoirEffect } from '../noir/NoirEffect';
 import { markHero } from '../noir/pipeline';
 import { buildBuilding, buildCoolingTower, buildDataCenter, buildHangingLamp, buildStreetLamp } from '../noir/props';
-import { buildDarkBerry, buildToy } from '../toys/build';
+import { buildDarthBerry, buildToy } from '../toys/build';
 import { G, group, m, mat } from '../toys/kit';
 import { useUI } from '../ui/uiStore';
 import { DISTRICT_RECTS, LINEUP_POS, PAD_POS, PAD_R } from './cityLayout';
@@ -342,6 +342,6 @@ function Patrol({ game }: { game: GameState }) {
 }
 
 function Giant() {
-  const obj = useMemo(() => markHero(buildDarkBerry()), []);
+  const obj = useMemo(() => markHero(buildDarthBerry()), []);
   return <primitive object={obj} position={[0, -0.5, -14]} scale={7.5} />;
 }

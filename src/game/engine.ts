@@ -196,7 +196,7 @@ export function newGame(seats: SeatConfig[], seed = Date.now()): GameState {
   });
   s.market = Array.from({ length: MARKET_SIZE }, () => s.deck.shift() ?? null);
   s.setupQueue = s.players.map((p) => p.id);
-  log(s, null, '2048. DarkBerry runs the city. Your cell has six nights.', 'round');
+  log(s, null, '2048. Darth Berry runs the city. Your cell has six nights.', 'round');
   nextSetup(s);
   return s;
 }

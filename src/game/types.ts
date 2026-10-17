@@ -1,4 +1,4 @@
-// Core types for RotMania (2048). Worker placement: resistance cells send agents across DarkBerry's city.
+// Core types for RotMania (2048). Worker placement: resistance cells send agents across Darth Berry's city.
 // No DOM, no three.js: the rules run in Node for tests and simulations.
 
 export const RES = ['grass', 'coolant', 'pcb', 'glitter', 'copper'] as const;

@@ -529,7 +529,7 @@ export function RulesSheet() {
           <b>Grow your cell.</b> Recruit (from night 2) to get more agents next night, up to 5. Each recruit is worth {2} points at the end.
         </p>
         <p>
-          <b>Patrols.</b> Every night one of DarkBerry’s generals patrols a district. Using a space there costs a 1-resource toll.
+          <b>Patrols.</b> Every night one of Darth Berry’s generals patrols a district. Using a space there costs a 1-resource toll.
         </p>
         <p>
           <b>Check-ins</b> after nights 3 and 6: every agent needs 1 Grass to stay grounded. Each one you can’t ground costs 2 points.

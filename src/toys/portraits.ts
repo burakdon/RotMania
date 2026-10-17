@@ -6,7 +6,7 @@ import { BRAINROT } from '../game/cards';
 import { GENERAL } from '../game/content';
 import type { ToyRecipe } from '../game/types';
 import { markHero, NoirPipeline } from '../noir/pipeline';
-import { buildDarkBerry, buildToy } from './build';
+import { buildDarthBerry, buildToy } from './build';
 
 const SIZE = 360;
 const cache = new Map<string, string>();
@@ -108,7 +108,7 @@ function usePortraitKey(key: string, make: () => THREE.Group): string | undefine
 
 export const useBrainrotPortrait = (id: string) => usePortraitKey('b:' + id, () => buildToy(BRAINROT[id].toy));
 export const useGeneralPortrait = (id: string) => usePortraitKey('g:' + id, () => buildToy(GENERAL[id].toy));
-export const useDarkBerryPortrait = () => usePortraitKey('darkberry', () => buildDarkBerry());
+export const useDarthBerryPortrait = () => usePortraitKey('darthberry', () => buildDarthBerry());
 export const useToyPortrait = (key: string, recipe: ToyRecipe) => usePortraitKey('t:' + key, () => buildToy(recipe));
 
 /** Warm the cache in the background (e.g. while the comic is being read). */

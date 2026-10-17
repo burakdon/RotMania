@@ -12,18 +12,18 @@ Eight comic pages of still panels, read before the game. Backgrounds are black-a
 
 | Page | Panels | Beat |
 | --- | --- | --- |
-| 1 | Route 9 · back seat · phone | 2026. Sabrina, nine, loves her strawberry squishy, Strawbaby ("You're my favorite. Forever."). Forever lasts until the next video: *NEW DROP: GLITTER BUNBUN*. |
-| 2 | the toss · the ditch | She throws Strawbaby out of the window of the family's **red Honda Fit**. It lies in a ditch waiting for the car to come back. Cars don't come back. |
-| 3 | buried · data center | Mud, then gravel, then concrete. In 2031 a data center is built on top: fifty thousand GPUs running hot all night. |
-| 4 | underground · the eye · red eyes | Coolant and data leak through the floor: every feed, every trend, every 3 a.m. doomscroll. Strawbaby drinks all the rot. "They threw me away for something newer. Fine. I'll be the newest thing there is." |
-| 5 | splash | Strawbaby died in that hole. What climbed out calls itself **DarkBerry**: crimson, stitched scars, a fedora and a black trench coat to hide the tears and the scars. |
-| 6 | screens · kids · generals | He never fires a shot; he learns what we'd watch and feeds us more of it. The kids go first, then their parents, then the people who make the rules. He makes generals. Not every brainrot is a squishy. |
-| 7 | 2048 · the basement | Humans serve brainrots now; nobody remembers agreeing to it. But not everybody logged in. Grass, copper, coolant, circuit boards, glitter: the resistance takes what it can carry. |
-| 8 | skyline · end card | DarkBerry rises over the city. ROTMANIA 2048: six nights, one city, take it back. |
+| 1 | Route 9 · back seat · phone | 2026. The world is ending, and it starts with one person in the back seat of a **red Honda Fit**. Sabrina, nine, loves her strawberry squishy, Strawbaby ("You're my favorite. Forever and ever and ever!"). Forever lasts until the next trend, next scroll and next online purchase. |
+| 2 | the toss · the ditch | She throws Strawbaby out of the car window without looking back. It lies in a ditch waiting for the car to come back. Cars don't come back for worthless squishies. |
+| 3 | buried · data center · text | Mud, then gravel, then concrete. In 2031 a data center is built on top: fifty thousand GPUs running hot all night. Nobody came looking. |
+| 4 | underground · the eye · red eyes | Poisonous coolant, scorching heat, and data leak into the ground: every feed, every trend, every 3 a.m. doomscroll. Strawbaby drinks all the rot; it consumes all of it and all of it consumes it. "They threw me away as if I was nothing, for something newer and better. Fine. I'll be the one to throw people away soon." |
+| 5 | splash | Strawbaby died in that hole. What climbed out called itself **Darth Berry**. The hat hid the scars, the coat hid where it tore; nothing could hide or lessen the grudge and hate. |
+| 6 | screens · kids · generals | Always from the shadows, Darth Berry learns what we'd watch and feeds us more of it. The kids go first, then their parents, then the people who make the rules. He creates others like him: once neglected, now vengeful. |
+| 7 | 2048 · the basement | Humans serve brainrots now, though nobody remembers agreeing to it. A select few hide in the shadows, hoping to reclaim. Grass, copper, coolant, circuit boards, glitter: they take what they can carry and slowly scheme their comeback. |
+| 8 | skyline · end card | Darth Berry rises over the city. ROTMANIA 2048: six nights, one city, take it back. |
 
 ### Characters
 
-- **DarkBerry**: the headliner. A strawberry squishy turned crimson, with stitched scars, red eyes, a fedora and a black trench coat.
+- **Darth Berry**: the headliner. A strawberry squishy turned crimson, with stitched scars, red eyes, a fedora and a black trench coat.
 - **Sabrina**: the kid in the yellow raincoat. She isn't a villain, just nine and online.
 - **The generals**: brainrot officers in peaked caps and medals. Each one patrols a district. Their names are the only place the game's satire is explicit: General Scrollmaster, Admiral Autoplay, Colonel Clickbait, Major Deepfake, Commander Rewardhack and The Recommender.
 - **The brainrots**: 42 unique characters in five types: Critters, Snacks, Appliances, Icons and Squishies. They're occupiers you can deprogram into allies.

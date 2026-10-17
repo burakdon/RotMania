@@ -1,7 +1,7 @@
 // Renders comic panels to images, one at a time, off screen.
 import * as THREE from 'three';
 import { NoirPipeline } from '../noir/pipeline';
-import { buildDarkBerry } from '../toys/build';
+import { buildDarthBerry } from '../toys/build';
 import { PANEL_ART } from './art';
 import { cityMapTexture } from './citymap';
 import { envFor, screensWall, basement, type PanelBuilder } from './panels';
@@ -29,8 +29,8 @@ function panelSize(p: PanelSpec) {
   return { w: Math.round(p.rect[2] * pageW), h: Math.round(p.rect[3] * PAGE_H) };
 }
 
-/** A color portrait of DarkBerry for the billboards (rendered plainly, not inked). */
-function darkberryPortrait(): THREE.Texture {
+/** A color portrait of Darth Berry for the billboards (rendered plainly, not inked). */
+function darthberryPortrait(): THREE.Texture {
   if (dbPortrait) return dbPortrait;
   const r = renderer!;
   const scene = new THREE.Scene();
@@ -39,7 +39,7 @@ function darkberryPortrait(): THREE.Texture {
   const key = new THREE.DirectionalLight('#ffffff', 2.5);
   key.position.set(1, 3, 4);
   scene.add(key, new THREE.AmbientLight('#ffffff', 0.3));
-  const db = buildDarkBerry();
+  const db = buildDarthBerry();
   scene.add(db);
   const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 20);
   cam.position.set(0, db.userData.headY + 0.25, 3.2);
@@ -60,7 +60,7 @@ function darkberryPortrait(): THREE.Texture {
 }
 
 function builderFor(p: PanelSpec): PanelBuilder {
-  if (p.build === 'screens') return screensWall(darkberryPortrait());
+  if (p.build === 'screens') return screensWall(darthberryPortrait());
   if (p.build === 'basement') return basement(cityMapTexture());
   if (p.build === 'text') throw new Error('text panels have no image');
   return p.build;

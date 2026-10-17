@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { BRAINROT as CARD } from '../game/cards';
 import type { ToyRecipe } from '../game/types';
-import { buildDarkBerry, buildStrawbaby, buildToy } from '../toys/build';
+import { buildDarthBerry, buildStrawbaby, buildToy } from '../toys/build';
 import { G, m, mat } from '../toys/kit';
 import { markHero as hero, type NoirOptions } from '../noir/pipeline';
 import {
@@ -299,7 +299,7 @@ export const redEyes: PanelBuilder = (aspect, env) => {
   const s = stage('#060607', env, 0.15);
   ambient(s, 0.15);
   key(s, [-3, 2, 4], 1.4);
-  const db = buildDarkBerry({ hat: false });
+  const db = buildDarthBerry({ hat: false });
   s.add(hero(db));
   const h = headOf(db, s);
   const glow = new THREE.PointLight('#ff1f3d', 8, 3, 1.5);
@@ -309,7 +309,7 @@ export const redEyes: PanelBuilder = (aspect, env) => {
 };
 
 // ───────────────────────── page 5: the splash ─────────────────────────
-export const darkberrySplash: PanelBuilder = (aspect, env) => {
+export const darthberrySplash: PanelBuilder = (aspect, env) => {
   const s = stage('#232328', env, 0.25);
   ambient(s, 0.22);
   key(s, [-4, 6, 3], 0.8);
@@ -320,7 +320,7 @@ export const darkberrySplash: PanelBuilder = (aspect, env) => {
   rim.position.set(2, 3, -4);
   s.add(rim);
   for (let i = 0; i < 6; i++) s.add(place(buildBuilding(2.6, 6 + (i % 3) * 2, 2.6, '#55555b', true, 11 + i), [-7 + i * 2.8, 0, -6 - (i % 2) * 1.5]));
-  const db = hero(buildDarkBerry());
+  const db = hero(buildDarthBerry());
   db.position.set(0.15, 0, 0.3);
   db.rotation.y = -0.15;
   db.scale.setScalar(1.7);
@@ -385,7 +385,7 @@ export const generals: PanelBuilder = (aspect, env) => {
   ambient(s, 0.25);
   spot(s, [0, 7, 5], [0, 0.8, 0], 220, 0.6);
   ground(s, '#2c2c30');
-  s.add(place(buildDarkBerry(), [0, 0, -3.4], 0, 3.4));
+  s.add(place(buildDarthBerry(), [0, 0, -3.4], 0, 3.4));
   GENERALS.forEach((id, i) => {
     const t = { ...CARD[id].toy, acc: [...(CARD[id].toy.acc ?? []), 'officercap', 'medals'] };
     const front = i === 1 || i === 2;
@@ -439,7 +439,7 @@ export const skyline: PanelBuilder = (aspect, env) => {
   ground(s, '#26262a');
   for (let i = 0; i < 16; i++) s.add(place(buildBuilding(2.2 + (i % 3), 4 + ((i * 7) % 6), 2.4, '#4a4a50', true, 41 + i), [-20 + i * 2.7, 0, -2 - (i % 3) * 2]));
   s.add(place(buildDataCenter(), [0, 0, -12], 0, 1.2));
-  const db = hero(place(buildDarkBerry(), [0, 2.5, -28], 0, 17));
+  const db = hero(place(buildDarthBerry(), [0, 2.5, -28], 0, 17));
   s.add(db);
   spot(s, [0, 6, -6], [0, 16, -28], 4200, 0.6, '#ff8fa3');
   for (const x of [-8, 8]) {

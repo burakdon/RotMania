@@ -63,7 +63,7 @@ export const BRAINROTS: Brainrot[] = [
     'Runs laps around the last park in the city. Brings back whatever grows.',
     { head: 'watermelon', body: 'none', c1: '#2f9e44', c2: '#ff6b6b', legs: 'sneakers', arms: 'sticks', eyes: 'big' }),
   b('ananasso', 'Ananasso Gangsterino', 'snack', 'LLC', 5, undefined,
-    'Ran the fruit bowl for DarkBerry. Now runs it for you.',
+    'Ran the fruit bowl for Darth Berry. Now runs it for you.',
     { head: 'pineapple', body: 'suit', c1: '#fab005', c2: '#2f9e44', c3: '#212529', arms: 'nubs', legs: 'sneakers', eyes: 'shades', acc: ['chain'] }),
   b('sushini', 'Sushini Samurini', 'snack', 'PC', 3, { k: 'boost', space: 'redteam', gain: { pcb: 1 } },
     'Probes the racks for weak points. Writes a haiku about each one.',
@@ -83,7 +83,7 @@ export const BRAINROTS: Brainrot[] = [
     'Keeps a little coolant on the boil. Always.',
     { head: 'teapot', body: 'none', c1: '#4c6ef5', c2: '#e7f5ff', legs: 'nubs', arms: 'nubs', eyes: 'angry', acc: ['raincloud'] }),
   b('cassettina', 'Cassettina Nostalgina', 'appliance', 'PL', 2, { k: 'feedBonus', n: 1 },
-    'Splices old songs into DarkBerry’s broadcast. Track 7 makes people cry.',
+    'Splices old songs into Darth Berry’s broadcast. Track 7 makes people cry.',
     { head: 'cassette', body: 'none', c1: '#ff6b6b', c2: '#343a40', legs: 'sneakers', arms: 'sticks', eyes: 'dot' }),
   b('televisore', 'Televisore Tristezza', 'appliance', 'PPW', 3, { k: 'feedBonus', n: 2 },
     'Used to show reruns of better days. Now shows them to everyone.',
@@ -135,7 +135,7 @@ export const BRAINROTS: Brainrot[] = [
 
   // ───────────── SQUISHIES ─────────────
   b('fragolina', 'Fragolina Fan', 'squishy', 'L', 1, { k: 'final', per: 'type', type: 'squishy', n: 1 },
-    'Used to be DarkBerry’s biggest fan. Saw the scars once. Left that night.',
+    'Used to be Darth Berry’s biggest fan. Saw the scars once. Left that night.',
     { head: 'strawberry', body: 'bean', c1: '#ff4d6d', c2: '#51cf66', c3: '#ffc2d1', arms: 'nubs', legs: 'nubs', eyes: 'big', acc: ['glowstick'], scale: 0.85 }),
   b('cuscinone', 'Cuscinone Comfortino', 'squishy', 'GL', 2, { k: 'grounding', n: 2 },
     'The softest thing in the city. Lets tired agents nap on it.',
@@ -147,7 +147,7 @@ export const BRAINROTS: Brainrot[] = [
     'Fragile royalty. Insists every small ally gets a seat at the table.',
     { head: 'egg', body: 'none', c1: '#fff9db', legs: 'nubs', arms: 'nubs', eyes: 'sleepy', acc: ['crown'] }),
   b('succo', 'Succo Succhione', 'squishy', 'C', 1, { k: 'instant', gain: { coolant: 1, pcb: 1 } },
-    'DarkBerry brand juice box. Full of stolen parts instead of juice.',
+    'Darth Berry brand juice box. Full of stolen parts instead of juice.',
     { head: 'juicebox', body: 'none', c1: '#ff4d6d', c2: '#ffd6e0', legs: 'nubs', arms: 'sticks', eyes: 'big', acc: ['straw'] }),
 ];
 

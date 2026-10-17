@@ -129,7 +129,7 @@ function Panel({ p, url, visible }: { p: PanelSpec; url?: string; visible: boole
           ))}
         {visible &&
           p.balloons?.map((b, i) => (
-            <div key={i} className={`balloon tail-${b.tail} ${b.dark ? 'dark' : ''}`} style={{ left: `${b.x}%`, top: `${b.y}%`, animationDelay: `${0.6 + i * 0.9}s` }}>
+            <div key={i} className={`balloon tail-${b.tail} ${b.dark ? 'dark' : ''}`} style={{ left: `${b.x}%`, top: `${b.y}%`, maxWidth: b.w ? `${b.w}%` : undefined, animationDelay: `${0.6 + i * 0.9}s` }}>
               {b.text}
             </div>
           ))}

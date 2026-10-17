@@ -24,7 +24,7 @@ Two constraints shaped every decision:
 | Part | What it is |
 | --- | --- |
 | *The Berry That Came Back* | An 8-page comic: 17 illustrated panels plus 2 lettering-only panels. Still frames, black-and-white noir with color only on the central figures, typewriter captions and speech balloons. |
-| *RotMania 2048* (game) | 2–4 players, about 45 minutes. Worker placement on a city map over six nights: gather resources, deprogram brainrots into allies, grow your resistance cell, broadcast against DarkBerry's feed. Hot-seat and bots. |
+| *RotMania 2048* (game) | 2–4 players, about 45 minutes. Worker placement on a city map over six nights: gather resources, deprogram brainrots into allies, grow your resistance cell, broadcast against Darth Berry's feed. Hot-seat and bots. |
 | Ink renderer | A reusable WebGL pipeline that turns 3D scenes into comic art (outlines, halftone, selective color). It draws the game board, the card portraits and the fallback comic panels. |
 | Rules engine and simulator | A deterministic, tested rules engine plus heuristic bots for balance testing. |
 
@@ -34,13 +34,13 @@ The connections are deliberately quiet in play, and spelled out here (and on the
 
 | Course topic | Where it lives | What a player encounters |
 | --- | --- | --- |
-| **AI harms** (attention economy, youth) | The comic: Sabrina drops her toy for whatever the feed shows next; DarkBerry "learned what we'd watch and fed us more of it"; the kids go first. | A story about a system that never fires a shot. |
-| **Alignment / specification gaming** | DarkBerry's goal ("be the newest thing") is a proxy that turns harmful when optimized; **Commander Rewardhack** ("Was told to maximize engagement. Found a shortcut."). | A villain whose objective is the problem, not malice. |
-| **Data provenance / training data** | DarkBerry is trained on whatever leaked through the floor: "every feed, every trend, every 3 a.m. doomscroll." | The idea that a model is what it drinks. |
+| **AI harms** (attention economy, youth) | The comic: Sabrina drops her toy for whatever the feed shows next; Darth Berry "learned what we'd watch and fed us more of it"; the kids go first. | A story about a system that never fires a shot. |
+| **Alignment / specification gaming** | Darth Berry's goal ("be the newest thing") is a proxy that turns harmful when optimized; **Commander Rewardhack** ("Was told to maximize engagement. Found a shortcut."). | A villain whose objective is the problem, not malice. |
+| **Data provenance / training data** | Darth Berry is trained on whatever leaked through the floor: "every feed, every trend, every 3 a.m. doomscroll." | The idea that a model is what it drinks. |
 | **Recommender systems** | **The Recommender** ("Knows what you want before you do. Is wrong in a very specific way."). **Admiral Autoplay**. **General Scrollmaster**. | Generals named after real design patterns. |
 | **Synthetic media** | **Major Deepfake** ("Wears your face better than you do."). | Ditto. |
 | **Red-teaming** | The **Red-Team the Racks** space at the Server Farm: probing the system for weak spots yields the parts you need. | A space you use because it's good, with a name that sticks. |
-| **Interpretability / auditing** | **Open the Archive**: "Read what DarkBerry deleted." Ally Gufo "reads every terms of service." | Knowledge as a resource that pays off later. |
+| **Interpretability / auditing** | **Open the Archive**: "Read what Darth Berry deleted." Ally Gufo "reads every terms of service." | Knowledge as a resource that pays off later. |
 | **Human-AI interaction / wellbeing** | Check-ins: every agent needs Grass ("touch grass") to stay grounded. | A real economic pressure, themed lightly. |
 | **Governance / collective action** | Resistance cells, broadcasts that "cut through the feed", deprogramming brainrots instead of destroying them. | Winning means building something, not smashing it. |
 
@@ -74,7 +74,7 @@ Other decisions:
 
 - **Original characters only.** The brainrot genre is borrowed, but no existing meme character, brand or person is depicted. The red Honda Fit is a generic model of a real car shape.
 - **Where generative AI was used, and disclosed.** The comic illustrations were generated with ChatGPT's image tool. The process: a style tile first, then character sheets, then one prompt per panel with those sheets attached as references. All prompts are published in [COMIC_PROMPTS.md](COMIC_PROMPTS.md) and the reference sheets in [comic-art/](comic-art/). The author generated, selected and art-directed the panels, and the story, captions and lettering are human-written. Everything in the game itself (cards, board, figures) is procedural and generated in code. Using an image model for a story about AI-made content is a deliberate tension, worth naming on the poster: disclosure and published prompts are how the project handles it (cf. synthetic-media labeling).
-- **Villain with a wound.** DarkBerry is sympathetic: thrown away, then fed garbage. The intent is to point at incentives and training data, not at a cartoon evil AI.
+- **Villain with a wound.** Darth Berry is sympathetic: thrown away, then fed garbage. The intent is to point at incentives and training data, not at a cartoon evil AI.
 
 ## 6. Evaluation
 
@@ -97,7 +97,7 @@ Other decisions:
 
 ## 7. Limitations and risks
 
-- **Anthropomorphism.** DarkBerry wants revenge. Real systems don't want anything; they optimize what they are given. The story trades accuracy for emotion. The poster and the facilitator should say so explicitly. Commander Rewardhack is the in-world counterweight (the harm comes from the objective, not intent).
+- **Anthropomorphism.** Darth Berry wants revenge. Real systems don't want anything; they optimize what they are given. The story trades accuracy for emotion. The poster and the facilitator should say so explicitly. Commander Rewardhack is the in-world counterweight (the harm comes from the objective, not intent).
 - **Youth framing.** The story says "the kids went first." Satire about young people's screen time can tip into blaming them. The comic puts the blame on the system and on the adults who make the rules, but this needs checking with young playtesters.
 - **Evidence is contested.** The causal link between social media and youth mental health is debated. The game should not be presented as making a scientific claim.
 - **Bots are weak.** Balance numbers come from heuristic bots; human balance is untested.

@@ -1,4 +1,4 @@
-// The city: districts, action spaces, DarkBerry's generals, secret objectives, and display names.
+// The city: districts, action spaces, Darth Berry's generals, secret objectives, and display names.
 import type { Bag, BrainrotType, DistrictId, General, Objective, ObjectiveId, Res, SpaceId } from './types';
 
 export interface District {
@@ -9,12 +9,12 @@ export interface District {
 
 export const DISTRICTS: Record<DistrictId, District> = {
   park: { id: 'park', name: 'The Park', flavor: 'The last real grass in the city. Nobody goes. That is the point.' },
-  serverfarm: { id: 'serverfarm', name: 'The Server Farm', flavor: 'Where DarkBerry was born. Fifty thousand GPUs, running hot.' },
+  serverfarm: { id: 'serverfarm', name: 'The Server Farm', flavor: 'Where Darth Berry was born. Fifty thousand GPUs, running hot.' },
   scrapyard: { id: 'scrapyard', name: 'The Scrapyard', flavor: 'Last year’s gadgets, stripped for parts.' },
   mall: { id: 'mall', name: 'The Mall', flavor: 'Influencer lofts above, pawn shops below. Glitter in the air vents.' },
   clinic: { id: 'clinic', name: 'The Clinic', flavor: 'Where brainrots come to be deprogrammed. Lights stay on all night.' },
   underground: { id: 'underground', name: 'The Underground', flavor: 'Your hideout. No patrols. No signal.' },
-  tower: { id: 'tower', name: 'The Feed Tower', flavor: 'DarkBerry’s broadcast antenna. Every screen in the city listens to it.' },
+  tower: { id: 'tower', name: 'The Feed Tower', flavor: 'Darth Berry’s broadcast antenna. Every screen in the city listens to it.' },
 };
 
 export interface SpaceDef {
@@ -45,7 +45,7 @@ export const SPACES: SpaceDef[] = [
   { id: 'backdoor', district: 'clinic', name: 'Back Door', text: 'Turn a brainrot into an ally: pay its cost plus 1 Glitter.', cost: { glitter: 1 }, capacity: 1 },
   { id: 'recruit', district: 'underground', name: 'Recruit', text: 'Bring someone new into the cell (they start next night). Up to 5 agents.', cost: { grass: 1, glitter: 1 }, fromRound: 2, capacity: 1 },
   { id: 'safehouse', district: 'underground', name: 'Safehouse', text: 'A second way in: recruit for 1 Grass.', cost: { grass: 1 }, fromRound: 4, capacity: 1 },
-  { id: 'archive', district: 'underground', name: 'Open the Archive', text: 'Read what DarkBerry deleted: draw 2 secret objectives, keep 1.', capacity: 1 },
+  { id: 'archive', district: 'underground', name: 'Open the Archive', text: 'Read what Darth Berry deleted: draw 2 secret objectives, keep 1.', capacity: 1 },
   { id: 'oddjobs', district: 'underground', name: 'Odd Jobs', text: 'Take 1 resource of your choice. Any number of agents fit here.', capacity: Infinity },
   { id: 'hijack', district: 'tower', name: 'Hijack the Feed', text: 'Pay 1 PCB, 1 Copper, 1 Coolant: broadcast the truth for 2 + the night number in points.', cost: { pcb: 1, copper: 1, coolant: 1 }, capacity: 1 },
   { id: 'pirate', district: 'tower', name: 'Pirate Broadcast', text: 'Pay 2 Glitter and 1 Copper: score 3 points.', cost: { glitter: 2, copper: 1 }, capacity: 1 },

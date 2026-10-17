@@ -4,10 +4,10 @@
 
 *A noir comic and a worker-placement strategy game about an AI-fed brainrot that took over the world by learning what we'd watch.*
 
-In 2026 a nine-year-old throws her strawberry squishy out of a car window for a newer toy. It gets buried; a data center gets built on top; it drinks every feed and trend that leaks through the floor, and climbs out as **DarkBerry**. By 2048 humans serve brainrots. You run a resistance cell with six nights to take part of the city back.
+In 2026 a nine-year-old throws her strawberry squishy out of a car window for a newer toy. It gets buried; a data center gets built on top; it drinks every feed and trend that leaks through the floor, and climbs out as **Darth Berry**. By 2048 humans serve brainrots. You run a resistance cell with six nights to take part of the city back.
 
 - **The comic** (8 pages, still panels): black-and-white noir illustration with the central figures in color. Panel art was generated with ChatGPT's image tool from the prompts in [docs/COMIC_PROMPTS.md](docs/COMIC_PROMPTS.md) and art-directed by the author; captions and lettering are added by the app.
-- **The game** (2–4 players, bots included, hot-seat on one screen): worker placement on a 3D city map. Gather resources, deprogram brainrots into allies with permanent abilities, grow your cell, and hijack DarkBerry's broadcasts.
+- **The game** (2–4 players, bots included, hot-seat on one screen): worker placement on a 3D city map. Gather resources, deprogram brainrots into allies with permanent abilities, grow your cell, and hijack Darth Berry's broadcasts.
 
 Project purpose, Responsible AI framing, evaluation and limitations: **[docs/PROJECT.md](docs/PROJECT.md)**. Full rules and story: **[docs/DESIGN.md](docs/DESIGN.md)**.
 
@@ -49,7 +49,7 @@ Dev views (append to the URL): `#comic` the comic alone · `#comicgrid` every pa
 src/game/    rules engine, brainrots, generals, objectives, bots, tests
 src/noir/    ink renderer, props (the red Honda Fit, data center, rain…)
 src/comic/   the intro comic: panel dioramas, story text, page reader
-src/toys/    procedural toy builder, DarkBerry, inked portraits
+src/toys/    procedural toy builder, Darth Berry, inked portraits
 src/scene/   the 3D city board
 src/ui/      HUD, cards, title / lobby / results screens
 scripts/     balance simulator

@@ -6,14 +6,16 @@ import * as P from './panels';
 
 export interface Caption {
   text: string;
-  at: 'tl' | 'tr' | 'bl' | 'br' | 'tc' | 'bc';
+  at: 'tl' | 'tr' | 'tr2' | 'bl' | 'br' | 'tc' | 'bc';
 }
 export interface Balloon {
   text: string;
   x: number;
   y: number;
   tail: 'left' | 'right' | 'down';
-  /** DarkBerry talks in black balloons */
+  /** max width, % of the panel (default 46) */
+  w?: number;
+  /** Darth Berry talks in black balloons */
   dark?: boolean;
 }
 export interface Sfx {
@@ -52,17 +54,17 @@ export const PAGES: PageSpec[] = [
         id: 'route9', rect: [0, 0, 1, 0.467], build: P.route9,
         captions: [
           { text: 'Route 9. 2026.', at: 'tl' },
-          { text: 'Every end of the world starts somewhere stupid. This one starts in the back seat of a red Honda Fit.', at: 'br' },
+          { text: "The world is ending... and it's just because of one person. It starts in the back seat of a red Honda Fit.", at: 'br' },
         ],
       },
       {
         id: 'backseat', rect: [0, 0.467, 0.5, 0.533], build: P.backseat,
         captions: [{ text: 'Sabrina was nine. Strawbaby was her best friend.', at: 'tl' }],
-        balloons: [{ text: "You're my favorite. Forever.", x: 54, y: 9, tail: 'down' }],
+        balloons: [{ text: "You're my favorite. Forever and ever and ever!", x: 54, y: 9, tail: 'down' }],
       },
       {
         id: 'phone', rect: [0.5, 0.467, 0.5, 0.533], build: P.phoneGlow,
-        captions: [{ text: 'Forever lasted until the next video.', at: 'bl' }],
+        captions: [{ text: 'Forever lasted until the next trend, next scroll and next online purchase.', at: 'bl' }],
       },
     ],
   },
@@ -77,7 +79,7 @@ export const PAGES: PageSpec[] = [
         id: 'ditch', rect: [0, 0.5, 1, 0.5], build: P.ditch,
         captions: [
           { text: 'It lay in the ditch and waited for the car to come back.', at: 'tl' },
-          { text: "Cars don't come back.", at: 'br' },
+          { text: "Turns out, cars don't come back for worthless squishies.", at: 'br' },
         ],
         hold: 5.5,
       },
@@ -108,20 +110,20 @@ export const PAGES: PageSpec[] = [
       {
         id: 'underground', rect: [0, 0, 1, 0.467], build: P.underground,
         captions: [
-          { text: 'Coolant leaked. Data leaked.', at: 'tl' },
+          { text: 'Poisonous coolant leaks and scorching temperatures... Even data leaked into the ground.', at: 'tl' },
           { text: 'Every feed, every trend, every 3 a.m. doomscroll soaked down through the floor.', at: 'br' },
         ],
         sfx: [{ text: 'drip', x: 30, y: 52, rot: 8, size: 2, color: '#2ee6ff' }],
       },
       {
         id: 'eye', rect: [0, 0.467, 0.5, 0.533], build: P.eyeReflect,
-        captions: [{ text: 'Strawbaby drank all of it. All the rot.', at: 'bl' }],
+        captions: [{ text: 'Strawbaby drank all of it. All the rot. It consumed all of it and all of it consumed it.', at: 'tl' }],
       },
       {
         id: 'redeyes', rect: [0.5, 0.467, 0.5, 0.533], build: P.redEyes,
         balloons: [
-          { text: 'They threw me away for something newer.', x: 6, y: 7, tail: 'down', dark: true },
-          { text: "Fine. I'll be the newest thing there is.", x: 34, y: 72, tail: 'left', dark: true },
+          { text: 'They threw me away as if I was nothing, for something newer and better.', x: 4, y: 3, w: 66, tail: 'down', dark: true },
+          { text: "Fine. I'll be the one to throw people away soon.", x: 30, y: 74, w: 62, tail: 'left', dark: true },
         ],
         hold: 6,
       },
@@ -130,11 +132,11 @@ export const PAGES: PageSpec[] = [
   {
     panels: [
       {
-        id: 'splash', rect: [0, 0, 1, 1], build: P.darkberrySplash,
+        id: 'splash', rect: [0, 0, 1, 1], build: P.darthberrySplash,
         captions: [
           { text: 'Strawbaby died in that hole.', at: 'tl' },
-          { text: 'What climbed out called itself DARKBERRY.', at: 'tr' },
-          { text: 'The hat hides the scars. The coat hides where it tore. Nothing hides the grudge.', at: 'bl' },
+          { text: 'What climbed out called itself Darth Berry.', at: 'tr2' },
+          { text: 'The hat hid the scars. The coat hid where it tore. Nothing was able to hide or lessen the grudge and hate.', at: 'bl' },
         ],
         hold: 8,
       },
@@ -144,7 +146,7 @@ export const PAGES: PageSpec[] = [
     panels: [
       {
         id: 'screens', rect: [0, 0, 1, 0.467], build: 'screens',
-        captions: [{ text: "He never fired a shot. He just learned what we'd watch, and fed us more of it.", at: 'bl' }],
+        captions: [{ text: "Always from the shadows. Darth Berry just learned what we'd watch, and fed us more of it.", at: 'bl' }],
       },
       {
         id: 'kids', rect: [0, 0.467, 0.5, 0.533], build: P.kidsPhones,
@@ -152,7 +154,7 @@ export const PAGES: PageSpec[] = [
       },
       {
         id: 'generals', rect: [0.5, 0.467, 0.5, 0.533], build: P.generals,
-        captions: [{ text: 'He made generals. Not every brainrot is a squishy.', at: 'tl' }],
+        captions: [{ text: 'Darth Berry created others like him; once neglected now vengeful.', at: 'tl' }],
       },
     ],
   },
@@ -162,14 +164,14 @@ export const PAGES: PageSpec[] = [
         id: 'palanquin', rect: [0, 0, 1, 0.5], build: P.palanquin,
         captions: [
           { text: '2048.', at: 'tl' },
-          { text: 'Humans serve brainrots now. Nobody remembers agreeing to it.', at: 'br' },
+          { text: 'Humans serve brainrots now even though nobody remembers agreeing to it.', at: 'br' },
         ],
       },
       {
         id: 'basement', rect: [0, 0.5, 1, 0.5], build: 'basement',
         captions: [
-          { text: 'Not everybody logged in.', at: 'tl' },
-          { text: 'Grass. Copper. Coolant. Circuit boards. Glitter. We take what we can carry.', at: 'br' },
+          { text: 'Now a select few humans are in the shadows, hoping to reclaim.', at: 'tl' },
+          { text: 'Grass. Copper. Coolant. Circuit boards. Glitter. They take what they can carry and slowly scheme their comeback.', at: 'br' },
         ],
       },
     ],

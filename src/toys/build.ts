@@ -472,8 +472,8 @@ export function buildStrawbaby(opts: { coat?: boolean; torn?: boolean; glow?: bo
   return toy;
 }
 
-/** DarkBerry: what climbed out of the hole. Crimson, scarred, fedora and black trench coat. */
-export function buildDarkBerry(opts: { hat?: boolean; glowEyes?: boolean } = {}): THREE.Group {
+/** Darth Berry: what climbed out of the hole. Crimson, scarred, fedora and black trench coat. */
+export function buildDarthBerry(opts: { hat?: boolean; glowEyes?: boolean } = {}): THREE.Group {
   const recipe: ToyRecipe = {
     head: 'strawberry', body: 'coat', c1: '#8c0d26', c2: '#2f4a2c', c3: '#2a2523', seed: '#a8864c',
     arms: 'nubs', legs: 'nubs', eyes: 'angry',

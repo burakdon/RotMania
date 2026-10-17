@@ -4,7 +4,7 @@ import { BRAINROTS } from '../game/cards';
 import { GENERALS } from '../game/content';
 import { NoirEffect } from '../noir/NoirEffect';
 import { markHero } from '../noir/pipeline';
-import { buildDarkBerry, buildToy } from './build';
+import { buildDarthBerry, buildToy } from './build';
 
 /** Dev view: every figure in a grid, inked. Open with #gallery. */
 export function Gallery() {
@@ -15,7 +15,7 @@ export function Gallery() {
       <color attach="background" args={['#9a9690']} />
       <ambientLight intensity={0.5} />
       <directionalLight position={[4, 8, 5]} intensity={2.2} />
-      <primitive object={markHero(buildDarkBerry())} position={[0, 0, 6]} scale={1.6} />
+      <primitive object={markHero(buildDarthBerry())} position={[0, 0, 6]} scale={1.6} />
       {all.map((t, i) => (
         <primitive key={i} object={markHero(buildToy(t))} position={[((i % cols) - cols / 2 + 0.5) * 1.25, 0, Math.floor(i / cols) * 1.6 - 5]} />
       ))}

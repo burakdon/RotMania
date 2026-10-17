@@ -12,13 +12,13 @@ import { markHero } from '../noir/pipeline';
 import { buildBuilding, buildRain, buildStreetLamp } from '../noir/props';
 import { useStore } from '../store';
 import { preloadPortraits } from '../toys/portraits';
-import { buildDarkBerry } from '../toys/build';
+import { buildDarthBerry } from '../toys/build';
 import { Star } from './icons';
 
 function TitleScene() {
   const scene = useMemo(() => {
     const g = new THREE.Group();
-    const db = markHero(buildDarkBerry());
+    const db = markHero(buildDarthBerry());
     db.scale.setScalar(1.6);
     db.position.x = 0.2;
     g.add(db);
@@ -55,7 +55,7 @@ export function Title() {
       <div className="title-overlay">
         <h1>ROTMANIA</h1>
         <div className="title-sub">2048</div>
-        <div className="title-cap">DarkBerry runs the city. Humans serve brainrots. Your cell has six nights to take some of it back.</div>
+        <div className="title-cap">Darth Berry runs the city. Humans serve brainrots. Your cell has six nights to take some of it back.</div>
         <div className="title-btns">
           <button className="go" onClick={() => go('comic')}>Read the story</button>
           <button className="go alt" onClick={() => go('lobby')}>Play</button>
@@ -139,7 +139,7 @@ export function Results() {
     <div className="results">
       <div className="results-art">{art ? <img src={art} alt="" /> : <div className="panel-inking">inking…</div>}</div>
       <div className="results-cap">
-        Dawn after night six. DarkBerry is still out there, hat low, coat buttoned. But {freed} brainrots walked out of the Clinic this week, and {broadcasts} broadcasts cut through the feed. <b>{win.name}</b>’s cell did the most. It’s a start.
+        Dawn after night six. Darth Berry is still out there, hat low, coat buttoned. But {freed} brainrots walked out of the Clinic this week, and {broadcasts} broadcasts cut through the feed. <b>{win.name}</b>’s cell did the most. It’s a start.
       </div>
       <table className="score-table">
         <thead>

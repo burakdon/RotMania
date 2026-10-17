@@ -18,7 +18,7 @@ Image models drift between prompts. Lock the look first, then reuse it:
 2. **Character sheets.** Run prompts B1 to B5 with `style.png` attached. Save each sheet you like.
 3. **Panels.** For each panel, start a new message and attach `style.png` plus the character sheets for whoever appears in it. Then paste the panel prompt.
 
-If a result drifts, say so directly: "Same image, but DarkBerry's coat must be black, not brown." Fixing one thing at a time works better than rewriting the whole prompt.
+If a result drifts, say so directly: "Same image, but Darth Berry's coat must be black, not brown." Fixing one thing at a time works better than rewriting the whole prompt.
 
 ---
 
@@ -44,16 +44,16 @@ Attach `style.png` to each of these.
 
 > Character turnaround sheet in the attached style: front, three-quarter and back views plus three expressions (delighted, glued to a phone, bored). Sabrina is a nine-year-old girl. She has a round face and big expressive eyes, and dark brown hair in two low pigtails with red hair ties. She wears a bright yellow raincoat with the hood down, jeans and black rain boots. Sabrina is drawn in color; the background is monochrome. Cartoon proportions, not realistic. No text.
 
-**B3 · DarkBerry**
+**B3 · Darth Berry**
 
-> Character turnaround sheet in the attached style: front, three-quarter and side views plus three expressions (cold stare, quiet rage, almost sad). DarkBerry is what Strawbaby became: still small and baby-proportioned, but menacing.
+> Character turnaround sheet in the attached style: front, three-quarter and side views plus three expressions (cold stare, quiet rage, almost sad). Darth Berry is what Strawbaby became: still small and baby-proportioned, but menacing.
 >
 > - Head: the strawberry is a bruised, deep crimson (#8c0d26) with dull gold seeds and a wilted, browning leaf crown.
 > - Scar: a jagged seam, stitched shut with pale yellow yarn, runs from the forehead across one eye and down the cheek.
 > - Eyes: glossy black, with tiny glowing red pupils.
 > - Clothes: a long black trench coat, belted and slightly too big (collar up, sleeves past the hands), and a black fedora with a dark red band, tilted low.
 >
-> His posture is still, hands in pockets. DarkBerry is in color; the background is monochrome. No text.
+> His posture is still, hands in pockets. Darth Berry is in color; the background is monochrome. No text.
 
 **B4 · The generals**
 
@@ -142,7 +142,7 @@ Attach `style.png` and the listed character sheets to each prompt. Begin every p
 
 | File | Size | Attach |
 | --- | --- | --- |
-| `redeyes` | Portrait (2:3) | style, DarkBerry |
+| `redeyes` | Portrait (2:3) | style, Darth Berry |
 
 > Extreme close-up of the same face, changed: the strawberry has gone **bruised crimson** (COLOR), the stitched scar has appeared, and the pupils glow **red**. Lit from below by red light, with pitch black around. It's mid-transformation, so no hat or coat yet. Leave dark empty space at the top-left and bottom for speech balloons.
 
@@ -150,17 +150,17 @@ Attach `style.png` and the listed character sheets to each prompt. Begin every p
 
 | File | Size | Attach |
 | --- | --- | --- |
-| `splash` | Portrait (2:3) | style, DarkBerry |
+| `splash` | Portrait (2:3) | style, Darth Berry |
 
-> Full-page reveal. **DarkBerry** (COLOR) stands alone under a single streetlamp on a rain-soaked city street at night, in his black trench coat and fedora, hands in pockets. His red eyes glow under the brim, and his reflection shows in a puddle at his feet. Dark buildings loom behind him, and rain falls in the cone of lamplight. Iconic, like a movie poster. Leave some empty dark space at the top corners for captions.
+> Full-page reveal. **Darth Berry** (COLOR) stands alone under a single streetlamp on a rain-soaked city street at night, in his black trench coat and fedora, hands in pockets. His red eyes glow under the brim, and his reflection shows in a puddle at his feet. Dark buildings loom behind him, and rain falls in the cone of lamplight. Iconic, like a movie poster. Leave some empty dark space at the top corners for captions.
 
 ### Page 6
 
 | File | Size | Attach |
 | --- | --- | --- |
-| `screens` | Landscape (3:2) | style, DarkBerry |
+| `screens` | Landscape (3:2) | style, Darth Berry |
 
-> Night skyline of a city where every building facade carries giant billboards and screens. All of them show **DarkBerry's face** (COLOR) staring out, so the whole city glows crimson. Rooftops, water towers and antennas are in monochrome.
+> Night skyline of a city where every building facade carries giant billboards and screens. All of them show **Darth Berry's face** (COLOR) staring out, so the whole city glows crimson. Rooftops, water towers and antennas are in monochrome.
 
 | File | Size | Attach |
 | --- | --- | --- |
@@ -170,9 +170,9 @@ Attach `style.png` and the listed character sheets to each prompt. Begin every p
 
 | File | Size | Attach |
 | --- | --- | --- |
-| `generals` | Portrait (2:3) | style, DarkBerry, generals |
+| `generals` | Portrait (2:3) | style, Darth Berry, generals |
 
-> Low angle. **The four generals** (COLOR) stand at attention in front, in uniforms, caps and medals. Behind them, huge and in shadow (monochrome), **DarkBerry** towers like a statue with only his red eyes visible. Spotlight from above, propaganda-poster energy.
+> Low angle. **The four generals** (COLOR) stand at attention in front, in uniforms, caps and medals. Behind them, huge and in shadow (monochrome), **Darth Berry** towers like a statue with only his red eyes visible. Spotlight from above, propaganda-poster energy.
 
 ### Page 7
 
@@ -190,9 +190,9 @@ Attach `style.png` and the listed character sheets to each prompt. Begin every p
 
 | File | Size | Attach |
 | --- | --- | --- |
-| `skyline` | Landscape (3:2); keep the action in the middle band | style, DarkBerry |
+| `skyline` | Landscape (3:2); keep the action in the middle band | style, Darth Berry |
 
-> The city skyline at night with the data center in the middle distance. Behind it, enormous, rising like a moon over the rooftops, is the silhouette of **DarkBerry** (COLOR), his red eyes and the crimson strawberry catching a searchlight. Two searchlight beams cross the sky. Final shot, ominous and epic.
+> The city skyline at night with the data center in the middle distance. Behind it, enormous, rising like a moon over the rooftops, is the silhouette of **Darth Berry** (COLOR), his red eyes and the crimson strawberry catching a searchlight. Two searchlight beams cross the sky. Final shot, ominous and epic.
 
 ---
 
