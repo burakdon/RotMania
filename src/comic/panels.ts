@@ -2,7 +2,7 @@
 // Anything passed through `hero()` stays in color; the rest of the world is black and white.
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { CARD } from '../game/cards';
+import { BRAINROT as CARD } from '../game/cards';
 import type { ToyRecipe } from '../game/types';
 import { buildDarkBerry, buildStrawbaby, buildToy } from '../toys/build';
 import { G, m, mat } from '../toys/kit';
@@ -451,3 +451,23 @@ export const skyline: PanelBuilder = (aspect, env) => {
   return { scene: s, camera: cam(aspect, [0, 2.0, 15], [0, 10.5, -10], 50) };
 };
 
+
+// ───────────────────────── results ─────────────────────────
+/** Dawn on a rooftop: the winning cell's allies, in color, over a black-and-white city. */
+export const victory = (allies: string[]): PanelBuilder => (aspect, env) => {
+  const s = stage('#d9d4c7', env, 0.4);
+  ambient(s, 0.5);
+  key(s, [-6, 4, -8], 2.2);
+  key(s, [4, 6, 6], 1.0);
+  for (let i = 0; i < 14; i++) s.add(place(buildBuilding(2 + (i % 3), 3 + ((i * 7) % 6), 2.4, '#7a7a80', true, 61 + i), [-18 + i * 2.8, -4, -10 - (i % 3) * 2]));
+  s.add(m(G.sph(), mat('#fff8e6', 'glow'), [5, 3.5, -30], 3.5));
+  s.add(m(G.box(), mat('#55555b', 'matte'), [0, -0.5, 0], [12, 1, 4]));
+  s.add(m(G.box(), mat('#3d3d42', 'matte'), [0, 0.15, 1.9], [12, 0.3, 0.2]));
+  const shown = allies.slice(0, 7);
+  shown.forEach((id, i) => {
+    const x = (i - (shown.length - 1) / 2) * 1.25;
+    s.add(hero(place(buildToy(CARD[id].toy), [x, 0, 0.4 + (i % 2) * 0.35], -x * 0.06, 1.0)));
+  });
+  for (let i = 0; i < 3; i++) s.add(place(buildToy(HUMAN(i)), [-4.8 + i * 4.8, 0, -0.9], 0, 1.1));
+  return { scene: s, camera: cam(aspect, [0, 1.3, 7.4], [0, 1.0, 0], 40), noir: { contrast: 1.2 } };
+};

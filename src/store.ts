@@ -4,25 +4,22 @@ import { botAnswer } from './game/bots';
 import { apply, newGame, type SeatConfig } from './game/engine';
 import type { Answer, GameState } from './game/types';
 
-export type Screen = 'title' | 'film' | 'lobby' | 'game' | 'results';
+export type Screen = 'title' | 'comic' | 'lobby' | 'game' | 'results';
 
 interface Store {
   screen: Screen;
   game: GameState | null;
   seats: SeatConfig[];
   error: string | null;
-  /** which human last held the device (hot-seat hand-off) */
+  /** which human is looking at the screen (hot-seat) */
   viewer: number;
   handoffPending: boolean;
   botSpeed: number;
-  focus: { kind: 'table' } | { kind: 'player'; id: number };
-  history: GameState[];
   go: (s: Screen) => void;
   start: (seats: SeatConfig[]) => void;
   answer: (a: Answer) => void;
   clearError: () => void;
   acceptHandoff: () => void;
-  setFocus: (f: Store['focus']) => void;
   setBotSpeed: (n: number) => void;
 }
 
@@ -32,17 +29,16 @@ export const useStore = create<Store>((set, get) => {
   function afterChange() {
     const g = get().game;
     if (!g) return;
+    if (botTimer) clearTimeout(botTimer);
     if (g.phase === 'over') {
-      if (botTimer) clearTimeout(botTimer);
-      setTimeout(() => set({ screen: 'results' }), 1800);
+      botTimer = setTimeout(() => set({ screen: 'results' }), 2200);
       return;
     }
     const pr = g.prompt;
     if (!pr) return;
     const p = g.players[pr.player];
     if (p.bot) {
-      if (botTimer) clearTimeout(botTimer);
-      const delay = pr.type === 'turn' ? 900 : 520;
+      const delay = pr.type === 'place' ? 850 : 500;
       botTimer = setTimeout(() => {
         const cur = get().game;
         if (!cur || cur !== g) return;
@@ -56,11 +52,8 @@ export const useStore = create<Store>((set, get) => {
       }, delay * get().botSpeed);
       return;
     }
-    // a different human now holds the decision: hand the device over
     const humans = g.players.filter((x) => !x.bot).length;
-    if (p.id !== get().viewer) {
-      set({ viewer: p.id, handoffPending: humans > 1 });
-    }
+    if (p.id !== get().viewer) set({ viewer: p.id, handoffPending: humans > 1 });
   }
 
   return {
@@ -71,21 +64,18 @@ export const useStore = create<Store>((set, get) => {
     viewer: 0,
     handoffPending: false,
     botSpeed: 1,
-    focus: { kind: 'table' },
-    history: [],
     go: (screen) => set({ screen }),
     start: (seats) => {
       const game = newGame(seats);
       const firstHuman = game.players.find((p) => !p.bot)?.id ?? 0;
-      set({ seats, game, screen: 'game', viewer: firstHuman, handoffPending: false, history: [] });
+      set({ seats, game, screen: 'game', viewer: firstHuman, handoffPending: false, error: null });
       afterChange();
     },
     answer: (a) => {
       const g = get().game;
       if (!g) return;
       try {
-        const next = apply(g, a);
-        set({ game: next, error: null, history: [...get().history.slice(-30), g] });
+        set({ game: apply(g, a), error: null });
         afterChange();
       } catch (e) {
         set({ error: (e as Error).message });
@@ -93,7 +83,6 @@ export const useStore = create<Store>((set, get) => {
     },
     clearError: () => set({ error: null }),
     acceptHandoff: () => set({ handoffPending: false }),
-    setFocus: (focus) => set({ focus }),
     setBotSpeed: (botSpeed) => set({ botSpeed }),
   };
 });

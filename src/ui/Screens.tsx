@@ -1,74 +1,87 @@
-// Title, lobby, game shell and results.
-import { OrbitControls } from '@react-three/drei';
+// Title, lobby and results, in noir.
 import { Canvas } from '@react-three/fiber';
-import { useEffect, useState } from 'react';
-import { CARDS } from '../game/cards';
-import { RECLAIMERS } from '../game/content';
-import { softness, standings } from '../game/engine';
-import type { SeatConfig } from '../game/engine';
-import { StudioLights } from '../scene/Lights';
-import { TableScene } from '../scene/Table';
+import { useEffect, useMemo, useState } from 'react';
+import * as THREE from 'three';
+import { BRAINROTS } from '../game/cards';
+import { OBJECTIVES } from '../game/content';
+import { standings, type SeatConfig } from '../game/engine';
+import { victory } from '../comic/panels';
+import { renderCustom } from '../comic/render';
+import { NoirEffect } from '../noir/NoirEffect';
+import { markHero } from '../noir/pipeline';
+import { buildBuilding, buildRain, buildStreetLamp } from '../noir/props';
 import { useStore } from '../store';
 import { preloadPortraits } from '../toys/portraits';
-import { Strawbaby, Toy } from '../toys/Toy';
-import { ActionBar, Hand } from './Hand';
-import { Handoff, HoverCard, LogPanel, PlayersPanel, RulesSheet, Ticker, TopBar, WaitingBanner } from './Hud';
-import { PromptPanel, SetupModal } from './Prompts';
-import { useUI } from './uiStore';
+import { buildDarkBerry } from '../toys/build';
+import { Star } from './icons';
+
+function TitleScene() {
+  const scene = useMemo(() => {
+    const g = new THREE.Group();
+    const db = markHero(buildDarkBerry());
+    db.scale.setScalar(1.6);
+    db.position.x = 0.2;
+    g.add(db);
+    g.add(buildStreetLamp(5.5).translateX(-1.4).translateZ(-0.5));
+    for (let i = 0; i < 8; i++) g.add(buildBuilding(2.6, 5 + (i % 3) * 2.2, 2.6, '#57575d', true, 31 + i).translateX(-10 + i * 2.9).translateZ(-6 - (i % 2) * 1.6));
+    g.add(buildRain(420, [14, 12, 8], [0, 5, -1], 9, { at: [1.6, 1.4, 7.2], r: 3 }));
+    return g;
+  }, []);
+  return (
+    <>
+      <color attach="background" args={['#202024']} />
+      <ambientLight intensity={0.3} />
+      <spotLight position={[-0.5, 5.4, -0.5]} angle={0.6} penumbra={0.5} intensity={220} decay={1.6} />
+      <directionalLight position={[3, 3, -4]} intensity={1.4} color="#ff4d6d" />
+      <directionalLight position={[-4, 6, 4]} intensity={0.5} />
+      <mesh rotation-x={-Math.PI / 2}>
+        <planeGeometry args={[60, 60]} />
+        <meshStandardMaterial color="#3a3a3e" roughness={0.2} metalness={0.4} />
+      </mesh>
+      <primitive object={scene} />
+      <NoirEffect lineWidth={1.4} dotSize={4.5} grain={0.04} contrast={1.35} />
+    </>
+  );
+}
 
 export function Title() {
   const go = useStore((s) => s.go);
-  const crowd = ['squalino', 'cappuccina', 'croissanto', 'gattino', 'pinguino', 'discobolo'];
+  useEffect(() => preloadPortraits(BRAINROTS.map((b) => b.id)), []);
   return (
     <div className="title-screen">
-      <Canvas shadows camera={{ position: [0, 1.7, 8.4], fov: 35 }}>
-        <color attach="background" args={['#ffe3ec']} />
-        <StudioLights />
-        <Strawbaby position={[0, 0, 0]} scale={1.3} />
-        {crowd.map((id, i) => {
-          const c = CARDS.find((x) => x.id === id)!;
-          const a = -1.1 + (i / (crowd.length - 1)) * 2.2;
-          return <Toy key={id} recipe={c.toy} seed={i} position={[Math.sin(a) * 2.6, 0, -Math.cos(a) * 1.2 - 0.6]} scale={0.7} rotation-y={-a * 0.6} />;
-        })}
-        <mesh rotation-x={-Math.PI / 2} receiveShadow>
-          <circleGeometry args={[12, 64]} />
-          <meshStandardMaterial color="#ffc9d9" />
-        </mesh>
-        <OrbitControls enablePan={false} enableZoom={false} minPolarAngle={1.1} maxPolarAngle={1.45} target={[0, 0.55, 0]} autoRotate autoRotateSpeed={0.4} />
+      <Canvas camera={{ position: [1.6, 1.4, 7.2], fov: 38 }} dpr={[1, 1.5]} onCreated={({ camera }) => camera.lookAt(-0.2, 2.1, 0)}>
+        <TitleScene />
       </Canvas>
       <div className="title-overlay">
-        <h1>
-          ROTMANIA
-          <span>Soft Power</span>
-        </h1>
-        <p className="tagline">A strawberry squishy in a trench coat took over the world by being helpful. Take it back, one weird little guy at a time.</p>
+        <h1>ROTMANIA</h1>
+        <div className="title-sub">2048</div>
+        <div className="title-cap">DarkBerry runs the city. Humans serve brainrots. Your cell has six nights to take some of it back.</div>
         <div className="title-btns">
-          <button className="go big" onClick={() => go('film')}>▶ Watch the story</button>
-          <button className="go big alt" onClick={() => go('lobby')}>Play</button>
+          <button className="go" onClick={() => go('comic')}>Read the story</button>
+          <button className="go alt" onClick={() => go('lobby')}>Play</button>
         </div>
-        <p className="small">3–4 players · ~40 minutes · bots included</p>
+        <div className="title-small">2–4 players · about 45 minutes · bots included</div>
       </div>
     </div>
   );
 }
 
-const BOT_NAMES = ['Tralalina', 'Bombardino', 'Crocodilla', 'Patapim', 'Cappuccetto', 'Brr Brr Bruno'];
+const BOT_NAMES = ['Cell Rossa', 'Cell Blu', 'Cell Giallo', 'Cell Viola'];
 
 export function Lobby() {
   const start = useStore((s) => s.start);
   const go = useStore((s) => s.go);
   const [seats, setSeats] = useState<SeatConfig[]>([
     { name: 'You', bot: false },
-    { name: BOT_NAMES[0], bot: true },
     { name: BOT_NAMES[1], bot: true },
+    { name: BOT_NAMES[2], bot: true },
   ]);
   const set = (i: number, patch: Partial<SeatConfig>) => setSeats(seats.map((s, j) => (j === i ? { ...s, ...patch } : s)));
-  preloadPortraits(CARDS.map((c) => c.id));
   return (
     <div className="lobby">
       <div className="lobby-card">
-        <h2>Who's at the table?</h2>
-        <div className="seat-count">
+        <h2>Who’s in the cell?</h2>
+        <div className="seg">
           {[2, 3, 4].map((n) => (
             <button
               key={n}
@@ -85,19 +98,19 @@ export function Lobby() {
         </div>
         {seats.map((s, i) => (
           <div key={i} className="seat">
-            <span className="seat-dot" style={{ background: ['#ff6b6b', '#4dabf7', '#ffd43b', '#b197fc'][i] }} />
+            <span className="seat-dot" style={{ background: ['#e03131', '#1c7ed6', '#f59f00', '#7048e8'][i] }} />
             <input value={s.name} onChange={(e) => set(i, { name: e.target.value.slice(0, 16) })} />
-            <div className="seg">
+            <div className="seg small">
               <button className={!s.bot ? 'on' : ''} onClick={() => set(i, { bot: false })}>Human</button>
               <button className={s.bot ? 'on' : ''} onClick={() => set(i, { bot: true })}>Bot</button>
             </div>
           </div>
         ))}
-        <p className="hint">Several humans can share one screen: the game asks you to pass the device between turns.</p>
+        <p className="hint">Humans can share one screen: the game asks you to pass the device between turns.</p>
         <div className="row-btns">
-          <button className="skip" onClick={() => go('title')}>Back</button>
-          <button className="go big" disabled={!seats.some((s) => !s.bot) && false} onClick={() => start(seats.map((s, i) => ({ ...s, name: s.name.trim() || `Player ${i + 1}` })))}>
-            Deal me in →
+          <button className="go alt" onClick={() => go('title')}>Back</button>
+          <button className="go" onClick={() => start(seats.map((s, i) => ({ ...s, name: s.name.trim() || `Player ${i + 1}` })))}>
+            Start night one
           </button>
         </div>
       </div>
@@ -105,130 +118,59 @@ export function Lobby() {
   );
 }
 
-export function GameScreen() {
-  const game = useStore((s) => s.game)!;
-  const viewer = useStore((s) => s.viewer);
-  const error = useStore((s) => s.error);
-  const clearError = useStore((s) => s.clearError);
-  const me = game.players[viewer];
-  const setupMine = game.prompt?.type === 'setup' && game.prompt.player === viewer && !me.bot;
-  const handoff = useStore((s) => s.handoffPending);
-  const setHover = useUI((u) => u.setHover);
-  const select = useUI((u) => u.select);
-  useEffect(() => {
-    // anything that moves cards around invalidates hover previews and selections
-    setHover(null);
-    if (game.prompt?.type !== 'turn') select(null);
-  }, [game.tick, setHover, select, game.prompt?.type]);
-  return (
-    <div className="game">
-      <TableScene game={game} viewer={viewer} />
-      <TopBar game={game} />
-      <PlayersPanel game={game} viewer={viewer} />
-      <Ticker game={game} />
-      <LogPanel game={game} />
-      {!handoff && !me.bot && game.phase === 'play' && (
-        <>
-          <Hand game={game} me={me} />
-          <ActionBar game={game} me={me} />
-          <PromptPanel game={game} me={me} />
-        </>
-      )}
-      <WaitingBanner game={game} viewer={viewer} />
-      {setupMine && !handoff && <SetupModal key={viewer} me={me} />}
-      <HoverCard />
-      <RulesSheet />
-      <Handoff game={game} viewer={viewer} />
-      {error && (
-        <div className="toast" onClick={clearError}>
-          {error}
-        </div>
-      )}
-      {game.phase === 'over' && <div className="banner-over">The fourth season ends…</div>}
-    </div>
-  );
-}
-
-const EPILOGUE = {
-  sewn: {
-    title: 'The seam',
-    text: "You barely leaned on it. Somewhere in the Soft World, Strawbaby takes off the trench coat for the first time in years. There's a seam where it tore. Mina sits down next to it with a needle and some yellow yarn. It takes a while. That's the point.",
-  },
-  stalemate: {
-    title: 'Loosened',
-    text: "The Soft World loosened its grip, a little. Strawbaby is still out there, coat buttoned, app open, ready to help. But people are touching grass again some of the time. Most of the time. Okay, on weekends.",
-  },
-  soft: {
-    title: 'Comfortable',
-    text: "Strawbaby smiles. You needed it so often that it never had to win; you handed it the seasons one Juice at a time. The coat stays on. The seam stays hidden. Next time, maybe, you'll try doing it yourself.",
-  },
-};
-
 export function Results() {
   const game = useStore((s) => s.game)!;
   const go = useStore((s) => s.go);
   const start = useStore((s) => s.start);
   const seats = useStore((s) => s.seats);
   const st = standings(game);
-  const soft = softness(game);
-  const ep = EPILOGUE[soft.ending];
+  const win = st[0].p;
+  const [art, setArt] = useState<string | null>(null);
+  useEffect(() => {
+    const t = setTimeout(() => setArt(renderCustom('victory-' + game.tick, victory(win.allies), 1400, 620)), 30);
+    return () => clearTimeout(t);
+  }, [game.tick, win]);
+  const broadcasts = game.players.reduce((a, p) => a + p.feedCount, 0);
+  const freed = game.players.reduce((a, p) => a + p.allies.length, 0);
   const cols: [keyof (typeof st)[number]['sheet'], string][] = [
-    ['cards', 'Brainrots'], ['crafts', 'Crafts'], ['stash', 'Stash'], ['lore', 'Tucked'], ['districts', 'Districts'], ['finale', 'Finale'], ['challenge', 'Challenge'], ['soft', 'Soft'],
+    ['allies', 'Allies'], ['feed', 'Broadcasts'], ['objectives', 'Objectives'], ['recruits', 'Recruits'], ['finale', 'End powers'], ['leftovers', 'Leftovers'], ['hungry', 'Ungrounded'],
   ];
   return (
     <div className="results">
-      <div className="results-3d">
-        <Canvas shadows camera={{ position: [0, 1.8, 7.2], fov: 35 }}>
-          <color attach="background" args={[soft.ending === 'soft' ? '#ffd1e0' : soft.ending === 'sewn' ? '#e6f7ec' : '#fff1e0']} />
-          <StudioLights />
-          <Strawbaby coat={soft.ending !== 'sewn'} torn={soft.ending === 'sewn'} scale={1.5} />
-          <mesh rotation-x={-Math.PI / 2} receiveShadow>
-            <circleGeometry args={[8, 48]} />
-            <meshStandardMaterial color="#ffffff" />
-          </mesh>
-          <OrbitControls enablePan={false} enableZoom={false} target={[0, 0.85, 0]} autoRotate autoRotateSpeed={0.8} />
-        </Canvas>
+      <div className="results-art">{art ? <img src={art} alt="" /> : <div className="panel-inking">inking…</div>}</div>
+      <div className="results-cap">
+        Dawn after night six. DarkBerry is still out there, hat low, coat buttoned. But {freed} brainrots walked out of the Clinic this week, and {broadcasts} broadcasts cut through the feed. <b>{win.name}</b>’s cell did the most. It’s a start.
       </div>
-      <div className="results-body">
-        <h2>
-          {st[0].p.name} wins with {st[0].sheet.total} Aura
-        </h2>
-        <table className="score-table">
-          <thead>
-            <tr>
-              <th />
-              {cols.map(([, l]) => (
-                <th key={l}>{l}</th>
-              ))}
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {st.map(({ p, sheet }, i) => (
-              <tr key={p.id} className={i === 0 ? 'win' : ''}>
-                <td style={{ color: p.color }}>
-                  {i + 1}. {p.name}
-                  <small>{p.reclaimer && RECLAIMERS[p.reclaimer].name}</small>
-                </td>
-                {cols.map(([k]) => (
-                  <td key={k}>{sheet[k]}</td>
-                ))}
-                <td className="tot">{sheet.total}</td>
-              </tr>
+      <table className="score-table">
+        <thead>
+          <tr>
+            <th />
+            {cols.map(([, l]) => (
+              <th key={l}>{l}</th>
             ))}
-          </tbody>
-        </table>
-        <div className="epilogue">
-          <h3>Epilogue: {ep.title}</h3>
-          <p>{ep.text}</p>
-          <small>
-            The table took {soft.juice} Juice in total ({soft.perPlayer.toFixed(1)} each).
-          </small>
-        </div>
-        <div className="row-btns">
-          <button className="skip" onClick={() => go('title')}>Title</button>
-          <button className="go big" onClick={() => start(seats)}>Play again</button>
-        </div>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {st.map(({ p, sheet }, i) => (
+            <tr key={p.id} className={i === 0 ? 'win' : ''}>
+              <td style={{ color: p.color }}>
+                {i + 1}. {p.name}
+                <small>{p.objectives.map((o) => OBJECTIVES[o].name).join(', ')}</small>
+              </td>
+              {cols.map(([k]) => (
+                <td key={k}>{sheet[k]}</td>
+              ))}
+              <td className="tot">
+                <Star size={14} /> {sheet.total}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="row-btns">
+        <button className="go alt" onClick={() => go('title')}>Title</button>
+        <button className="go" onClick={() => start(seats)}>Play again</button>
       </div>
     </div>
   );

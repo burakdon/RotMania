@@ -6,7 +6,7 @@ import { useStore } from './store';
 import { apply } from './game/engine';
 import { botAnswer } from './game/bots';
 import { Comic, ComicGrid } from './comic/Comic';
-import { Closeup, Gallery, GalleryPage } from './toys/Gallery';
+import { Gallery } from './toys/Gallery';
 
 const route = location.hash.replace('#', '');
 if (import.meta.env.DEV) {
@@ -20,6 +20,6 @@ if (import.meta.env.DEV) {
 // dev: #bots watches an all-bot game at high speed
 if (route === 'bots') {
   useStore.getState().setBotSpeed(0.04);
-  useStore.getState().start([0, 1, 2].map((i) => ({ name: ['Tralalina', 'Bombardino', 'Patapim'][i], bot: true })));
+  useStore.getState().start([0, 1, 2].map((i) => ({ name: ['Cell Rossa', 'Cell Blu', 'Cell Giallo'][i], bot: true })));
 }
-createRoot(document.getElementById('root')!).render(<StrictMode>{route === 'comicgrid' ? <ComicGrid /> : route === 'comic' ? <Comic onDone={() => (location.hash = '')} /> : route === 'gallery' ? <Gallery /> : route === 'closeup' ? <Closeup /> : route.startsWith('g') && route.length <= 3 ? <GalleryPage page={Number(route.slice(1))} /> : <App />}</StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode>{route === 'comicgrid' ? <ComicGrid /> : route === 'comic' ? <Comic onDone={() => (location.hash = '')} /> : route === 'gallery' ? <Gallery /> : <App />}</StrictMode>);

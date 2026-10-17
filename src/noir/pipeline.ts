@@ -99,7 +99,7 @@ void main() {
   // color for heroes: flat comic bands, keep hue
   vec3 hsv = rgb2hsv(col);
   float v = hsv.z;
-  v = v < 0.08 ? 0.05 : v < 0.3 ? 0.4 : v < 0.62 ? 0.74 : 1.0;
+  v = v < 0.1 ? 0.04 : v < 0.25 ? 0.17 : v < 0.48 ? 0.4 : v < 0.72 ? 0.68 : 0.98;
   hsv.z = v;
   hsv.y = min(1.0, hsv.y * 1.15);
   vec3 heroCol = hsv2rgb(hsv);

@@ -97,3 +97,18 @@ export async function renderAll(onPanel: (id: string, url: string) => void) {
 export function cachedPanel(id: string) {
   return cache.get(id);
 }
+
+/** Render a one-off panel (results screen) at a given size. */
+export function renderCustom(key: string, build: PanelBuilder, w: number, h: number): string {
+  const hit = cache.get(key);
+  if (hit) return hit;
+  setup();
+  const { scene, camera, noir } = build(w / h, envFor(renderer!));
+  renderer!.setSize(w, h, false);
+  pipeline!.setSize(w, h);
+  pipeline!.set({ lineWidth: 1.6, dotSize: 5, grain: 0.045, contrast: 1.25, ...noir });
+  pipeline!.render(renderer!, scene, camera, null);
+  const url = renderer!.domElement.toDataURL('image/jpeg', 0.9);
+  cache.set(key, url);
+  return url;
+}

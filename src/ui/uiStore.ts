@@ -1,23 +1,29 @@
 import { create } from 'zustand';
+import type { SpaceId } from '../game/types';
 
 interface UI {
-  selected: string | null;
-  hover: { card: string; x: number; y: number } | null;
+  hoverSpace: SpaceId | null;
+  hoverCard: string | null;
+  /** a space waiting for a follow-up choice (who to deprogram, which resource, agent or helper) */
+  pending: SpaceId | null;
   showLog: boolean;
   showRules: boolean;
-  select: (id: string | null) => void;
-  setHover: (h: UI['hover']) => void;
+  setHoverSpace: (s: SpaceId | null) => void;
+  setHoverCard: (id: string | null) => void;
+  setPending: (s: SpaceId | null) => void;
   toggleLog: () => void;
   setRules: (v: boolean) => void;
 }
 
 export const useUI = create<UI>((set) => ({
-  selected: null,
-  hover: null,
+  hoverSpace: null,
+  hoverCard: null,
+  pending: null,
   showLog: false,
   showRules: false,
-  select: (selected) => set({ selected }),
-  setHover: (hover) => set({ hover }),
+  setHoverSpace: (hoverSpace) => set({ hoverSpace }),
+  setHoverCard: (hoverCard) => set({ hoverCard }),
+  setPending: (pending) => set({ pending }),
   toggleLog: () => set((s) => ({ showLog: !s.showLog })),
   setRules: (showRules) => set({ showRules }),
 }));
