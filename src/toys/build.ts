@@ -378,6 +378,11 @@ function accessories(t: ToyRecipe, root: THREE.Group, head: THREE.Group, h: Head
         addH(m(G.cyl(), mat('#212529'), [0, h.top - 0.02, h.half * 0.45], [h.half * 0.4, 0.02, h.half * 0.25]));
         addH(m(G.cyl(), mat('#fcc419', 'metal'), [0, h.top + 0.03, h.half * 0.62], [0.04, 0.01, 0.04], [PI / 2, 0, 0]));
         break;
+      case 'ponytail':
+        addH(m(G.cap(1), mat(t.c2 ?? '#3b2f2f', 'matte'), [0, h.top * 0.35, -h.half * 1.02], [0.12, 0.16, 0.12], [0.5, 0, 0]));
+        addH(m(G.tor(0.3), mat('#ff6b6b'), [0, h.top * 0.62, -h.half * 0.88], 0.07, [1.1, 0, 0]));
+        addH(m(G.sph(), mat(t.c2 ?? '#3b2f2f', 'matte'), [0, h.top * 0.55, h.half * 0.62], [h.half * 0.62, 0.08, 0.14], [0.5, 0, 0]));
+        break;
       case 'collar':
       case 'cassetteshell':
         break;
@@ -427,7 +432,7 @@ export function buildStrawbaby(opts: { coat?: boolean; torn?: boolean; glow?: bo
   // pacifier: baby squishy
   head.add(m(G.cyl(), mat('#ffd6e0'), [0, -0.16, 0.46], [0.09, 0.03, 0.09], [PI / 2, 0, 0]));
   head.add(m(G.tor(0.25), mat('#ff8fab'), [0, -0.16, 0.5], 0.05));
-  if (opts.torn || !coat) {
+  if (opts.torn) {
     // the seam where it tore, stitched with yarn
     const seam = mat('#7a1f2b', 'matte');
     const curve = new THREE.CatmullRomCurve3([

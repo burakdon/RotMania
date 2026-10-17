@@ -73,9 +73,16 @@ function schedule() {
   requestAnimationFrame(() => setTimeout(pump, 0));
 }
 
-function request(key: string, make: () => THREE.Group) {
-  if (cache.has(key) || queue.some((q) => q.key === key)) return;
-  queue.push({ key, make });
+function request(key: string, make: () => THREE.Group, urgent = false) {
+  if (cache.has(key)) return;
+  const i = queue.findIndex((q) => q.key === key);
+  if (i >= 0) {
+    // something on screen wants it now: move it to the front
+    if (urgent && i > 0) queue.unshift(...queue.splice(i, 1));
+    return;
+  }
+  if (urgent) queue.unshift({ key, make });
+  else queue.push({ key, make });
   schedule();
 }
 
@@ -86,7 +93,7 @@ function subscribe(l: () => void) {
 
 function usePortraitKey(key: string, make: () => THREE.Group): string | undefined {
   const url = useSyncExternalStore(subscribe, () => cache.get(key));
-  if (!url) request(key, make);
+  if (!url) request(key, make, true);
   return url;
 }
 

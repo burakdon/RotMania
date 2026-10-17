@@ -17,7 +17,7 @@ export const RECLAIMERS: Record<ReclaimerId, Reclaimer> = {
     perk: 'Make Stuff gives you 1 extra Craft.',
     challengeName: 'Hold It Yourself',
     challenge: 'End-game Aura by Juice you took all game: none → 8 · 1–2 → 5 · 3–4 → 2.',
-    toy: { head: 'kid', body: 'bean', c1: '#f1c27d', c2: '#3b2f2f', c3: '#ffd166', arms: 'nubs', legs: 'sneakers', eyes: 'dot', acc: ['hoodie'] },
+    toy: { head: 'kid', body: 'bean', c1: '#f1c27d', c2: '#3b2f2f', c3: '#ffd166', arms: 'nubs', legs: 'sneakers', eyes: 'dot', acc: ['hoodie', 'ponytail'] },
   },
   nonna: {
     id: 'nonna', name: 'Nonna Lievito', tagline: 'Has kept the same sourdough starter alive since 1987. His name is Gerald.',
