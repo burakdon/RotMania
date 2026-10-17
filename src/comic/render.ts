@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { NoirPipeline } from '../noir/pipeline';
 import { buildDarkBerry } from '../toys/build';
+import { PANEL_ART } from './art';
 import { cityMapTexture } from './citymap';
 import { envFor, screensWall, basement, type PanelBuilder } from './panels';
 import { PAGE_ASPECT, PAGES, type PanelSpec } from './story';
@@ -65,6 +66,7 @@ function builderFor(p: PanelSpec): PanelBuilder {
 }
 
 export function renderPanel(p: PanelSpec): string {
+  if (PANEL_ART[p.id]) return PANEL_ART[p.id];
   const hit = cache.get(p.id);
   if (hit) return hit;
   setup();
@@ -85,6 +87,10 @@ export async function renderAll(onPanel: (id: string, url: string) => void) {
   await document.fonts.load('64px Bangers').catch(() => undefined);
   for (const page of PAGES)
     for (const p of page.panels) {
+      if (PANEL_ART[p.id]) {
+        onPanel(p.id, PANEL_ART[p.id]);
+        continue;
+      }
       await new Promise((r) => setTimeout(r, 0));
       try {
         onPanel(p.id, renderPanel(p));
