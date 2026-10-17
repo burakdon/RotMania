@@ -1,5 +1,7 @@
 # RotMania 2048
 
+**▶ [Play online](https://burakdon.github.io/RotMania/)**: runs in the browser, nothing to install.
+
 *A noir comic and a worker-placement strategy game about an AI-fed brainrot that took over the world by learning what we'd watch.*
 
 In 2026 a nine-year-old throws her strawberry squishy out of a car window for a newer toy. It gets buried; a data center gets built on top; it drinks every feed and trend that leaks through the floor, and climbs out as **DarkBerry**. By 2048 humans serve brainrots. You run a resistance cell with six nights to take part of the city back.
