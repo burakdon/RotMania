@@ -1,7 +1,7 @@
-// Bot-vs-bot balance run: npx vite-node scripts/sim.ts [games] [players]
+// Bot-vs-bot balance run: npm run sim -- [games] [players]
 import { botAnswer } from '../src/game/bots';
-import { apply, newGame, scorePlayer, softness, standings } from '../src/game/engine';
-import { CARD } from '../src/game/cards';
+import { BRAINROT } from '../src/game/cards';
+import { apply, newGame, standings } from '../src/game/engine';
 import type { GameState } from '../src/game/types';
 
 const games = Number(process.argv[2] ?? 200);
@@ -11,21 +11,21 @@ export function playOut(seed: number, n: number): GameState {
   let s = newGame(Array.from({ length: n }, (_, i) => ({ name: `Bot${i}`, bot: true })), seed);
   let steps = 0;
   while (s.phase !== 'over') {
-    if (++steps > 20000) throw new Error('stuck');
+    if (++steps > 5000) throw new Error('stuck');
     s = apply(s, botAnswer(s));
   }
   return s;
 }
 
 const tot: Record<string, number> = {};
-const reclWins: Record<string, [number, number]> = {};
-const cardPlays: Record<string, number> = {};
-const endings: Record<string, number> = {};
+const seatWins = Array(players).fill(0);
+const allyCount: Record<string, number> = {};
+const allyWin: Record<string, number> = {};
+const spaceUse: Record<string, number> = {};
 let errors = 0;
-let totalScore = 0;
 let margin = 0;
-let juice = 0;
-const winnerJuice: number[] = [];
+let agents = 0;
+let alliesPer = 0;
 for (let g = 0; g < games; g++) {
   let s: GameState;
   try {
@@ -37,28 +37,28 @@ for (let g = 0; g < games; g++) {
   }
   const st = standings(s);
   margin += st[0].sheet.total - st[1].sheet.total;
-  endings[softness(s).ending] = (endings[softness(s).ending] ?? 0) + 1;
+  seatWins[st[0].p.id]++;
   for (const { p, sheet } of st) {
     for (const [k, v] of Object.entries(sheet)) tot[k] = (tot[k] ?? 0) + v;
-    totalScore += sheet.total;
-    juice += p.juiceTaken;
-    const r = (reclWins[p.reclaimer!] ??= [0, 0]);
-    r[1]++;
-    if (p === st[0].p) r[0]++;
-    for (const sl of p.rows.flat()) cardPlays[sl.card] = (cardPlays[sl.card] ?? 0) + 1;
+    agents += p.agents + p.rookies;
+    alliesPer += p.allies.length;
+    for (const id of p.allies) {
+      allyCount[id] = (allyCount[id] ?? 0) + 1;
+      if (p === st[0].p) allyWin[id] = (allyWin[id] ?? 0) + 1;
+    }
   }
-  winnerJuice.push(st[0].p.juiceTaken);
-  void scorePlayer;
+  for (const l of s.log) {
+    const m = l.msg.match(/: ([A-Z][\w-]+(?: [\w-]+)*), \+/);
+    if (m) spaceUse[m[1]] = (spaceUse[m[1]] ?? 0) + 1;
+  }
 }
 const ok = games - errors;
 const per = (x: number) => (x / (ok * players)).toFixed(1);
-console.log(`${ok}/${games} games OK, ${players} players. Avg score ${per(totalScore)}, avg winning margin ${(margin / ok).toFixed(1)}`);
-console.log('Avg breakdown:', Object.fromEntries(Object.entries(tot).map(([k, v]) => [k, per(v)])));
-console.log(`Avg juice per player ${per(juice)}; winners avg juice ${(winnerJuice.reduce((a, b) => a + b, 0) / ok).toFixed(1)}`);
-console.log('Endings:', endings);
-console.log('Reclaimer win rates (fair share ' + (100 / players).toFixed(0) + '%):');
-for (const [k, [w, n]] of Object.entries(reclWins).sort((a, b) => b[1][0] / b[1][1] - a[1][0] / a[1][1]))
-  console.log(`  ${k.padEnd(7)} ${((100 * w) / n).toFixed(0)}% of ${n}`);
-const plays = Object.entries(cardPlays).sort((a, b) => b[1] - a[1]);
-console.log('Most played:', plays.slice(0, 6).map(([k, v]) => `${CARD[k].name} ${v}`).join(', '));
-console.log('Least played:', plays.slice(-6).map(([k, v]) => `${CARD[k].name} ${v}`).join(', '));
+console.log(`${ok}/${games} games OK, ${players} players. Avg winning margin ${(margin / ok).toFixed(1)}`);
+console.log('Avg score breakdown per player:', Object.fromEntries(Object.entries(tot).map(([k, v]) => [k, per(v)])));
+console.log(`Avg agents at end ${per(agents)}, allies ${per(alliesPer)}`);
+console.log('Wins by seat:', seatWins.map((w) => `${((100 * w) / ok).toFixed(0)}%`).join(' '));
+const rate = Object.entries(allyCount).map(([id, n]) => ({ id, n, w: (allyWin[id] ?? 0) / n })).sort((a, b) => b.w - a.w);
+console.log('Ally win-rate (top):', rate.slice(0, 5).map((r) => `${BRAINROT[r.id].name} ${(r.w * 100).toFixed(0)}%/${r.n}`).join(', '));
+console.log('Ally win-rate (bottom):', rate.slice(-5).map((r) => `${BRAINROT[r.id].name} ${(r.w * 100).toFixed(0)}%/${r.n}`).join(', '));
+console.log('Least taken:', Object.entries(allyCount).sort((a, b) => a[1] - b[1]).slice(0, 5).map(([id, n]) => `${BRAINROT[id].name} ${n}`).join(', '));

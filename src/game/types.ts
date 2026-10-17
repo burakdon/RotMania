@@ -1,61 +1,41 @@
-// Core types for RotMania: Soft Power. No DOM, no three.js: the rules run in Node for tests and sims.
+// Core types for RotMania (2048). Worker placement: resistance cells send agents across DarkBerry's city.
+// No DOM, no three.js: the rules run in Node for tests and simulations.
 
-export const RES = ['grass', 'bread', 'vinyl', 'yarn', 'paper'] as const;
+export const RES = ['grass', 'coolant', 'pcb', 'glitter', 'copper'] as const;
 export type Res = (typeof RES)[number];
-export type Face = Res | 'juice';
-export type Pool = Res | 'juice';
+export type Bag = Partial<Record<Res, number>>;
 
-/** 0 Outside (go touch grass → resources), 1 Workshop (make stuff → crafts), 2 Group Chat (word of mouth → cards) */
-export type Row = 0 | 1 | 2;
-export const ROWS: Row[] = [0, 1, 2];
+export const TYPES = ['critter', 'snack', 'appliance', 'icon', 'squishy'] as const;
+export type BrainrotType = (typeof TYPES)[number];
 
-export const VIBES = ['snacc', 'beast', 'gadget', 'icon'] as const;
-export type Vibe = (typeof VIBES)[number];
+export type DistrictId = 'park' | 'serverfarm' | 'scrapyard' | 'mall' | 'clinic' | 'underground' | 'tower';
 
-export type CostItem = Res | 'any';
+export type SpaceId =
+  | 'grass' | 'lookout'
+  | 'coolant' | 'redteam'
+  | 'copper' | 'pcb'
+  | 'glitter' | 'pawn'
+  | 'deprogram' | 'backdoor'
+  | 'recruit' | 'safehouse' | 'archive' | 'oddjobs'
+  | 'hijack' | 'pirate';
 
-export type When = 'woke' | 'each' | 'meanwhile' | 'whenever' | 'finale';
-export type Trigger = 'otherJuice' | 'otherOutside' | 'otherWorkshop' | 'otherChat' | 'otherWakes' | 'youJuice';
-
-export type Effect =
-  | { k: 'gain'; res: Res | 'any'; n: number }
-  | { k: 'gacha'; n: number }
-  | { k: 'gachaStash'; res: Res }
-  | { k: 'draw'; n: number }
-  | { k: 'craftHere'; n: number }
-  | { k: 'craftAny'; n: number }
-  | { k: 'craftRow' }
-  | { k: 'stash'; res: Res; n: number }
-  | { k: 'tuckDraw' }
-  | { k: 'tuckGain'; res: Res | 'any' }
-  | { k: 'tuckTop'; n: number }
-  | { k: 'hunt'; max: number }
-  | { k: 'fish'; res: Res }
-  | { k: 'trade'; pay: Res | 'any' | 'craft' | 'card'; then: Effect }
-  | { k: 'allDraw' }
-  | { k: 'allGain'; res: Res }
-  | { k: 'unsoft' }
-  | { k: 'repeat' }
-  | { k: 'aura'; n: number }
-  | { k: 'juice'; n: number }
-  | { k: 'finaleVibe'; vibe: Vibe; n: number; scope: 'row' | 'all' }
-  | { k: 'finaleRowFull'; n: number }
-  | { k: 'finaleNoSoft'; n: number }
-  | { k: 'finaleSoft'; n: number; max: number }
-  | { k: 'finaleStash'; n: number };
-
-export interface Power {
-  when: When;
-  on?: Trigger;
-  /** for otherWakes: only when the woken brainrot has this vibe */
-  vibe?: Vibe;
-  fx: Effect;
-}
-
-export type HeadKind = string;
+export type Ability =
+  | { k: 'dawn'; gain: Bag }
+  | { k: 'boost'; space: SpaceId; gain: Bag }
+  | { k: 'turnDiscount' }
+  | { k: 'recruitDiscount' }
+  | { k: 'feedBonus'; n: number }
+  | { k: 'instant'; gain?: Bag; objective?: boolean; tempAgent?: boolean }
+  | { k: 'helper'; district: DistrictId }
+  | { k: 'grounding'; n: number }
+  | { k: 'tollProof' }
+  | { k: 'pawnRate' }
+  | { k: 'final'; per: 'type'; type: BrainrotType; n: number }
+  | { k: 'final'; per: 'lowAlly'; n: number }
+  | { k: 'final'; per: 'agent'; n: number };
 
 export interface ToyRecipe {
-  head: HeadKind;
+  head: string;
   body?: 'bean' | 'blob' | 'tall' | 'none' | 'coat' | 'tutu' | 'suit';
   c1: string;
   c2?: string;
@@ -69,110 +49,88 @@ export interface ToyRecipe {
   seed?: string;
 }
 
-export interface Card {
+export interface Brainrot {
   id: string;
   name: string;
-  vibe: Vibe;
-  rows: Row[];
-  cost: CostItem[];
-  /** victory points printed on the card */
-  aura: number;
-  /** craft capacity */
-  cap: number;
-  /** Rot %: flavor stat, used by Hunt powers */
-  rot: number;
-  power?: Power;
+  type: BrainrotType;
+  cost: Bag;
+  /** points it's worth at the end */
+  strength: number;
+  ability?: Ability;
   flavor: string;
   toy: ToyRecipe;
 }
 
-export interface Slot {
-  card: string;
-  crafts: number;
-  stash: number;
-  lore: number;
+export interface General {
+  id: string;
+  name: string;
+  district: DistrictId;
+  toll: Res;
+  flavor: string;
+  toy: ToyRecipe;
 }
 
-export type ReclaimerId = 'mina' | 'nonna' | 'coach' | 'dj' | 'biblio' | 'bruno' | 'dev' | 'kiki';
+export type ObjectiveId =
+  | 'zookeeper' | 'snackbar' | 'repair' | 'fanclub' | 'softspot' | 'fullcell' | 'onair' | 'greenthumb'
+  | 'coolantcartel' | 'variety' | 'heavy' | 'underdogs' | 'neverhungry' | 'coppercrew' | 'glamsquad' | 'nightshift' | 'packrat';
+
+export interface Objective {
+  id: ObjectiveId;
+  name: string;
+  text: string;
+}
+
+export interface Placement {
+  space: SpaceId;
+  /** index into player.allies when a brainrot helper was placed instead of an agent */
+  helper?: number;
+}
 
 export interface Player {
   id: number;
   name: string;
   bot: boolean;
   color: string;
-  reclaimer: ReclaimerId | null;
-  reclaimerOptions: ReclaimerId[];
-  hand: string[];
-  res: Record<Pool, number>;
-  rows: Slot[][];
-  soft: [number, number, number];
-  actionsLeft: number;
-  juiceTaken: number;
-  auraBonus: number;
-  perkUsed: boolean;
-  meanwhileUsed: boolean;
-  askedThisTurn: boolean;
-  districtAura: number[];
-  /** setup offer: dealt cards/res to choose from */
-  offer?: { cards: string[]; res: Res[] };
+  res: Record<Res, number>;
+  /** agents still to place this round */
+  agentsFree: number;
+  /** agents owned (recruits count from the round after they join) */
+  agents: number;
+  /** recruited this round: placeable from next round */
+  rookies: number;
+  allies: string[];
+  /** helper allies already used this round (indices into allies) */
+  helpersUsed: number[];
+  objectives: ObjectiveId[];
+  feedPoints: number;
+  feedCount: number;
+  hungry: number;
+  /** what this player did this round, for the board */
+  placements: Placement[];
 }
 
-export type DistrictId =
-  | 'park' | 'garage' | 'cafeteria' | 'fair' | 'school' | 'foodcourt'
-  | 'zoo' | 'repair' | 'stage' | 'pantry' | 'library' | 'arcade';
-
-export interface DistrictResult {
-  round: number;
-  district: DistrictId;
-  scores: { player: number; value: number; place: number; aura: number }[];
+export interface SpaceState {
+  id: SpaceId;
+  /** players who occupy it this round (in order) */
+  taken: number[];
+  /** accumulated resources sitting on it */
+  pile: Bag;
 }
 
 export type Prompt =
-  | { type: 'setup'; player: number }
-  | { type: 'turn'; player: number }
-  | { type: 'gacha'; player: number; left: number; stashOn?: [Row, number] }
-  | { type: 'draw'; player: number; left: number }
-  | { type: 'crafts'; player: number; n: number }
-  | { type: 'soft'; player: number; rows: Row[] }
-  | { type: 'bonus'; player: number; row: Row }
-  | { type: 'tuck'; player: number; at: [Row, number]; then: 'draw' | Res | 'any' }
-  | { type: 'trade'; player: number; at: [Row, number]; pay: Res | 'any' | 'craft' | 'card'; then: Effect }
-  | { type: 'pickRes'; player: number; n: number; why: string }
-  | { type: 'unsoft'; player: number; rows: Row[] }
-  | { type: 'repeat'; player: number; row: Row; options: number[] };
+  | { type: 'objective'; player: number; options: ObjectiveId[]; setup: boolean }
+  | { type: 'place'; player: number }
+  | { type: 'pawn'; player: number; left: number };
 
 export type Answer =
-  | { type: 'setup'; reclaimer: ReclaimerId; keepCards: string[]; keepRes: Res[] }
-  | { type: 'wake'; card: string; row: Row }
-  | { type: 'act'; row: Row }
-  | { type: 'ask' }
-  | { type: 'gacha'; index: number }
-  | { type: 'draw'; tray: number | 'deck' }
-  | { type: 'crafts'; targets: [Row, number][] }
-  | { type: 'soft'; row: Row }
-  | { type: 'bonus'; use: false }
-  | { type: 'bonus'; use: true; card?: string; res?: Pool; from?: [Row, number] }
-  | { type: 'tuck'; card: string | null }
-  | { type: 'trade'; use: false }
-  | { type: 'trade'; use: true; res?: Pool; card?: string; from?: [Row, number] }
-  | { type: 'pickRes'; res: Res }
-  | { type: 'unsoft'; row: Row }
-  | { type: 'repeat'; col: number };
-
-/** Work the engine still has to do. Executed LIFO from state.queue. */
-export type Task =
-  | { t: 'fx'; player: number; fx: Effect; at?: [Row, number] }
-  | { t: 'activate'; player: number; row: Row; col: number }
-  | { t: 'rowGain'; player: number; row: Row; n: number }
-  | { t: 'powers'; player: number; row: Row }
-  | { t: 'meanwhile'; actor: number; trigger: Trigger; vibe?: Vibe }
-  | { t: 'endTurn' }
-  | { t: 'prompt'; prompt: Prompt };
+  | { type: 'objective'; keep: ObjectiveId }
+  | { type: 'place'; space: SpaceId; helper?: number; slot?: number; res?: Res }
+  | { type: 'pawn'; give?: Res[]; get?: Res; done?: boolean };
 
 export interface LogEntry {
   p: number | null;
   msg: string;
-  kind?: 'act' | 'soft' | 'round' | 'power' | 'info';
+  kind?: 'act' | 'round' | 'ally' | 'info' | 'warn';
 }
 
 export interface GameState {
@@ -180,19 +138,21 @@ export interface GameState {
   players: Player[];
   deck: string[];
   discard: string[];
-  tray: (string | null)[];
-  gacha: Face[];
+  /** face-up brainrots; index 0 is newest, the last ones are older and cheaper */
+  market: (string | null)[];
+  spaces: Record<SpaceId, SpaceState>;
+  /** generals in patrol order, one per round */
+  generals: string[];
+  objectiveDeck: ObjectiveId[];
   round: number;
-  turn: number;
   firstPlayer: number;
-  districts: DistrictId[];
-  results: DistrictResult[];
+  nextFirst: number | null;
+  turn: number;
   phase: 'setup' | 'play' | 'over';
   prompt: Prompt | null;
-  queue: Task[];
+  /** pending setup objective choices, in seat order */
+  setupQueue: number[];
   log: LogEntry[];
-  /** monotonically increasing; UI uses it to animate */
   tick: number;
-  /** last thing that happened, for camera/animation hints */
-  last?: { p: number; kind: 'wake' | 'act' | 'ask'; row?: Row; col?: number; card?: string };
+  last?: { p: number; space: SpaceId; card?: string };
 }

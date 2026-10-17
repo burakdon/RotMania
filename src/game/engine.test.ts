@@ -1,120 +1,114 @@
 import { describe, expect, it } from 'vitest';
 import { botAnswer } from './bots';
-import { apply, canAsk, newGame, payPlan, scoreDistrict, scorePlayer } from './engine';
-import type { GameState, Player } from './types';
+import { apply, brainrotCost, canPlace, newGame, scorePlayer, spaceCost, tollFor } from './engine';
+import { BRAINROT } from './cards';
+import type { GameState } from './types';
 
 function seated(n = 3, seed = 1): GameState {
   return newGame(Array.from({ length: n }, (_, i) => ({ name: `P${i}`, bot: true })), seed);
 }
 function toPlay(s: GameState): GameState {
-  while (s.prompt?.type === 'setup') s = apply(s, botAnswer(s));
+  while (s.phase === 'setup') s = apply(s, botAnswer(s));
   return s;
-}
-function blank(p: Player) {
-  p.res = { grass: 0, bread: 0, vinyl: 0, yarn: 0, paper: 0, juice: 0 };
-  p.rows = [[], [], []];
-  p.soft = [0, 0, 0];
-  p.hand = [];
 }
 
 describe('setup', () => {
-  it('asks every player to choose, then starts season 1', () => {
-    const s = toPlay(seated());
+  it('deals each player 2 objectives to keep 1, then starts night 1', () => {
+    let s = seated();
+    expect(s.prompt).toMatchObject({ type: 'objective', setup: true });
+    if (s.prompt?.type !== 'objective') throw new Error();
+    expect(s.prompt.options).toHaveLength(2);
+    s = toPlay(s);
     expect(s.phase).toBe('play');
-    expect(s.prompt?.type).toBe('turn');
+    expect(s.round).toBe(0);
     for (const p of s.players) {
-      expect(p.reclaimer).not.toBeNull();
-      expect(p.actionsLeft).toBe(8);
+      expect(p.objectives).toHaveLength(1);
+      expect(p.agentsFree).toBe(2);
+    }
+    expect(s.market.filter(Boolean)).toHaveLength(5);
+  });
+  it('later seats start with more Grass', () => {
+    const s = seated(4);
+    expect(s.players.map((p) => p.res.grass)).toEqual([2, 3, 4, 5]);
+  });
+});
+
+describe('placing agents', () => {
+  it('takes the pile from an accumulating space and blocks it for others', () => {
+    let s = toPlay(seated());
+    const id = s.prompt!.player;
+    const before = s.players[id].res.copper;
+    const pile = s.spaces.copper.pile.copper ?? 0;
+    if (tollFor(s, s.players[id], 'copper').copper) return; // patrol on the scrapyard eats a copper; covered elsewhere
+    s = apply(s, { type: 'place', space: 'copper' });
+    expect(s.players[id].res.copper).toBeGreaterThanOrEqual(before + pile - 1);
+    const other = s.players[s.prompt!.player];
+    expect(canPlace(s, other, 'copper').ok).toBe(false);
+  });
+  it('Odd Jobs never fills up', () => {
+    let s = toPlay(seated(4));
+    for (let i = 0; i < 4; i++) s = apply(s, { type: 'place', space: 'oddjobs', res: 'pcb' });
+    expect(s.spaces.oddjobs.taken).toHaveLength(4);
+  });
+  it('recruiting is closed on night 1', () => {
+    const s = toPlay(seated());
+    expect(canPlace(s, s.players[s.prompt!.player], 'recruit').ok).toBe(false);
+  });
+});
+
+describe('deprogramming', () => {
+  it('older lineup cards are cheaper by one resource', () => {
+    const s = toPlay(seated());
+    const p = { ...s.players[0], allies: [] };
+    const size = (bag: object) => Object.values(bag).reduce((a: number, b) => a + ((b as number) ?? 0), 0);
+    for (const slot of [0, 3, 4]) {
+      const printed = size(BRAINROT[s.market[slot]!].cost);
+      expect(size(brainrotCost(s, p, slot))).toBe(slot >= 3 ? Math.max(0, printed - 1) : printed);
     }
   });
-  it('rejects keeping more than 5 things', () => {
-    const s = seated();
-    const p = s.players[0];
-    expect(() => apply(s, { type: 'setup', reclaimer: p.reclaimerOptions[0], keepCards: p.offer!.cards, keepRes: ['grass'] })).toThrow();
-  });
-});
-
-describe('paying', () => {
-  it('uses exact resources, then Juice, then 2-for-1', () => {
-    const s = toPlay(seated());
-    const p = s.players[0];
-    blank(p);
-    p.res.grass = 1;
-    p.res.bread = 2;
-    expect(payPlan(p, ['grass', 'vinyl'], 0)?.pay).toMatchObject({ grass: 1, bread: 2 });
-    p.res.juice = 1;
-    expect(payPlan(p, ['grass', 'vinyl'], 0)?.pay).toMatchObject({ grass: 1, juice: 1, bread: 0 });
-    expect(payPlan(p, ['vinyl', 'vinyl', 'vinyl'], 0)).toBeNull();
-  });
-  it('charges crafts by column', () => {
-    const s = toPlay(seated());
-    const p = s.players[0];
-    blank(p);
-    p.res.grass = 5;
-    p.rows[0] = [{ card: 'carotina', crafts: 0, stash: 0, lore: 0 }, { card: 'onigiri', crafts: 0, stash: 0, lore: 0 }];
-    expect(payPlan(p, ['grass'], 2)).toBeNull();
-    p.rows[0][0].crafts = 1;
-    expect(payPlan(p, ['grass'], 2)?.crafts).toBe(1);
-  });
-});
-
-describe('Strawbaby', () => {
-  it('cannot be asked before you have a brainrot to soften', () => {
-    const s = toPlay(seated());
-    const p = s.players[s.prompt!.player];
-    blank(p);
-    p.reclaimer = 'mina';
-    expect(canAsk(s, p)).toBe(false);
-    p.rows[0].push({ card: 'carotina', crafts: 0, stash: 0, lore: 0 });
-    expect(canAsk(s, p)).toBe(true);
-  });
-  it('asking gives Juice and a Soft token; the Soft token switches off that row once', () => {
+  it('turns a brainrot into an ally and empties its slot until dawn', () => {
     let s = toPlay(seated());
     const id = s.prompt!.player;
     const p = s.players[id];
-    blank(p);
-    p.reclaimer = 'mina';
-    p.rows[2].push({ card: 'pomodorino', crafts: 0, stash: 0, lore: 0 }); // each: draw 1
-    s = apply(s, { type: 'ask' });
-    expect(s.players[id].res.juice).toBe(1);
-    expect(s.players[id].soft[2]).toBe(1);
-    expect(s.prompt?.type).toBe('turn');
-    const before = s.players[id].hand.length;
-    s = apply(s, { type: 'act', row: 2 });
-    // base draw of 1 still happens
-    while (s.prompt?.player === id && s.prompt.type === 'draw') s = apply(s, { type: 'draw', tray: 'deck' });
-    expect(s.players[id].hand.length).toBe(before + 1);
-    expect(s.players[id].soft[2]).toBe(0);
+    p.res = { grass: 9, coolant: 9, pcb: 9, glitter: 9, copper: 9 };
+    const card = s.market[0]!;
+    s = apply(s, { type: 'place', space: 'deprogram', slot: 0 });
+    // an ally that draws objectives may prompt first
+    while (s.prompt?.type === 'objective' && s.prompt.player === id) s = apply(s, botAnswer(s));
+    expect(s.players[id].allies).toContain(card);
+    expect(s.market[0]).toBeNull();
+    expect(spaceCost(s, s.players[id], 'deprogram', 0)).toEqual({ ...tollFor(s, s.players[id], 'deprogram') });
   });
 });
 
-describe('districts', () => {
-  it('splits tied places, rounding down', () => {
-    const s = toPlay(seated(3));
-    s.districts[0] = 'park';
-    s.players.forEach(blank);
-    s.players[0].rows[0] = [{ card: 'carotina', crafts: 0, stash: 0, lore: 0 }];
-    s.players[1].rows[0] = [{ card: 'onigiri', crafts: 0, stash: 0, lore: 0 }];
-    const r = scoreDistrict(s, 0);
-    expect(r.scores[0]).toMatchObject({ place: 1, aura: 2 });
-    expect(r.scores[1]).toMatchObject({ place: 1, aura: 2 });
-    expect(r.scores[2]).toMatchObject({ place: 0, aura: 0 });
+describe('check-ins', () => {
+  it('unfed agents cost points at the end of night 2', () => {
+    let s = toPlay(seated(2, 7));
+    s.players[0].res.grass = 0;
+    s.players[0].allies = [];
+    let guard = 0;
+    while (s.round < 2 && s.phase === 'play') {
+      if (s.prompt?.player === 0 && s.prompt.type === 'place') s = apply(s, { type: 'place', space: 'oddjobs', res: 'pcb' });
+      else s = apply(s, botAnswer(s));
+      if (++guard > 200) break;
+    }
+    expect(s.players[0].hungry).toBeGreaterThan(0);
+    expect(scorePlayer(s.players[0]).hungry).toBeLessThan(0);
   });
 });
 
 describe('full games', () => {
-  it.each([2, 3, 4])('bots finish a %i-player game with sane scores', (n) => {
+  it.each([2, 3, 4])('bots finish a %i-player game', (n) => {
     let s = seated(n, 42 + n);
     let steps = 0;
     while (s.phase !== 'over') {
       s = apply(s, botAnswer(s));
-      expect(++steps).toBeLessThan(20000);
+      expect(++steps).toBeLessThan(5000);
     }
+    expect(s.round).toBe(5);
     for (const p of s.players) {
-      const sheet = scorePlayer(s, p);
-      expect(sheet.total).toBeGreaterThan(10);
-      expect(p.actionsLeft).toBe(0);
+      expect(p.agents + p.rookies).toBeLessThanOrEqual(5);
+      expect(scorePlayer(p).total).toBeGreaterThan(5);
     }
-    expect(s.results).toHaveLength(4);
   });
 });

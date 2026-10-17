@@ -1,74 +1,46 @@
-// Human-readable power text, generated from the effect data so cards and rules never disagree.
-import { POOL_NAMES, VIBE_NAMES } from './content';
-import type { Effect, Power } from './types';
+// Human-readable ability text, generated from the data so cards and rules never disagree.
+import { DISTRICTS, RES_NAMES, SPACE, TYPE_NAMES } from './content';
+import type { Ability, Bag } from './types';
+import { RES } from './types';
 
-const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? '' : 's'}`;
-const res = (r: string) => (r === 'any' ? 'any resource' : POOL_NAMES[r as keyof typeof POOL_NAMES]);
+const bag = (b: Bag) => RES.filter((r) => b[r]).map((r) => `${b[r]} ${RES_NAMES[r]}`).join(' and ');
 
-export function fxText(fx: Effect): string {
-  switch (fx.k) {
-    case 'gain': return `Gain ${fx.n === 1 ? '' : fx.n + ' '}${res(fx.res)} from the supply.`;
-    case 'gacha': return `Take ${plural(fx.n, 'capsule')} from the gacha.`;
-    case 'gachaStash': return `If the gacha shows ${res(fx.res)}, take it and stash it here.`;
-    case 'draw': return `Draw ${plural(fx.n, 'card')}.`;
-    case 'craftHere': return `Make ${plural(fx.n, 'craft')} on this brainrot.`;
-    case 'craftAny': return `Make ${plural(fx.n, 'craft')} on any of your brainrots.`;
-    case 'craftRow': return 'Make 1 craft on every brainrot in this row.';
-    case 'stash': return `Stash ${fx.n} ${res(fx.res)} from the supply here.`;
-    case 'tuckDraw': return 'You may tuck a card from your hand under this. If you do, draw 1.';
-    case 'tuckGain': return `You may tuck a card from your hand under this. If you do, gain ${res(fx.res)}.`;
-    case 'tuckTop': return `Tuck ${fx.n === 1 ? 'the top card' : `the top ${fx.n} cards`} of the deck under this.`;
-    case 'hunt': return `Reveal the top card. If its Rot is under ${fx.max}%, tuck it here; otherwise discard it.`;
-    case 'fish': return `Shake the machine: roll the empty capsule slots. If any shows ${res(fx.res)}, stash 1 here.`;
-    case 'trade': {
-      const pay = fx.pay === 'card' ? 'discard a card' : fx.pay === 'craft' ? 'spend a craft' : `pay ${fx.pay === 'any' ? 'any resource' : res(fx.pay)}`;
-      const then = fxText(fx.then);
-      return `You may ${pay} to: ${then.charAt(0).toLowerCase()}${then.slice(1)}`;
+export const ABILITY_LABEL: Record<Ability['k'], string> = {
+  dawn: 'EVERY DAWN',
+  boost: 'ON THE JOB',
+  turnDiscount: 'ALWAYS',
+  recruitDiscount: 'ALWAYS',
+  feedBonus: 'ON AIR',
+  instant: 'WHEN TURNED',
+  helper: 'NIGHT SHIFT',
+  grounding: 'CHECK-IN',
+  tollProof: 'ALWAYS',
+  pawnRate: 'ALWAYS',
+  final: 'AT THE END',
+};
+
+export function abilityText(a: Ability): string {
+  switch (a.k) {
+    case 'dawn': return `Gain ${bag(a.gain)}.`;
+    case 'boost': return `When you use ${SPACE[a.space].name}, also gain ${bag(a.gain)}.`;
+    case 'turnDiscount': return 'Deprogramming costs you 1 less resource.';
+    case 'recruitDiscount': return 'Recruiting costs you 1 less resource.';
+    case 'feedBonus': return `+${a.n} point${a.n > 1 ? 's' : ''} every time you Hijack the Feed or run a Pirate Broadcast.`;
+    case 'instant': {
+      const parts: string[] = [];
+      if (a.gain) parts.push(`gain ${bag(a.gain)}`);
+      if (a.objective) parts.push('draw 2 secret objectives and keep 1');
+      if (a.tempAgent) parts.push('place 1 extra agent tonight');
+      const t = parts.join('; ');
+      return t.charAt(0).toUpperCase() + t.slice(1) + '.';
     }
-    case 'allDraw': return 'Everyone draws 1 card. You draw 1 more.';
-    case 'allGain': return `Everyone gains ${res(fx.res)}. You gain 1 more.`;
-    case 'unsoft': return 'Remove a Soft token from one of your rows.';
-    case 'repeat': return 'Repeat another brainrot power in this row.';
-    case 'aura': return `Gain ${fx.n} Aura.`;
-    case 'juice': return `Gain ${plural(fx.n, 'Juice')} 🍓 (and the Soft token${fx.n > 1 ? 's' : ''} that come${fx.n > 1 ? '' : 's'} with it).`;
-    case 'finaleVibe': return `+${fx.n} Aura per ${VIBE_NAMES[fx.vibe]} ${fx.scope === 'row' ? 'in this row' : 'you woke'}.`;
-    case 'finaleRowFull': return `+${fx.n} Aura if this row is full.`;
-    case 'finaleNoSoft': return `+${fx.n} Aura if you end with no Soft tokens.`;
-    case 'finaleSoft': return `+${fx.n} Aura per Soft token you still have (max ${fx.max}).`;
-    case 'finaleStash': return `+${fx.n} Aura per resource stashed here.`;
+    case 'helper': return `Once a night, this ally can take a space in ${DISTRICTS[a.district].name} like an agent.`;
+    case 'grounding': return `Grounds ${a.n} agent${a.n > 1 ? 's' : ''} at every Check-in (no Grass needed).`;
+    case 'tollProof': return 'Generals never charge you a toll.';
+    case 'pawnRate': return 'Pawn Shop trades are 1 for 1.';
+    case 'final':
+      if (a.per === 'type') return `+${a.n} point${a.n > 1 ? 's' : ''} per ${TYPE_NAMES[a.type]} ally (counting this one).`;
+      if (a.per === 'lowAlly') return `+${a.n} point per ally with strength 2 or less.`;
+      return `+${a.n} point per agent in your cell.`;
   }
 }
-
-export const WHEN_LABEL: Record<Power['when'], string> = {
-  woke: 'WHEN WOKEN',
-  each: 'EACH TIME',
-  meanwhile: 'MEANWHILE',
-  whenever: 'WHENEVER',
-  finale: 'FINALE',
-};
-
-const TRIGGER_TEXT = {
-  otherJuice: 'another player takes Juice',
-  otherOutside: 'another player Goes Outside',
-  otherWorkshop: 'another player Makes Stuff',
-  otherChat: 'another player Group Chats',
-  otherWakes: 'another player wakes a brainrot',
-  youJuice: 'you take Juice',
-} as const;
-
-export function powerText(p: Power): string {
-  if (p.when === 'meanwhile' || p.when === 'whenever') {
-    let trig: string = TRIGGER_TEXT[p.on!];
-    if (p.on === 'otherWakes' && p.vibe) trig = `another player wakes a ${VIBE_NAMES[p.vibe]}`;
-    return `When ${trig}: ${fxText(p.fx).charAt(0).toLowerCase()}${fxText(p.fx).slice(1)}${p.when === 'meanwhile' ? ' (once between your turns)' : ''}`;
-  }
-  return fxText(p.fx);
-}
-
-export const WHEN_HELP: Record<Power['when'], string> = {
-  woke: 'Happens once, right when you wake this brainrot.',
-  each: 'Happens every time you take the action of the row this brainrot lives in.',
-  meanwhile: "Reacts on other players' turns.",
-  whenever: 'Reacts to something you do.',
-  finale: 'Scores at the end of the game.',
-};
