@@ -1,4 +1,5 @@
-// The intro comic: "THE BERRY THAT CAME BACK". Seven pages, still frames, read in order.
+// The intro comic: "THE BERRY THAT CAME BACK". Eight pages, still frames, read in order.
+// Rects are laid out for 3:2 and 2:3 artwork (src/comic/art/); text panels are lettering only.
 // Rects are fractions of the page (x, y, w, h). Text positions are % of the panel.
 import type { PanelBuilder } from './panels';
 import * as P from './panels';
@@ -26,7 +27,10 @@ export interface Sfx {
 export interface PanelSpec {
   id: string;
   rect: [number, number, number, number];
-  build: PanelBuilder | 'screens' | 'basement';
+  /** how to draw it when there's no art file: a 3D diorama, or 'text' for a lettering-only panel */
+  build: PanelBuilder | 'screens' | 'basement' | 'text';
+  /** lettering for text panels */
+  text?: { title?: string; sub?: string; lines: string[] };
   captions?: Caption[];
   balloons?: Balloon[];
   sfx?: Sfx[];
@@ -45,19 +49,19 @@ export const PAGES: PageSpec[] = [
   {
     panels: [
       {
-        id: 'route9', rect: [0, 0, 1, 0.42], build: P.route9,
+        id: 'route9', rect: [0, 0, 1, 0.467], build: P.route9,
         captions: [
           { text: 'Route 9. 2026.', at: 'tl' },
           { text: 'Every end of the world starts somewhere stupid. This one starts in the back seat of a red Honda Fit.', at: 'br' },
         ],
       },
       {
-        id: 'backseat', rect: [0, 0.42, 0.55, 0.58], build: P.backseat,
+        id: 'backseat', rect: [0, 0.467, 0.5, 0.533], build: P.backseat,
         captions: [{ text: 'Sabrina was nine. Strawbaby was her best friend.', at: 'tl' }],
-        balloons: [{ text: "You're my favorite. Forever.", x: 22, y: 30, tail: 'down' }],
+        balloons: [{ text: "You're my favorite. Forever.", x: 54, y: 9, tail: 'down' }],
       },
       {
-        id: 'phone', rect: [0.55, 0.42, 0.45, 0.58], build: P.phoneGlow,
+        id: 'phone', rect: [0.5, 0.467, 0.5, 0.533], build: P.phoneGlow,
         captions: [{ text: 'Forever lasted until the next video.', at: 'bl' }],
       },
     ],
@@ -82,26 +86,27 @@ export const PAGES: PageSpec[] = [
   {
     panels: [
       {
-        id: 'buried', rect: [0, 0, 0.42, 1], build: P.buried,
+        id: 'buried', rect: [0, 0, 0.5, 0.72], build: P.buried,
         captions: [
           { text: 'Mud.', at: 'bl' },
           { text: 'Then gravel. Then concrete.', at: 'tl' },
         ],
       },
       {
-        id: 'datacenter', rect: [0.42, 0, 0.58, 1], build: P.dataCenter,
+        id: 'datacenter', rect: [0.5, 0, 0.5, 0.72], build: P.dataCenter,
         captions: [
           { text: '2031. They built a data center on top of it.', at: 'tl' },
           { text: 'Fifty thousand GPUs, running hot, all night, every night.', at: 'bl' },
         ],
         sfx: [{ text: 'hmmmmmmmmm', x: 30, y: 46, rot: -6, size: 2.2, color: '#e9e6df' }],
       },
+      { id: 'nobody', rect: [0, 0.72, 1, 0.28], build: 'text', text: { lines: ['Nobody came looking.'] }, hold: 3.5 },
     ],
   },
   {
     panels: [
       {
-        id: 'underground', rect: [0, 0, 1, 0.46], build: P.underground,
+        id: 'underground', rect: [0, 0, 1, 0.467], build: P.underground,
         captions: [
           { text: 'Coolant leaked. Data leaked.', at: 'tl' },
           { text: 'Every feed, every trend, every 3 a.m. doomscroll soaked down through the floor.', at: 'br' },
@@ -109,11 +114,11 @@ export const PAGES: PageSpec[] = [
         sfx: [{ text: 'drip', x: 30, y: 52, rot: 8, size: 2, color: '#2ee6ff' }],
       },
       {
-        id: 'eye', rect: [0, 0.46, 0.5, 0.54], build: P.eyeReflect,
+        id: 'eye', rect: [0, 0.467, 0.5, 0.533], build: P.eyeReflect,
         captions: [{ text: 'Strawbaby drank all of it. All the rot.', at: 'bl' }],
       },
       {
-        id: 'redeyes', rect: [0.5, 0.46, 0.5, 0.54], build: P.redEyes,
+        id: 'redeyes', rect: [0.5, 0.467, 0.5, 0.533], build: P.redEyes,
         balloons: [
           { text: 'They threw me away for something newer.', x: 6, y: 7, tail: 'down', dark: true },
           { text: "Fine. I'll be the newest thing there is.", x: 34, y: 72, tail: 'left', dark: true },
@@ -138,38 +143,43 @@ export const PAGES: PageSpec[] = [
   {
     panels: [
       {
-        id: 'screens', rect: [0, 0, 1, 0.42], build: 'screens',
+        id: 'screens', rect: [0, 0, 1, 0.467], build: 'screens',
         captions: [{ text: "He never fired a shot. He just learned what we'd watch, and fed us more of it.", at: 'bl' }],
       },
       {
-        id: 'kids', rect: [0, 0.42, 0.52, 0.58], build: P.kidsPhones,
+        id: 'kids', rect: [0, 0.467, 0.5, 0.533], build: P.kidsPhones,
         captions: [{ text: 'The kids went first. Then their parents. Then the people who made the rules.', at: 'tl' }],
       },
       {
-        id: 'generals', rect: [0.52, 0.42, 0.48, 0.58], build: P.generals,
-        captions: [{ text: 'He made generals. Not every brainrot is a squishy.', at: 'bl' }],
+        id: 'generals', rect: [0.5, 0.467, 0.5, 0.533], build: P.generals,
+        captions: [{ text: 'He made generals. Not every brainrot is a squishy.', at: 'tl' }],
       },
     ],
   },
   {
     panels: [
       {
-        id: 'palanquin', rect: [0, 0, 1, 0.4], build: P.palanquin,
+        id: 'palanquin', rect: [0, 0, 1, 0.5], build: P.palanquin,
         captions: [
           { text: '2048.', at: 'tl' },
           { text: 'Humans serve brainrots now. Nobody remembers agreeing to it.', at: 'br' },
         ],
       },
       {
-        id: 'basement', rect: [0, 0.4, 1, 0.32], build: 'basement',
+        id: 'basement', rect: [0, 0.5, 1, 0.5], build: 'basement',
         captions: [
           { text: 'Not everybody logged in.', at: 'tl' },
           { text: 'Grass. Copper. Coolant. Circuit boards. Glitter. We take what we can carry.', at: 'br' },
         ],
       },
+    ],
+  },
+  {
+    panels: [
+      { id: 'skyline', rect: [0, 0, 1, 0.467], build: P.skyline, hold: 4.5 },
       {
-        id: 'skyline', rect: [0, 0.72, 1, 0.28], build: P.skyline,
-        captions: [{ text: 'Six nights. One city. Take it back.', at: 'bc' }],
+        id: 'endcard', rect: [0, 0.467, 1, 0.533], build: 'text',
+        text: { title: 'ROTMANIA', sub: '2048', lines: ['Six nights. One city.', 'Take it back.'] },
         hold: 6,
       },
     ],

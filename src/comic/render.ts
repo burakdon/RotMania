@@ -62,6 +62,7 @@ function darkberryPortrait(): THREE.Texture {
 function builderFor(p: PanelSpec): PanelBuilder {
   if (p.build === 'screens') return screensWall(darkberryPortrait());
   if (p.build === 'basement') return basement(cityMapTexture());
+  if (p.build === 'text') throw new Error('text panels have no image');
   return p.build;
 }
 
@@ -87,6 +88,7 @@ export async function renderAll(onPanel: (id: string, url: string) => void) {
   await document.fonts.load('64px Bangers').catch(() => undefined);
   for (const page of PAGES)
     for (const p of page.panels) {
+      if (p.build === 'text') continue;
       if (PANEL_ART[p.id]) {
         onPanel(p.id, PANEL_ART[p.id]);
         continue;

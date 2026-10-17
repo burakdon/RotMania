@@ -1,6 +1,6 @@
 # Comic art prompts (ChatGPT image generation)
 
-Prompts for illustrating the intro comic, *The Berry That Came Back*. There are 17 panels across 7 pages. The game's cards and board keep their current art; this pack is only for the comic.
+Prompts for illustrating the intro comic, *The Berry That Came Back*. There are 17 illustrated panels across 8 pages (two more panels are lettering only and need no art). The game's cards and board keep their current art; this pack is only for the comic.
 
 ## How the images get into the game
 

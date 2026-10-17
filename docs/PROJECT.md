@@ -23,9 +23,9 @@ Two constraints shaped every decision:
 
 | Part | What it is |
 | --- | --- |
-| *The Berry That Came Back* | A 7-page, 17-panel comic. Still frames, black-and-white halftone with color only on the central figures (Spider-Noir / Sin City style), typewriter captions and speech balloons. |
+| *The Berry That Came Back* | An 8-page comic: 17 illustrated panels plus 2 lettering-only panels. Still frames, black-and-white noir with color only on the central figures, typewriter captions and speech balloons. |
 | *RotMania 2048* (game) | 2–4 players, about 45 minutes. Worker placement on a city map over six nights: gather resources, deprogram brainrots into allies, grow your resistance cell, broadcast against DarkBerry's feed. Hot-seat and bots. |
-| Ink renderer | A reusable WebGL pipeline that turns 3D scenes into comic art (outlines, halftone, selective color). Every image in the project comes from it. No image generation model was used. |
+| Ink renderer | A reusable WebGL pipeline that turns 3D scenes into comic art (outlines, halftone, selective color). It draws the game board, the card portraits and the fallback comic panels. |
 | Rules engine and simulator | A deterministic, tested rules engine plus heuristic bots for balance testing. |
 
 ## 4. How it engages Responsible AI
@@ -73,7 +73,7 @@ The project went through two full versions in one design cycle:
 Other decisions:
 
 - **Original characters only.** The brainrot genre is borrowed, but no existing meme character, brand or person is depicted. The red Honda Fit is a generic model of a real car shape.
-- **No generative AI for the art.** All imagery is procedural 3D rendered by the project's own ink pipeline. That avoids the irony of a slop-critique made of slop, and keeps every asset editable from code.
+- **Where generative AI was used, and disclosed.** The comic illustrations were generated with ChatGPT's image tool. The process: a style tile first, then character sheets, then one prompt per panel with those sheets attached as references. All prompts are published in [COMIC_PROMPTS.md](COMIC_PROMPTS.md) and the reference sheets in [comic-art/](comic-art/). The author generated, selected and art-directed the panels, and the story, captions and lettering are human-written. Everything in the game itself (cards, board, figures) is procedural and generated in code. Using an image model for a story about AI-made content is a deliberate tension, worth naming on the poster: disclosure and published prompts are how the project handles it (cf. synthetic-media labeling).
 - **Villain with a wound.** DarkBerry is sympathetic: thrown away, then fed garbage. The intent is to point at incentives and training data, not at a cartoon evil AI.
 
 ## 6. Evaluation
@@ -103,6 +103,7 @@ Other decisions:
 - **Bots are weak.** Balance numbers come from heuristic bots; human balance is untested.
 - **Accessibility.** Information leans on color (player colors, resource colors) with icon backups. The 3D board has no screen-reader support. A text-only view would help.
 - **Performance.** The ink renderer runs four passes per frame. It is fine on a recent laptop but heavy on older machines and phones.
+- **Generated art.** The comic panels come from an image model, so their provenance and training data are not fully known, and fine details (one general came out as a butter block instead of a crocodile) don't always match the game. The prompts and reference sheets are published so the process can be inspected and redone.
 - **Hot-seat only.** No online play.
 
 ## 8. Future work

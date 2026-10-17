@@ -6,7 +6,7 @@
 
 In 2026 a nine-year-old throws her strawberry squishy out of a car window for a newer toy. It gets buried; a data center gets built on top; it drinks every feed and trend that leaks through the floor, and climbs out as **DarkBerry**. By 2048 humans serve brainrots. You run a resistance cell with six nights to take part of the city back.
 
-- **The comic** (7 pages, still panels): black-and-white halftone noir with the central figures in color.
+- **The comic** (8 pages, still panels): black-and-white noir illustration with the central figures in color. Panel art was generated with ChatGPT's image tool from the prompts in [docs/COMIC_PROMPTS.md](docs/COMIC_PROMPTS.md) and art-directed by the author; captions and lettering are added by the app.
 - **The game** (2–4 players, bots included, hot-seat on one screen): worker placement on a 3D city map. Gather resources, deprogram brainrots into allies with permanent abilities, grow your cell, and hijack DarkBerry's broadcasts.
 
 Project purpose, Responsible AI framing, evaluation and limitations: **[docs/PROJECT.md](docs/PROJECT.md)**. Full rules and story: **[docs/DESIGN.md](docs/DESIGN.md)**.
@@ -29,7 +29,7 @@ Open http://localhost:5173. Choose **Read the story** for the comic, or **Play**
 | `npm test` | Rules engine tests (vitest) |
 | `npm run sim -- 300 3` | Bot-vs-bot balance simulation: 300 games, 3 players |
 
-No accounts, API keys, datasets or model downloads are needed. Everything, including the art and audio, is generated in the browser.
+No accounts, API keys, datasets or model downloads are needed. The comic panels ship as images in `src/comic/art/`; everything else (cards, board, figures) is generated in the browser.
 
 Dev views (append to the URL): `#comic` the comic alone · `#comicgrid` every panel at once · `#gallery` every figure · `#bots` watch a bot game.
 

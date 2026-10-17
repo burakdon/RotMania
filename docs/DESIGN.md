@@ -8,7 +8,7 @@ For why this exists and how it connects to Responsible AI, see [PROJECT.md](PROJ
 
 ## 1. The story: *The Berry That Came Back*
 
-Seven comic pages of still panels, read before the game. Backgrounds are black-and-white halftone; the central figures in each panel are in color.
+Eight comic pages of still panels, read before the game. Backgrounds are black-and-white; the central figures in each panel are in color. Two panels are lettering only: "Nobody came looking." (page 3) and the end card (page 8). The illustrations come from ChatGPT using [COMIC_PROMPTS.md](COMIC_PROMPTS.md); reference sheets are in [comic-art/](comic-art/).
 
 | Page | Panels | Beat |
 | --- | --- | --- |
@@ -18,7 +18,8 @@ Seven comic pages of still panels, read before the game. Backgrounds are black-a
 | 4 | underground · the eye · red eyes | Coolant and data leak through the floor: every feed, every trend, every 3 a.m. doomscroll. Strawbaby drinks all the rot. "They threw me away for something newer. Fine. I'll be the newest thing there is." |
 | 5 | splash | Strawbaby died in that hole. What climbed out calls itself **DarkBerry**: crimson, stitched scars, a fedora and a black trench coat to hide the tears and the scars. |
 | 6 | screens · kids · generals | He never fires a shot; he learns what we'd watch and feeds us more of it. The kids go first, then their parents, then the people who make the rules. He makes generals. Not every brainrot is a squishy. |
-| 7 | 2048 · the basement · skyline | Humans serve brainrots now; nobody remembers agreeing to it. But not everybody logged in. Grass, copper, coolant, circuit boards, glitter: the resistance takes what it can carry. Six nights. One city. Take it back. |
+| 7 | 2048 · the basement | Humans serve brainrots now; nobody remembers agreeing to it. But not everybody logged in. Grass, copper, coolant, circuit boards, glitter: the resistance takes what it can carry. |
+| 8 | skyline · end card | DarkBerry rises over the city. ROTMANIA 2048: six nights, one city, take it back. |
 
 ### Characters
 

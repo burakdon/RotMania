@@ -28,7 +28,7 @@ export function Comic({ onDone }: { onDone: () => void }) {
 
   const panels = flat[page];
   const current = panels[Math.min(shown, panels.length) - 1];
-  const ready = !!images[current.id];
+  const ready = current.build === 'text' || !!images[current.id];
 
   const next = useCallback(() => {
     if (shown < panels.length) setShown(shown + 1);
@@ -106,7 +106,21 @@ function Panel({ p, url, visible }: { p: PanelSpec; url?: string; visible: boole
       style={{ left: `${x * 100}%`, top: `${y * 100}%`, width: `${w * 100}%`, height: `${h * 100}%` }}
     >
       <div className="panel-frame">
-        {url ? <img src={url} alt="" draggable={false} /> : visible && <div className="panel-inking">inking…</div>}
+        {p.build === 'text' && p.text ? (
+          <div className={`panel-text ${p.text.title ? 'endcard' : ''}`}>
+            {p.text.title && <div className="pt-title">{p.text.title}</div>}
+            {p.text.sub && <div className="pt-sub">{p.text.sub}</div>}
+            {p.text.lines.map((l, i) => (
+              <div key={i} className="pt-line" style={{ animationDelay: `${0.4 + i * 0.7}s` }}>
+                {l}
+              </div>
+            ))}
+          </div>
+        ) : url ? (
+          <img src={url} alt="" draggable={false} />
+        ) : (
+          visible && <div className="panel-inking">inking…</div>
+        )}
         {visible &&
           p.captions?.map((c, i) => (
             <div key={i} className={`cap cap-${c.at}`} style={{ animationDelay: `${0.35 + i * 0.6}s` }}>
@@ -138,7 +152,7 @@ export function ComicGrid() {
   }, []);
   return (
     <div style={{ position: 'fixed', inset: 0, overflow: 'auto', background: '#222', display: 'flex', flexWrap: 'wrap', gap: 8, padding: 8 }}>
-      {PAGES.flatMap((pg) => pg.panels).map((p) => (
+      {PAGES.flatMap((pg) => pg.panels).filter((p) => p.build !== 'text').map((p) => (
         <div key={p.id} style={{ width: 228, height: 280, color: '#ccc', font: '12px monospace' }}>
           {p.id}
           {images[p.id] && <img src={images[p.id]} style={{ width: '100%', height: 262, objectFit: 'contain', display: 'block' }} />}

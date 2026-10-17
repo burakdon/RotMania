@@ -315,3 +315,11 @@ small { opacity: 0.75; }
 .comic-dots i.done { background: #8a8a90; }
 .comic-dots i.now { background: #c8102e; }
 .comic-go { background: #c8102e !important; border-color: #c8102e !important; font-weight: 600; letter-spacing: 0.05em; }
+
+/* lettering-only panels */
+.panel-text { position: absolute; inset: 0; background: #0b0b0d; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3em; text-align: center; padding: 1em; }
+.pt-line { font-family: var(--type); color: #ece6da; font-size: 1.5em; opacity: 0; animation: capfade 0.8s forwards; }
+.panel-text.endcard { background: radial-gradient(circle at 50% 40%, #2a0a12, #0b0b0d 70%); gap: 0.15em; }
+.pt-title { font-family: var(--display); font-size: 6.4em; line-height: 0.9; color: var(--red); letter-spacing: 0.04em; -webkit-text-stroke: 0.04em #0b0b0d; text-shadow: 0.06em 0.06em 0 #000; }
+.pt-sub { font-family: var(--display); font-size: 2em; color: #ece6da; letter-spacing: 0.5em; margin: 0 0 0.6em 0.5em; }
+.panel-text.endcard .pt-line { font-size: 1.4em; }
