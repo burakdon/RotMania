@@ -383,6 +383,25 @@ function accessories(t: ToyRecipe, root: THREE.Group, head: THREE.Group, h: Head
         addH(m(G.tor(0.3), mat('#ff6b6b'), [0, h.top * 0.62, -h.half * 0.88], 0.07, [1.1, 0, 0]));
         addH(m(G.sph(), mat(t.c2 ?? '#3b2f2f', 'matte'), [0, h.top * 0.55, h.half * 0.62], [h.half * 0.62, 0.08, 0.14], [0.5, 0, 0]));
         break;
+      case 'pigtails':
+        for (const x of [-1, 1]) {
+          addH(m(G.cap(1), mat(t.c2 ?? '#3b2f2f', 'matte'), [x * h.half * 1.05, -h.half * 0.15, -0.05], [0.11, 0.17, 0.11], [0, 0, x * 0.35]));
+          addH(m(G.tor(0.3), mat('#ff6b6b'), [x * h.half * 0.98, h.half * 0.12, -0.05], 0.06, [Math.PI / 2, 0, 0]));
+        }
+        break;
+      case 'officercap': {
+        const capc = t.c3 ?? '#2b2d42';
+        addH(m(G.cylTaper(1.15), mat(capc, 'fabric'), [0, h.top + 0.06, 0], [h.half * 0.75, 0.16, h.half * 0.75]));
+        addH(m(G.cyl(), mat('#111', 'vinyl'), [0, h.top - 0.01, h.half * 0.5], [h.half * 0.5, 0.025, h.half * 0.35]));
+        addH(m(G.star(), mat('#fcc419', 'metal'), [0, h.top + 0.08, h.half * 0.82], 0.07));
+        break;
+      }
+      case 'medals':
+        for (let i = 0; i < 3; i++) {
+          addR(m(G.box(), mat(['#e03131', '#1971c2', '#fcc419'][i], 'fabric'), [-0.12 + i * 0.07, f.bodyY + 0.12, (f.bodyHalf || 0.25) * 0.92], [0.05, 0.08, 0.02]));
+          addR(m(G.cyl(), mat('#fcc419', 'metal'), [-0.12 + i * 0.07, f.bodyY + 0.05, (f.bodyHalf || 0.25) * 0.95], [0.025, 0.01, 0.025], [Math.PI / 2, 0, 0]));
+        }
+        break;
       case 'collar':
       case 'cassetteshell':
         break;
@@ -449,6 +468,46 @@ export function buildStrawbaby(opts: { coat?: boolean; torn?: boolean; glow?: bo
   }
   if (opts.glow) {
     head.add(m(G.sph(), new THREE.MeshBasicMaterial({ color: '#ff4d6d', transparent: true, opacity: 0.18 }), [0, 0, 0], 0.75));
+  }
+  return toy;
+}
+
+/** DarkBerry: what climbed out of the hole. Crimson, scarred, fedora and black trench coat. */
+export function buildDarkBerry(opts: { hat?: boolean; glowEyes?: boolean } = {}): THREE.Group {
+  const recipe: ToyRecipe = {
+    head: 'strawberry', body: 'coat', c1: '#8c0d26', c2: '#2f4a2c', c3: '#2a2523', seed: '#a8864c',
+    arms: 'nubs', legs: 'nubs', eyes: 'angry',
+  };
+  const toy = buildToy(recipe);
+  const head = toy.userData.head as THREE.Group;
+  const yarn = mat('#d9c48a', 'matte');
+  // stitched scars: one long seam across the face, two X-stitches
+  const seam = new THREE.CatmullRomCurve3([new THREE.Vector3(-0.36, 0.32, 0.22), new THREE.Vector3(-0.12, 0.2, 0.44), new THREE.Vector3(0.1, 0.02, 0.47), new THREE.Vector3(0.3, -0.2, 0.36)]);
+  head.add(m(new THREE.TubeGeometry(seam, 24, 0.012, 6, false), mat('#3a0610', 'matte')));
+  for (let i = 0; i <= 7; i++) {
+    const p = seam.getPoint(i / 7);
+    const tan = seam.getTangent(i / 7);
+    const st = m(G.cyl(), yarn, [p.x, p.y, p.z + 0.01], [0.01, 0.09, 0.01]);
+    st.rotation.z = Math.atan2(tan.y, tan.x) + Math.PI / 2 + 0.5;
+    head.add(st);
+  }
+  for (const [x, y] of [[0.3, 0.3], [-0.32, -0.18]]) {
+    head.add(m(G.cyl(), yarn, [x, y, 0.42], [0.012, 0.11, 0.012], [0, 0, 0.8]));
+    head.add(m(G.cyl(), yarn, [x, y, 0.42], [0.012, 0.11, 0.012], [0, 0, -0.8]));
+  }
+  if (opts.glowEyes ?? true) {
+    for (const x of [-0.2, 0.2]) head.add(m(G.sph(), mat('#ff1f3d', 'glow'), [x * 1.0, 0.07, 0.5], 0.035));
+  }
+  if (opts.hat ?? true) {
+    const felt = mat('#1c1a1a', 'fabric');
+    const hat = new THREE.Group();
+    hat.add(m(G.cyl(), felt, [0, 0, 0], [0.62, 0.035, 0.6]));
+    hat.add(m(G.cylTaper(0.86), felt, [0, 0.16, 0], [0.36, 0.3, 0.34]));
+    hat.add(m(G.cyl(), mat('#9b1028', 'fabric'), [0, 0.06, 0], [0.365, 0.07, 0.345]));
+    hat.add(m(G.box(), felt, [0, 0.31, 0], [0.4, 0.04, 0.12]));
+    hat.position.set(0.02, 0.5, -0.02);
+    hat.rotation.set(-0.12, 0, -0.14);
+    head.add(hat);
   }
   return toy;
 }

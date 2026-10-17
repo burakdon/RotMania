@@ -5,7 +5,7 @@ import { App } from './App';
 import { useStore } from './store';
 import { apply } from './game/engine';
 import { botAnswer } from './game/bots';
-import { Film } from './film/Film';
+import { Comic, ComicGrid } from './comic/Comic';
 import { Closeup, Gallery, GalleryPage } from './toys/Gallery';
 
 const route = location.hash.replace('#', '');
@@ -22,4 +22,4 @@ if (route === 'bots') {
   useStore.getState().setBotSpeed(0.04);
   useStore.getState().start([0, 1, 2].map((i) => ({ name: ['Tralalina', 'Bombardino', 'Patapim'][i], bot: true })));
 }
-createRoot(document.getElementById('root')!).render(<StrictMode>{route.startsWith('film@') ? <Film startAt={Number(route.slice(5))} onDone={() => (location.hash = '')} /> : route === 'gallery' ? <Gallery /> : route === 'closeup' ? <Closeup /> : route.startsWith('g') && route.length <= 3 ? <GalleryPage page={Number(route.slice(1))} /> : <App />}</StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode>{route === 'comicgrid' ? <ComicGrid /> : route === 'comic' ? <Comic onDone={() => (location.hash = '')} /> : route === 'gallery' ? <Gallery /> : route === 'closeup' ? <Closeup /> : route.startsWith('g') && route.length <= 3 ? <GalleryPage page={Number(route.slice(1))} /> : <App />}</StrictMode>);

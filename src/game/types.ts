@@ -65,6 +65,8 @@ export interface ToyRecipe {
   legs?: 'nubs' | 'sneakers' | 'long' | 'wheels' | 'none' | 'boots';
   acc?: string[];
   scale?: number;
+  /** strawberry seed color */
+  seed?: string;
 }
 
 export interface Card {

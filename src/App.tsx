@@ -1,4 +1,4 @@
-import { Film } from './film/Film';
+import { Comic } from './comic/Comic';
 import { useStore } from './store';
 import { GameScreen, Lobby, Results, Title } from './ui/Screens';
 
@@ -9,7 +9,7 @@ export function App() {
     case 'title':
       return <Title />;
     case 'film':
-      return <Film onDone={() => go('lobby')} />;
+      return <Comic onDone={() => go('lobby')} />;
     case 'lobby':
       return <Lobby />;
     case 'game':

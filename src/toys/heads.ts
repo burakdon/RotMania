@@ -78,7 +78,7 @@ export const HEADS: Record<string, (t: ToyRecipe) => HeadInfo> = {
     g.computeVertexNormals();
     body.geometry = g;
     h.add(body);
-    seedsOn(h, g, 0.5, -0.04, '#ffe9a8', 7);
+    seedsOn(h, g, 0.5, -0.04, t.seed ?? '#ffe9a8', 7);
     h.add(leafCrown(t.c2 ?? '#51cf66', 0.45, 6, 0.28));
     return { g: h, top: 0.6, bottom: -0.6, face: { y: 0.05, z: 0.47, spread: 0.2, size: 0.1 }, half: 0.5, mouth: true };
   },
@@ -688,6 +688,15 @@ export const HEADS: Record<string, (t: ToyRecipe) => HeadInfo> = {
       m(G.cone(), mat(t.c1, 'metal'), [0, 0.6, 0], [0.26, 0.2, 0.26]),
     );
     return { g: h, top: 0.72, bottom: -0.7, face: { y: 0.32, z: 0.21, spread: 0.08, size: 0.045 }, half: 0.26, mouth: true };
+  },
+  bunny: (t) => {
+    const s = sphereHead(t.c1, 0.42, 0.95);
+    for (const x of [-1, 1]) {
+      s.g.add(m(G.cap(1.6), mat(t.c1), [x * 0.16, 0.62, -0.02], [0.1, 0.16, 0.08], [0, 0, -x * 0.18]));
+      s.g.add(m(G.cap(1.6), mat(t.c2 ?? '#ffc2d6'), [x * 0.16, 0.62, 0.05], [0.055, 0.12, 0.04], [0, 0, -x * 0.18]));
+    }
+    s.top = 1.0;
+    return s;
   },
   kid: (t) => {
     // humans: skin c1, hair c2
