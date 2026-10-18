@@ -188,7 +188,7 @@ ul.tight li::before {
   font-family: var(--label); font-weight: 500; font-size: 16pt; letter-spacing: 0.02em;
   border: 0.035in solid var(--ink); padding: 0.01in 0.1in; background: #fff;
 }
-.loop { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.12in; margin-top: 0.14in; }
+.loop { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.12in; margin-top: 0.1in; }
 .step {
   border: 0.045in solid var(--ink); background: #fff; padding: 0.1in 0.11in 0.12in;
   font-size: 16.5pt; line-height: 1.22; position: relative;
@@ -197,7 +197,7 @@ ul.tight li::before {
   display: block; font-family: var(--display); font-weight: 400; font-size: 25pt; letter-spacing: 0.04em; line-height: 1; margin-bottom: 0.04in;
 }
 .step b i { font-style: normal; color: var(--red); }
-.cast { border: 0.05in solid var(--ink); display: block; width: 100%; margin-top: 0.06in; }
+.cast { border: 0.05in solid var(--ink); display: block; width: 100%; margin-top: 0.03in; }
 
 /* ───────── column 3: RAI table ───────── */
 .chip {
@@ -305,16 +305,16 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
     </div>
     <h3>42 brainrots, 6 generals, 1 Darth Berry</h3>
     <img class="cast" src="img/cast.jpg" alt="The procedural cast: 42 brainrot toys and six generals in black and gold uniforms" />
-    <p class="small" style="margin-top: 0.08in">All in-game art is <b>procedural 3D built in code</b>, inked by a custom WebGL renderer. Underneath: a seeded rules engine, bots, a 13-page rulebook and the backstory comic.</p>
+    <p class="small" style="margin-top: 0.05in">All in-game art is <b>procedural 3D built in code</b>, inked by a custom WebGL renderer. Underneath: a seeded rules engine, bots, a 13-page rulebook and the backstory comic.</p>
   </section>
 
   <section class="panel grow">
     <h2><span class="n">04</span>Why it’s built this way</h2>
     <ul class="tight small">
-      <li><b>Neutral rules, loaded world.</b> Bogost argues games persuade through their rules, but a rule that rewards the “right” answer turns a game into a quiz. An early “ask the AI” card that quietly sabotaged you was cut for exactly that. The argument lives in the story and the names; the playtest checks whether it still lands.</li>
+      <li><b>Neutral rules, loaded world.</b> Bogost argues games persuade through their rules, but a rule that rewards the “right” answer turns a game into a didactic quiz. An early “ask the AI” card and other interactive AI features that quietly sabotaged you were cut for exactly that. The argument lives in the story and the names; the playtest will check whether it still lands.</li>
       <li><b>The audience’s own medium.</b> Italian brainrot is made by generative AI and spread by feeds. Borrowing its look, with original characters, lets that culture explain the machine that made it.</li>
       <li><b>You play the people, not the AI.</b> Players run a resistance cell and win by deprogramming brainrots into allies, not destroying them: agency and collective action instead of doom.</li>
-      <li><b>Fun has to carry it.</b> Skill decides, with no character select, and the game has to work for someone who never opens the comic.</li>
+      <li><b>Fun has to carry it.</b> Skill decides, with no deck building, and the game has to work for someone who never opens the comic. It’s akin to a true eurogame.</li>
     </ul>
   </section>
 </div>
@@ -325,27 +325,21 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
     <h2><span class="n">05</span>Contribution &amp; audience</h2>
     <h3 class="first">Who it’s for</h3>
     <ul class="tight small">
-      <li>Teens and young adults who know brainrot but won’t read AI papers.</li>
-      <li>Classrooms and clubs: it fits one class period, free in a browser.</li>
+      <li>Teens and young adults who know brainrot but won’t read AI papers (why would they?).</li>
+      <li>Hopefully anyone and everyone who wants to try out a cool new board game, especially as it keeps improving.</li>
     </ul>
     <h3>What’s new</h3>
     <ul class="tight small">
-      <li>A Responsible AI teaching tool that doesn’t preach: a full strategy game with neutral rules; the story and names carry the ideas.</li>
+      <li>A Responsible AI teaching tool that doesn’t preach: a full strategy game with neutral rules, and a story and skin that carry the ideas.</li>
       <li>A testable claim, that neutral rules can still teach, with a protocol to test it (07).</li>
       <li>Open parts: rules engine, bot simulator, ink renderer, every image prompt.</li>
     </ul>
     <h3>Ideas hiding in the game</h3>
-    <ul class="tight small ideas">
-      <li><b>Red-teaming:</b> Red-Team the Racks pays you to probe for weak spots.</li>
-      <li><b>Specification gaming:</b> Commander Rewardhack “found a shortcut” to engagement.</li>
-      <li><b>Auditing:</b> Open the Archive lets you “read what Darth Berry deleted.”</li>
-      <li><b>Recommender loops:</b> The Recommender and Admiral Autoplay run the city.</li>
-      <li><b>Synthetic media:</b> Major Deepfake “wears your face better than you do.”</li>
-    </ul>
+    <p class="small">Nobody gets a vocabulary lesson, but players red-team a server farm for parts, audit what Darth Berry deleted, and dodge generals named Autoplay, Clickbait and Deepfake. One general sums up the whole story: Commander Rewardhack was told to maximize engagement and found a shortcut. Researchers call that specification gaming.</p>
     <h3>Why it matters</h3>
     <ul class="tight small">
-      <li>Engagement-optimizing feeds shape what young people see; the words for it stay in papers.</li>
-      <li>AI literacy usually arrives as a lecture. A game that teaches without preaching reaches people a lecture can’t; if it fails, that’s a finding too.</li>
+      <li>Engagement-optimizing feeds shape what young people see; the words for it stay in papers. In a self-contradicting way, this game is an engagement-optimizing, AI-enhanced board game. Irony tends to be a good teacher.</li>
+      <li>AI literacy usually arrives as a lecture. A game that teaches without preaching reaches people a lecture can’t, and if it fails, that’s a finding too.</li>
     </ul>
   </section>
 
@@ -439,22 +433,22 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
     <ul class="tight small">
       <li><b>No evidence with people yet.</b> Everything in 06 comes from bots, and the playtest hasn’t run.</li>
       <li><b>Weak bots.</b> They only look one move ahead, so the balance numbers may not hold for humans (though I still lose to them).</li>
-      <li><b>The story simplifies.</b> Darth Berry wants revenge, but real systems want nothing; they optimize the objective they’re given.</li>
+      <li><b>The story is simplified.</b> Darth Berry wants revenge, but real systems want nothing; they optimize the objective they’re given.</li>
     </ul>
     <h3>Failure modes</h3>
     <ul class="tight small">
       <li><b>Too quiet:</b> it’s fun, but nobody connects it to AI. The subtlety that keeps it from preaching could hide the point entirely.</li>
       <li><b>Too loud:</b> the comic or the generals’ names feel heavy-handed anyway.</li>
-      <li><b>Wrong target:</b> the satire lands on kids instead of the systems built to hold their attention.</li>
+      <li><b>Wrong target:</b> the satire lands on people and kids instead of the systems built to hold their attention.</li>
     </ul>
     <h3>Misuse risks</h3>
     <ul class="tight small">
-      <li><b>Taken as fact:</b> the comic could be presented as how AI really works, or as settled science. Research on social media and youth mental health is contested; the game makes no scientific claim.</li>
-      <li><b>It uses the hooks it critiques:</b> cute collectibles and “one more turn”. It stops after six nights, with no accounts, streaks, ads or data collection.</li>
-      <li><b>Generated art:</b> the comic panels came from an image model trained on unknown work. They’re labeled, the prompts are published, and nothing inside the game is generated.</li>
+      <li><b>Taken as fact:</b> the comic is satire, not a technical account of how AI works. Research on social media and youth mental health is contested; the game makes no scientific claim.</li>
+      <li><b>It uses the hooks it critiques:</b> cute collectibles. If anything, it could popularize brainrot figures and items in an irresponsible manner. There are no accounts, streaks, ads or data collection in the game, but for enough money…</li>
+      <li><b>Generated art:</b> the comic panels came from an image model trained on unknown work. They’re labeled, the prompts are published, and the game itself is an original work (developed and visualized using AI tools).</li>
     </ul>
     <h3>Next</h3>
-    <p class="small">Run the protocol · a debrief guide for teachers · print-and-play edition · stronger bots · a text-only board for screen readers.</p>
+    <p class="small">Run the protocol · improve based on the playtest · print-and-play edition · stronger bots (reinforcement learning)</p>
   </section>
 </div>
 
