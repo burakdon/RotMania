@@ -11,7 +11,7 @@ function holdFor(p: PanelSpec) {
   return p.hold ?? READ_BASE + chars * READ_PER_CHAR;
 }
 
-export function Comic({ onDone }: { onDone: () => void }) {
+export function Comic({ onDone, onBook }: { onDone: () => void; onBook?: () => void }) {
   const [images, setImages] = useState<Record<string, string>>({});
   const [page, setPage] = useState(0);
   const [shown, setShown] = useState(1);
@@ -88,6 +88,7 @@ export function Comic({ onDone }: { onDone: () => void }) {
             <i key={i} className={i < page ? 'done' : i === page ? 'now' : ''} />
           ))}
         </div>
+        {onBook && <button className="comic-book" onClick={onBook}>Book view</button>}
         {last ? (
           <button className="comic-go" onClick={onDone}>Take the city back →</button>
         ) : (
@@ -98,7 +99,7 @@ export function Comic({ onDone }: { onDone: () => void }) {
   );
 }
 
-function Panel({ p, url, visible }: { p: PanelSpec; url?: string; visible: boolean }) {
+export function Panel({ p, url, visible }: { p: PanelSpec; url?: string; visible: boolean }) {
   const [x, y, w, h] = p.rect;
   return (
     <div

@@ -11,6 +11,8 @@ In 2026 a nine-year-old throws her strawberry squishy out of a car window for a 
 
 **Rulebook:** open the game and choose **Rulebook**, or go straight to [burakdon.github.io/RotMania/#handbook](https://burakdon.github.io/RotMania/#handbook). It prints as an A5 booklet (use *Print / save as PDF*).
 
+**Comic book:** *The Berry That Came Back*, all eight pages with a cover and back cover, at [burakdon.github.io/RotMania/#comicbook](https://burakdon.github.io/RotMania/#comicbook). It also prints as an A5 booklet. In the game, *Read the story* plays it panel by panel and has a *Book view* button.
+
 Project purpose, Responsible AI framing, evaluation and limitations: **[docs/PROJECT.md](docs/PROJECT.md)**. Design notes and balance: **[docs/DESIGN.md](docs/DESIGN.md)**.
 
 ## Run it
@@ -33,7 +35,7 @@ Open http://localhost:5173. Choose **Read the story** for the comic, or **Play**
 
 No accounts, API keys, datasets or model downloads are needed. The comic panels ship as images in `src/comic/art/`; everything else (cards, board, figures) is generated in the browser.
 
-Views (append to the URL): `#handbook` the rulebook · `#comic` the comic alone · `#comicgrid` every panel at once · `#gallery` every figure · `#darth` Darth Berry and the generals up close · `#bots` watch a bot game.
+Views (append to the URL): `#handbook` the rulebook · `#comicbook` the comic as a printable book · `#comic` the comic, panel by panel · `#comicgrid` every panel at once · `#gallery` every figure · `#darth` Darth Berry and the generals up close · `#bots` watch a bot game.
 
 ## How it's made
 
