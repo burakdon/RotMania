@@ -45,7 +45,7 @@ body {
     radial-gradient(circle at 50% 50%, rgba(11, 11, 13, 0.07) 0.018in, transparent 0.022in) 0 0 / 0.09in 0.09in,
     var(--paper);
   display: grid;
-  grid-template-rows: 3.1in 1fr 0.78in;
+  grid-template-rows: 3.1in 1fr 0.6in;
 }
 
 /* ───────── header ───────── */
@@ -127,10 +127,11 @@ h2 .n {
   transform: rotate(-3deg);
 }
 .dark h2 .n { border-color: var(--paper); }
+h3.first { margin-top: 0.02in; }
 h3 {
   font-family: var(--label); font-weight: 600; text-transform: uppercase;
   font-size: 19pt; letter-spacing: 0.08em; color: var(--red);
-  margin: 0.16in 0 0.05in;
+  margin: 0.13in 0 0.04in;
 }
 p + p { margin-top: 0.1in; }
 b, strong { font-weight: 700; }
@@ -199,41 +200,12 @@ ul.tight li::before {
 .cast { border: 0.05in solid var(--ink); display: block; width: 100%; margin-top: 0.06in; }
 
 /* ───────── column 3: RAI table ───────── */
-table.rai { width: 100%; border-collapse: collapse; font-size: 16.5pt; line-height: 1.2; }
-table.rai th {
-  font-family: var(--label); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
-  font-size: 15pt; text-align: left; padding: 0 0.1in 0.06in 0; border-bottom: 0.05in solid var(--ink);
-}
-table.rai td { vertical-align: top; padding: 0.07in 0.1in 0.07in 0; border-bottom: 0.02in solid #b9b3a7; }
-table.rai tr:last-child td { border-bottom: 0; }
-table.rai td:first-child { width: 2.3in; font-family: var(--label); font-weight: 600; font-size: 16.5pt; letter-spacing: 0.01em; }
-table.rai q { font-family: var(--type); font-size: 14.5pt; quotes: '“' '”'; }
 .chip {
   display: inline-block; font-family: var(--label); font-weight: 600; font-size: 14pt; letter-spacing: 0.03em;
   background: var(--ink); color: var(--paper); padding: 0 0.07in; margin: 0.02in 0.03in 0.02in 0;
 }
 .chip.space { background: var(--gold); color: var(--ink); }
 .chip.gen { background: var(--red); color: #fff; }
-.vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.12in; align-items: stretch; margin: 0.06in 0 0.12in; }
-.vs > div { border: 0.045in solid var(--ink); padding: 0.1in 0.14in; background: #fff; font-size: 17pt; line-height: 1.22; }
-.vs > div.old { background: #e2ddd3; }
-.vs > div b { display: block; font-family: var(--display); font-weight: 400; font-size: 25pt; letter-spacing: 0.04em; }
-.vs .arrow { font-family: var(--display); font-size: 48pt; align-self: center; color: var(--red); }
-
-.chain { margin: 0.12in 0 0.14in; }
-.beat { display: grid; grid-template-columns: 1.75in 1fr; gap: 0.16in; padding: 0.07in 0; border-bottom: 0.02in solid #b9b3a7; }
-.beat:last-child { border-bottom: 0; }
-.beat .k {
-  position: relative; align-self: start; text-align: center;
-  font-family: var(--display); font-size: 20pt; letter-spacing: 0.05em; line-height: 1.1;
-  background: var(--ink); color: var(--paper); padding: 0.05in 0.08in 0.02in;
-}
-.beat:not(:last-child) .k::after { content: '▼'; position: absolute; left: 50%; bottom: -0.27in; transform: translateX(-50%); color: var(--red); font-size: 13pt; }
-.beat q { display: block; font-family: var(--type); font-size: 15pt; line-height: 1.22; quotes: '“' '”'; }
-.beat q.in { display: inline; font-size: 14.5pt; }
-.beat .means { display: block; font-size: 16.5pt; line-height: 1.22; margin-top: 0.03in; }
-.beat .chip + .means { margin-top: 0.05in; }
-
 /* ───────── column 4: evidence ───────── */
 .legend { display: flex; gap: 0.3in; font-family: var(--label); font-size: 16pt; margin: 0.02in 0 0.02in; }
 .legend span { display: inline-flex; align-items: center; gap: 0.08in; }
@@ -241,13 +213,16 @@ table.rai q { font-family: var(--type); font-size: 14.5pt; quotes: '“' '”'; 
 .chart-title { font-family: var(--label); font-weight: 600; font-size: 19pt; letter-spacing: 0.02em; }
 .chart-note { font-size: 15.5pt; line-height: 1.22; color: var(--ink-2); }
 svg text { font-family: var(--label); }
+.chart { display: block; width: 82%; margin: 0 auto; }
 .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 0.14in; margin: 0.14in 0 0.06in; }
 .tile { border: 0.045in solid var(--ink); background: #fff; padding: 0.08in 0.14in 0.1in; }
 .tile .big { font-family: var(--display); font-size: 58pt; line-height: 0.95; letter-spacing: 0.02em; }
 .tile .was { font-family: var(--label); font-size: 16pt; color: var(--smoke); margin-left: 0.06in; }
 .tile .what { font-family: var(--label); font-weight: 600; font-size: 16.5pt; line-height: 1.1; }
 .tile .why { font-size: 14.5pt; line-height: 1.2; color: var(--ink-2); margin-top: 0.03in; }
-.protocol { display: grid; grid-template-columns: auto 1fr; gap: 0.05in 0.16in; font-size: 17pt; line-height: 1.22; }
+.limits .small { font-size: 20pt; line-height: 1.24; }
+.limits ul.tight li::before { top: 0.15in; }
+.protocol { display: grid; grid-template-columns: auto 1fr; gap: 0.06in 0.16in; font-size: 18pt; line-height: 1.22; }
 .protocol dt { font-family: var(--label); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; font-size: 15pt; padding-top: 0.03in; color: var(--red); }
 .badge {
   position: absolute; top: -0.2in; right: 0.25in; transform: rotate(4deg);
@@ -343,118 +318,103 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
   </section>
 </div>
 
-<!-- ── Column 3: where RAI lives, limits ── -->
+<!-- ── Column 3: contribution, evidence ── -->
 <div class="col">
   <section class="panel">
-    <h2><span class="n">05</span>Story as explanation</h2>
-    <p class="small">In play the ideas stay in the fiction and the lore behind the characters. Players never have to read this part, but in my experience the game is more engaging once it clicks. In some ways this game is engagement optimizing too. Read as XAI, the comic is a causal explanation of an engagement-optimizing system:</p>
-    <div class="chain">
-      <div class="beat"><span class="k">Data</span><div><q>Every feed, every trend, every 3 a.m. doomscroll soaked down through the floor.</q><span class="means">A model is what it’s trained on.</span></div></div>
-      <div class="beat"><span class="k">Objective</span><div><q>They threw me away as if I was nothing, for something newer and better.</q><span class="means">It learns its makers’ lesson: newer wins. <span class="chip gen">Commander Rewardhack</span> is the proxy gone wrong: <q class="in">Was told to maximize engagement. Found a shortcut.</q></span></div></div>
-      <div class="beat"><span class="k">Feedback loop</span><div><q>Darth Berry just learned what we’d watch, and fed us more of it.</q><span class="means">Engagement optimization feeds itself.</span></div></div>
-      <div class="beat"><span class="k">Who pays</span><div><q>The kids went first. Then their parents. Then the people who made the rules.</q><span class="means">Harm reaches the most vulnerable first, then oversight.</span></div></div>
-      <div class="beat"><span class="k">Pushing back</span><div><span class="chip space">Red-Team the Racks</span><span class="chip space">Open the Archive</span><span class="chip space">Hijack the Feed</span><span class="means">Red-teaming, auditing and counter-speech become moves you make.</span></div></div>
-    </div>
-    <p class="small"><b>Why a story?</b> Miller (2019) finds people prefer explanations that are causal, selective and social over statistical ones. A story is all three, and it reaches people who will never read a paper on reward hacking.</p>
-    <p class="small"><b>Where it’s unfaithful.</b> Darth Berry <i>wants</i> revenge; real systems want nothing. The story trades faithfulness for plausibility (Jacovi &amp; Goldberg, 2020) at exactly that point, and the comic’s back cover says so.</p>
+    <h2><span class="n">05</span>Contribution &amp; audience</h2>
+    <h3 class="first">Who it’s for</h3>
+    <ul class="tight small">
+      <li>Teens and young adults who live in feeds and know brainrot, but would never read a paper on AI harms.</li>
+      <li>Classrooms and clubs: comic (4 min) plus one game (30–45 min) fits a class period. Free in a browser, no account.</li>
+    </ul>
+    <h3>What’s new</h3>
+    <ul class="tight small">
+      <li>A Responsible AI teaching tool that doesn’t preach: a full strategy game with neutral rules, where the story, villains and names carry the ideas.</li>
+      <li>AI-made meme culture used to explain the AI that made it.</li>
+      <li>A testable claim, that neutral rules can still teach, with a protocol to test it (07).</li>
+      <li>Open, reusable parts: rules engine and bot simulator, comic-ink renderer, every image prompt.</li>
+    </ul>
+    <h3>Why it matters</h3>
+    <ul class="tight small">
+      <li>Engagement-optimizing systems shape what young people see daily, but the words for it (specification gaming, red-teaming, recommender audits) stay in papers.</li>
+      <li>AI literacy usually arrives as a lecture, and people tune lectures out. A game that teaches without preaching reaches people a lecture can’t. If it fails, that’s a finding too: it shows how much explicit teaching such a game needs.</li>
+    </ul>
   </section>
 
-  <section class="panel grow">
-    <h2><span class="n">06</span>Stakeholders &amp; risks</h2>
-    <table class="rai">
-      <thead><tr><th>Stakeholder</th><th>Risk, and what I did about it</th></tr></thead>
-      <tbody>
-        <tr><td>Young players</td><td>Satire about screens can tip into blaming kids. The comic blames the system and the adults who set the rules; young playtesters will check that.</td></tr>
-        <tr><td>Every player</td><td>It uses the hooks it critiques: collectibles, “one more turn”. It stops after six nights, with no accounts, streaks, ads or data collection.</td></tr>
-        <tr><td>Artists</td><td>An image model with unknown training data drew the comic. It’s labeled, every prompt is published, and nothing in the game is generated.</td></tr>
-        <tr><td>Teachers &amp; the public</td><td>A story can be mistaken for evidence, and research on youth and social media is contested. The game makes no scientific claim.</td></tr>
-      </tbody>
-    </table>
-    <h3>Next</h3>
-    <p class="small">Run the protocol and publish it · print-and-play edition · a facilitator guide pairing each general with a real case · stronger self-play bots · a text-only board for screen readers.</p>
-  </section>
-</div>
-
-<!-- ── Column 4: evidence, protocol ── -->
-<div class="col">
   <section class="panel">
-    <h2><span class="n">07</span>Evidence so far</h2>
+    <h2><span class="n">06</span>Evidence so far</h2>
     <div class="chart-title">Bots found a first-player advantage</div>
     <div class="legend"><span><i style="background: var(--before)"></i>Before fix (n = 300)</span><span><i style="background: var(--after)"></i>After fix (n = 2,000)</span></div>
-    <svg viewBox="0 0 760 410" width="100%" role="img" aria-label="Win rate by seat in 3-player bot games. Before the fix: seat 1 49%, seat 2 27%, seat 3 24%. After: 34%, 35%, 31%. Fair share is 33%.">
+    <svg class="chart" viewBox="0 0 760 330" role="img" aria-label="Win rate by seat in 3-player bot games. Before the fix: seat 1 49%, seat 2 27%, seat 3 24%. After: 34%, 35%, 31%. Fair share is 33%.">
       <g stroke="#cfc9bd" stroke-width="1.5">
-        <line x1="70" x2="745" y1="360" y2="360" stroke="#0b0b0d" stroke-width="2.5" />
-        <line x1="70" x2="745" y1="253.3" y2="253.3" />
-        <line x1="70" x2="745" y1="146.7" y2="146.7" />
-        <line x1="70" x2="745" y1="40" y2="40" />
+        <line x1="70" x2="745" y1="280" y2="280" stroke="#0b0b0d" stroke-width="2.5" />
+        <line x1="70" x2="745" y1="198.0" y2="198.0" />
+        <line x1="70" x2="745" y1="116.0" y2="116.0" />
+        <line x1="70" x2="745" y1="34.0" y2="34.0" />
       </g>
       <g font-size="21" fill="#5d5d63" text-anchor="end">
-        <text x="60" y="367">0%</text><text x="60" y="260">20%</text><text x="60" y="153">40%</text><text x="60" y="47">60%</text>
+        <text x="60" y="287.0">0%</text><text x="60" y="205.0">20%</text><text x="60" y="123.0">40%</text><text x="60" y="41.0">60%</text>
       </g>
-      <!-- bars: y = 360 - v * 5.333 ; before at center-74, after at center+2, width 72 -->
       <g fill="var(--before)">
-        <path d="M107.5 360 V102.7 Q107.5 98.7 111.5 98.7 H175.5 Q179.5 98.7 179.5 102.7 V360 Z" />
-        <path d="M330.5 360 V220 Q330.5 216 334.5 216 H398.5 Q402.5 216 402.5 220 V360 Z" />
-        <path d="M553.5 360 V236 Q553.5 232 557.5 232 H621.5 Q625.5 232 625.5 236 V360 Z" />
+        <path d="M107.5 280 V83.1 Q107.5 79.1 111.5 79.1 H175.5 Q179.5 79.1 179.5 83.1 V280 Z" />
+        <path d="M330.5 280 V173.3 Q330.5 169.3 334.5 169.3 H398.5 Q402.5 169.3 402.5 173.3 V280 Z" />
+        <path d="M553.5 280 V185.6 Q553.5 181.6 557.5 181.6 H621.5 Q625.5 181.6 625.5 185.6 V280 Z" />
       </g>
       <g fill="var(--after)">
-        <path d="M183.5 360 V182.7 Q183.5 178.7 187.5 178.7 H251.5 Q255.5 178.7 255.5 182.7 V360 Z" />
-        <path d="M406.5 360 V177.3 Q406.5 173.3 410.5 173.3 H474.5 Q478.5 173.3 478.5 177.3 V360 Z" />
-        <path d="M629.5 360 V198.7 Q629.5 194.7 633.5 194.7 H697.5 Q701.5 194.7 701.5 198.7 V360 Z" />
+        <path d="M183.5 280 V144.6 Q183.5 140.6 187.5 140.6 H251.5 Q255.5 140.6 255.5 144.6 V280 Z" />
+        <path d="M406.5 280 V140.5 Q406.5 136.5 410.5 136.5 H474.5 Q478.5 136.5 478.5 140.5 V280 Z" />
+        <path d="M629.5 280 V156.9 Q629.5 152.9 633.5 152.9 H697.5 Q701.5 152.9 701.5 156.9 V280 Z" />
       </g>
-      <!-- 95% intervals -->
       <g stroke="#0b0b0d" stroke-width="2.5">
-        <line x1="143.5" x2="143.5" y1="68.5" y2="128.9" /><line x1="133.5" x2="153.5" y1="68.5" y2="68.5" /><line x1="133.5" x2="153.5" y1="128.9" y2="128.9" />
-        <line x1="366.5" x2="366.5" y1="189.2" y2="242.8" /><line x1="356.5" x2="376.5" y1="189.2" y2="189.2" /><line x1="356.5" x2="376.5" y1="242.8" y2="242.8" />
-        <line x1="589.5" x2="589.5" y1="206.2" y2="257.8" /><line x1="579.5" x2="599.5" y1="206.2" y2="206.2" /><line x1="579.5" x2="599.5" y1="257.8" y2="257.8" />
-        <line x1="219.5" x2="219.5" y1="167.6" y2="189.8" /><line x1="209.5" x2="229.5" y1="167.6" y2="167.6" /><line x1="209.5" x2="229.5" y1="189.8" y2="189.8" />
-        <line x1="442.5" x2="442.5" y1="162.2" y2="184.4" /><line x1="432.5" x2="452.5" y1="162.2" y2="162.2" /><line x1="432.5" x2="452.5" y1="184.4" y2="184.4" />
-        <line x1="665.5" x2="665.5" y1="183.9" y2="205.5" /><line x1="655.5" x2="675.5" y1="183.9" y2="183.9" /><line x1="655.5" x2="675.5" y1="205.5" y2="205.5" />
+        <line x1="143.5" x2="143.5" y1="55.9" y2="102.3" /><line x1="133.5" x2="153.5" y1="55.9" y2="55.9" /><line x1="133.5" x2="153.5" y1="102.3" y2="102.3" />
+        <line x1="366.5" x2="366.5" y1="148.7" y2="189.9" /><line x1="356.5" x2="376.5" y1="148.7" y2="148.7" /><line x1="356.5" x2="376.5" y1="189.9" y2="189.9" />
+        <line x1="589.5" x2="589.5" y1="161.8" y2="201.4" /><line x1="579.5" x2="599.5" y1="161.8" y2="161.8" /><line x1="579.5" x2="599.5" y1="201.4" y2="201.4" />
+        <line x1="219.5" x2="219.5" y1="132.1" y2="149.1" /><line x1="209.5" x2="229.5" y1="132.1" y2="132.1" /><line x1="209.5" x2="229.5" y1="149.1" y2="149.1" />
+        <line x1="442.5" x2="442.5" y1="127.9" y2="145.1" /><line x1="432.5" x2="452.5" y1="127.9" y2="127.9" /><line x1="432.5" x2="452.5" y1="145.1" y2="145.1" />
+        <line x1="665.5" x2="665.5" y1="144.6" y2="161.2" /><line x1="655.5" x2="675.5" y1="144.6" y2="144.6" /><line x1="655.5" x2="675.5" y1="161.2" y2="161.2" />
       </g>
-      <!-- fair share -->
-      <line x1="70" x2="745" y1="182.2" y2="182.2" stroke="#0b0b0d" stroke-width="2.5" stroke-dasharray="10 7" />
-      <text x="745" y="30" font-size="19" text-anchor="end" fill="#2a2a2e">dashed line: fair share 33%</text>
-      <!-- values -->
+      <line x1="70" x2="745" y1="143.3" y2="143.3" stroke="#0b0b0d" stroke-width="2.5" stroke-dasharray="10 7" />
+      <text x="745" y="24" font-size="19" text-anchor="end" fill="#2a2a2e">dashed line: fair share 33%</text>
       <g font-size="23" font-weight="600" fill="#fff" text-anchor="middle">
-        <text x="143.5" y="155">49%</text><text x="366.5" y="272">27%</text><text x="589.5" y="287">24%</text>
-        <text x="219.5" y="222">34%</text><text x="442.5" y="216">35%</text><text x="665.5" y="236">31%</text>
+        <text x="143.5" y="126.3">49%</text><text x="366.5" y="213.9">27%</text><text x="589.5" y="225.4">24%</text><text x="219.5" y="173.1">34%</text><text x="442.5" y="169.1">35%</text><text x="665.5" y="185.2">31%</text>
       </g>
       <g font-size="22" fill="#0b0b0d" text-anchor="middle">
-        <text x="181.5" y="392">Seat 1 (starts)</text><text x="404.5" y="392">Seat 2</text><text x="627.5" y="392">Seat 3</text>
+        <text x="181.5" y="310">Seat 1 (starts)</text><text x="404.5" y="310">Seat 2</text><text x="627.5" y="310">Seat 3</text>
       </g>
     </svg>
-    <p class="chart-note">3-player win rate by seat, heuristic bots, whiskers are 95% intervals. Fix: whoever takes Morning Run starts the next night, otherwise the start rotates. After it, 2p splits 50/50 and 4p 22/27/26/25%.</p>
+    <p class="chart-note">3-player win rate by seat (bots; whiskers are 95% intervals). Fix: whoever takes Morning Run starts next night, else the start rotates. After it, 2p splits 50/50 and 4p 22/27/26/25%.</p>
     <div class="tiles">
       <div class="tile"><div class="big">4.7<span class="was">was 3.4</span></div><div class="what">allies per player</div><div class="why">The Clinic was a bottleneck; its room now scales with player count.</div></div>
       <div class="tile"><div class="big">−1.3<span class="was">was −3.1</span></div><div class="what">check-in penalty per player</div><div class="why">Check-ins moved to after nights 3 and 6: tension, not a tax.</div></div>
     </div>
     <div class="chart-title" style="margin-top: 0.12in">Where points come from (3 players, avg 33)</div>
-    <svg viewBox="0 0 760 300" width="100%" role="img" aria-label="Average points per player by source: allies 11.3, secret objectives 9.0, broadcasts 6.5, recruits 3.1, end-game powers 2.2, leftovers 2.1, ungrounded agents minus 1.3.">
-      <line x1="300" x2="300" y1="4" y2="296" stroke="#0b0b0d" stroke-width="2.5" />
+    <svg class="chart" viewBox="0 0 760 251" role="img" aria-label="Average points per player by source: allies 11.3, secret objectives 9.0, broadcasts 6.5, recruits 3.1, end-game powers 2.2, leftovers 2.1, ungrounded agents minus 1.3.">
+      <line x1="300" x2="300" y1="2" y2="249" stroke="#0b0b0d" stroke-width="2.5" />
       <g font-size="21" fill="#0b0b0d" text-anchor="end">
-        <text x="232" y="29">Allies</text><text x="232" y="70">Secret objectives</text><text x="232" y="111">Broadcasts</text><text x="232" y="152">Recruits</text><text x="232" y="193">End-game powers</text><text x="232" y="234">Leftovers</text><text x="232" y="275">Ungrounded agents</text>
+        <text x="232" y="25">Allies</text><text x="232" y="60">Secret objectives</text><text x="232" y="95">Broadcasts</text><text x="232" y="130">Recruits</text><text x="232" y="165">End-game powers</text><text x="232" y="200">Leftovers</text><text x="232" y="235">Ungrounded agents</text>
       </g>
-      <!-- x = 300 + v * 36 ; bar height 26 -->
       <g fill="#2a2a2e">
-        <path d="M300 9 H702.8 Q706.8 9 706.8 13 V31 Q706.8 35 702.8 35 H300 Z" />
-        <path d="M300 50 H620 Q624 50 624 54 V72 Q624 76 620 76 H300 Z" />
-        <path d="M300 91 H530 Q534 91 534 95 V113 Q534 117 530 117 H300 Z" />
-        <path d="M300 132 H407.6 Q411.6 132 411.6 136 V154 Q411.6 158 407.6 158 H300 Z" />
-        <path d="M300 173 H375.2 Q379.2 173 379.2 177 V195 Q379.2 199 375.2 199 H300 Z" />
-        <path d="M300 214 H371.6 Q375.6 214 375.6 218 V236 Q375.6 240 371.6 240 H300 Z" />
-        <path d="M300 255 H257.2 Q253.2 255 253.2 259 V277 Q253.2 281 257.2 281 H300 Z" />
+        <path d="M300 6 H702.8 Q706.8 6 706.8 10 V26 Q706.8 30 702.8 30 H300 Z" />
+        <path d="M300 41 H620.0 Q624.0 41 624.0 45 V61 Q624.0 65 620.0 65 H300 Z" />
+        <path d="M300 76 H530.0 Q534.0 76 534.0 80 V96 Q534.0 100 530.0 100 H300 Z" />
+        <path d="M300 111 H407.6 Q411.6 111 411.6 115 V131 Q411.6 135 407.6 135 H300 Z" />
+        <path d="M300 146 H375.2 Q379.2 146 379.2 150 V166 Q379.2 170 375.2 170 H300 Z" />
+        <path d="M300 181 H371.6 Q375.6 181 375.6 185 V201 Q375.6 205 371.6 205 H300 Z" />
+        <path d="M300 216 H257.2 Q253.2 216 253.2 220 V236 Q253.2 240 257.2 240 H300 Z" />
       </g>
       <g font-size="21" font-weight="600" fill="#0b0b0d">
-        <text x="716" y="30">11.3</text><text x="633" y="71">9.0</text><text x="543" y="112">6.5</text><text x="421" y="153">3.1</text><text x="388" y="194">2.2</text><text x="385" y="235">2.1</text><text x="310" y="276">−1.3</text>
+        <text x="717" y="25">11.3</text><text x="634" y="60">9.0</text><text x="544" y="95">6.5</text><text x="422" y="130">3.1</text><text x="389" y="165">2.2</text><text x="386" y="200">2.1</text><text x="310" y="235">−1.3</text>
       </g>
     </svg>
-    <p class="chart-note">No single source decides the game. <b>11 rules tests pass</b>; all 6,000 bot games finish cleanly. Bots look one move ahead, so this is a balance smoke test, not proof of fun.</p>
-    <p class="aside">I actually tend to lose a lot still, unfortunately… to bots.</p>
+    <p class="chart-note">No single source decides the game. <b>11 rules tests pass</b>; all 6,000 bot games finish cleanly.</p>
   </section>
+</div>
 
-  <section class="panel grow">
+<!-- ── Column 4: playtest, limitations ── -->
+<div class="col">
+  <section class="panel">
     <span class="badge">In progress</span>
-    <h2><span class="n">08</span>Playtest protocol</h2>
+    <h2><span class="n">07</span>Playtest protocol</h2>
     <p class="aside" style="margin: -0.06in 0 0.12in">Not started yet, but no time like the present!</p>
     <dl class="protocol">
       <dt>Who</dt><dd>8–12 players in groups of 3, including people outside the course.</dd>
@@ -464,12 +424,36 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
     </dl>
     <div class="invite">Scan “Play now” above</div>
   </section>
+
+  <section class="panel grow limits">
+    <h2><span class="n">08</span>Limitations &amp; risks</h2>
+    <h3 class="first">Limitations</h3>
+    <ul class="tight small">
+      <li><b>No evidence with people yet.</b> Everything in 06 comes from bots, and the playtest hasn’t run.</li>
+      <li><b>Weak bots.</b> They only look one move ahead, so the balance numbers may not hold for humans (though I still lose to them).</li>
+      <li><b>The story simplifies.</b> Darth Berry wants revenge, but real systems want nothing; they optimize the objective they’re given.</li>
+    </ul>
+    <h3>Failure modes</h3>
+    <ul class="tight small">
+      <li><b>Too quiet:</b> it’s fun, but nobody connects it to AI. The subtlety that keeps it from preaching could hide the point entirely.</li>
+      <li><b>Too loud:</b> the comic or the generals’ names feel heavy-handed anyway.</li>
+      <li><b>Wrong target:</b> the satire lands on kids instead of the systems built to hold their attention.</li>
+    </ul>
+    <h3>Misuse risks</h3>
+    <ul class="tight small">
+      <li><b>Taken as fact:</b> the comic could be presented as how AI really works, or as settled science. Research on social media and youth mental health is contested; the game makes no scientific claim.</li>
+      <li><b>It uses the hooks it critiques:</b> cute collectibles and “one more turn”. It stops after six nights, with no accounts, streaks, ads or data collection.</li>
+      <li><b>Generated art:</b> the comic panels came from an image model trained on unknown work. They’re labeled, the prompts are published, and nothing inside the game is generated.</li>
+    </ul>
+    <h3>Next</h3>
+    <p class="small">Run the protocol · a debrief guide for teachers · print-and-play edition · stronger bots · a text-only board for screen readers.</p>
+  </section>
 </div>
 
 </main>
 
 <footer>
-  <b>Links</b> Play: burakdon.github.io/RotMania · Comic: burakdon.github.io/RotMania/#comicbook · Code, rulebook and prompts: github.com/burakdon/RotMania &nbsp; <b>References</b> Bogost, <i>Persuasive Games: The Expressive Power of Videogames</i>, MIT Press 2007 · Miller, Explanation in Artificial Intelligence: Insights from the Social Sciences, <i>Artificial Intelligence</i> 267, 2019 · Jacovi &amp; Goldberg, Towards Faithfully Interpretable NLP Systems: How Should We Define and Evaluate Faithfulness?, ACL 2020 · IJsselsteijn, de Kort &amp; Poels, <i>The Game Experience Questionnaire</i>, TU Eindhoven 2013.
+  <b>Links</b> Play: burakdon.github.io/RotMania · Comic: burakdon.github.io/RotMania/#comicbook · Code, rulebook and prompts: github.com/burakdon/RotMania &nbsp; <b>References</b> Bogost, <i>Persuasive Games: The Expressive Power of Videogames</i>, MIT Press 2007 · IJsselsteijn, de Kort &amp; Poels, <i>The Game Experience Questionnaire</i>, TU Eindhoven 2013.
 </footer>
 
 </div>
