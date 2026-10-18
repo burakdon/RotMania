@@ -1,0 +1,27 @@
+import { Comic } from './comic/Comic';
+import { ComicBook } from './comic/ComicBook';
+import { useStore } from './store';
+import { GameScreen } from './ui/Game';
+import { Handbook } from './ui/Handbook';
+import { Lobby, Results, Title } from './ui/Screens';
+
+export function App() {
+  const screen = useStore((s) => s.screen);
+  const go = useStore((s) => s.go);
+  switch (screen) {
+    case 'title':
+      return <Title />;
+    case 'comic':
+      return <Comic onDone={() => go('lobby')} onBook={() => go('comicbook')} />;
+    case 'comicbook':
+      return <ComicBook onClose={() => go('title')} onPlay={() => go('lobby')} />;
+    case 'lobby':
+      return <Lobby />;
+    case 'game':
+      return <GameScreen />;
+    case 'results':
+      return <Results />;
+    case 'handbook':
+      return <Handbook onClose={() => go('title')} />;
+  }
+}

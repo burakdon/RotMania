@@ -1,0 +1,1 @@
+{"name":"rotmania","version":"0.1.0","private":true,"scripts":{"build":"node build.js","sim":"node sim/simulate.js 400 4","smoke":"node sim/ui-smoke.js"},"devDependencies":{"jsdom":"^25.0.1"}}
