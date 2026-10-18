@@ -39,7 +39,10 @@ small { opacity: 0.75; }
 .seg.small button { padding: 4px 10px; font-size: 13px; }
 
 /* ───────────── title ───────────── */
-.title-screen { position: fixed; inset: 0; background: #202024; }
+.title-screen { position: fixed; inset: 0; background: #0b0b0d; overflow: hidden; }
+/* the art is wider than the screen so Darth Berry sits right of the title */
+.title-art { position: absolute; top: 0; left: 0; width: 125%; height: 100%; object-fit: cover; object-position: 50% 28%; display: block; }
+.title-shade { position: absolute; inset: 0; background: linear-gradient(90deg, #000d 0%, #0009 30%, #0000 55%); }
 .title-overlay { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: center; padding-left: 7vw; }
 .title-overlay > * { pointer-events: auto; }
 .title-overlay h1 {
@@ -50,6 +53,11 @@ small { opacity: 0.75; }
 .title-cap { font-family: var(--type); background: var(--paper); border: 3px solid var(--ink); box-shadow: var(--hard); padding: 12px 16px; max-width: 420px; font-size: 16px; line-height: 1.4; }
 .title-btns { display: flex; gap: 16px; margin: 26px 0 10px; }
 .title-small { font-family: var(--type); color: #bbb; font-size: 13px; }
+@media (max-aspect-ratio: 4/5) {
+  .title-art { width: 100%; object-position: 50% 30%; }
+  .title-shade { background: linear-gradient(0deg, #000e 0%, #0009 38%, #0000 62%); }
+  .title-overlay { justify-content: flex-end; padding: 0 6vw 7vh; }
+}
 
 /* ───────────── lobby ───────────── */
 .lobby { position: fixed; inset: 0; display: grid; place-items: center; background: #18181b repeating-linear-gradient(115deg, #0000 0 22px, #ffffff06 22px 24px); padding: 16px; }

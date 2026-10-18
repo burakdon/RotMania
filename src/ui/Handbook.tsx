@@ -75,7 +75,7 @@ export function Handbook({ onClose }: { onClose?: () => void }) {
             <div className="hb-title">ROTMANIA</div>
             <div className="hb-sub">2048</div>
             <div className="hb-cover-k">RULEBOOK</div>
-            <div className="hb-cover-meta">2–4 players · about 45 minutes · ages 12+</div>
+            <div className="hb-cover-meta">2–4 players · 30–45 minutes · ages 12+</div>
           </div>
         </Page>
 

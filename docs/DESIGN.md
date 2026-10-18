@@ -1,6 +1,6 @@
 # RotMania 2048: game design (v0.6)
 
-A worker-placement strategy game for 2–4 players, about 45 minutes, with a noir comic that tells the backstory. This document is the source of truth for the story and the rules; the code in `src/game/` implements exactly what is written here.
+A worker-placement strategy game for 2–4 players, 30–45 minutes, with a noir comic that tells the backstory. This document is the source of truth for the story and the rules; the code in `src/game/` implements exactly what is written here.
 
 For why this exists and how it connects to Responsible AI, see [PROJECT.md](PROJECT.md).
 

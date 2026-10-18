@@ -2,7 +2,7 @@
 
 A creative Responsible AI artifact: a noir comic plus a playable strategy game that makes the harms of engagement-optimizing AI legible to people who would never read a paper about them.
 
-> This is a working draft for the final project. The sections on evaluation describe what has been done (design iteration, automated balance testing) and what is planned (playtests). No user-study results are reported here yet.
+> This is a working draft for the AIPI 590 (Explainable AI) final project at Duke. The sections on evaluation describe what has been done (design iteration, automated balance testing) and what is planned (playtests). No user-study results are reported here yet.
 
 ## 1. Motivation
 
@@ -24,7 +24,7 @@ Two constraints shaped every decision:
 | Part | What it is |
 | --- | --- |
 | *The Berry That Came Back* | An 8-page comic: 17 illustrated panels plus 2 lettering-only panels. Still frames, black-and-white noir with color only on the central figures, typewriter captions and speech balloons. |
-| *RotMania 2048* (game) | 2–4 players, about 45 minutes. Worker placement on a city map over six nights: gather resources, deprogram brainrots into allies, grow your resistance cell, broadcast against Darth Berry's feed. Hot-seat and bots. |
+| *RotMania 2048* (game) | 2–4 players, 30–45 minutes. Worker placement on a city map over six nights: gather resources, deprogram brainrots into allies, grow your resistance cell, broadcast against Darth Berry's feed. Hot-seat and bots. |
 | Ink renderer | A reusable WebGL pipeline that turns 3D scenes into comic art (outlines, halftone, selective color). It draws the game board, the card portraits and the fallback comic panels. |
 | Rules engine and simulator | A deterministic, tested rules engine plus heuristic bots for balance testing. |
 
@@ -87,7 +87,7 @@ Other decisions:
 ### Planned (suggested protocol for the expo)
 
 - **Participants:** 8–12 playtesters in groups of 3, ideally including people outside the course.
-- **Procedure:** read the comic (about 4 minutes), play one game with a facilitator (about 45 minutes), then a short survey and 5-minute interview.
+- **Procedure:** read the comic (about 4 minutes), play one game with a facilitator (30–45 minutes), then a short survey and 5-minute interview.
 - **Measures:**
   - Enjoyment: a short Likert block, e.g. from the Game Experience Questionnaire.
   - Perceived preachiness: "The game was trying to teach me something" (1–5).

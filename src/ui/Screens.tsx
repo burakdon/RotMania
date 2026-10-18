@@ -1,57 +1,25 @@
 // Title, lobby and results, in noir.
-import { Canvas } from '@react-three/fiber';
-import { useEffect, useMemo, useState } from 'react';
-import * as THREE from 'three';
+import { useEffect, useState } from 'react';
 import { BRAINROTS } from '../game/cards';
 import { OBJECTIVES } from '../game/content';
 import { standings, type SeatConfig } from '../game/engine';
+import { PANEL_ART } from '../comic/art';
 import { victory } from '../comic/panels';
 import { renderCustom } from '../comic/render';
-import { NoirEffect } from '../noir/NoirEffect';
-import { markHero } from '../noir/pipeline';
-import { buildBuilding, buildRain, buildStreetLamp } from '../noir/props';
 import { useStore } from '../store';
 import { preloadPortraits } from '../toys/portraits';
-import { buildDarthBerry } from '../toys/build';
 import { Star } from './icons';
-
-function TitleScene() {
-  const scene = useMemo(() => {
-    const g = new THREE.Group();
-    const db = markHero(buildDarthBerry());
-    db.scale.setScalar(1.6);
-    db.position.x = 0.2;
-    g.add(db);
-    g.add(buildStreetLamp(5.5).translateX(-1.4).translateZ(-0.5));
-    for (let i = 0; i < 8; i++) g.add(buildBuilding(2.6, 5 + (i % 3) * 2.2, 2.6, '#57575d', true, 31 + i).translateX(-10 + i * 2.9).translateZ(-6 - (i % 2) * 1.6));
-    g.add(buildRain(420, [14, 12, 8], [0, 5, -1], 9, { at: [1.6, 1.4, 7.2], r: 3 }));
-    return g;
-  }, []);
-  return (
-    <>
-      <color attach="background" args={['#202024']} />
-      <ambientLight intensity={0.3} />
-      <spotLight position={[-0.5, 5.4, -0.5]} angle={0.6} penumbra={0.5} intensity={220} decay={1.6} />
-      <directionalLight position={[3, 3, -4]} intensity={1.4} color="#ff4d6d" />
-      <directionalLight position={[-4, 6, 4]} intensity={0.5} />
-      <mesh rotation-x={-Math.PI / 2}>
-        <planeGeometry args={[60, 60]} />
-        <meshStandardMaterial color="#3a3a3e" roughness={0.2} metalness={0.4} />
-      </mesh>
-      <primitive object={scene} />
-      <NoirEffect lineWidth={1.4} dotSize={4.5} grain={0.04} contrast={1.35} />
-    </>
-  );
-}
 
 export function Title() {
   const go = useStore((s) => s.go);
   useEffect(() => preloadPortraits(BRAINROTS.map((b) => b.id)), []);
   return (
     <div className="title-screen">
-      <Canvas camera={{ position: [1.6, 1.4, 7.2], fov: 38 }} dpr={[1, 1.5]} onCreated={({ camera }) => camera.lookAt(-0.2, 2.1, 0)}>
-        <TitleScene />
-      </Canvas>
+      <picture>
+        <source media="(max-aspect-ratio: 4/5)" srcSet={PANEL_ART.splash} />
+        <img className="title-art" src={PANEL_ART.skyline} alt="Darth Berry looms over the city at night" />
+      </picture>
+      <div className="title-shade" />
       <div className="title-overlay">
         <h1>ROTMANIA</h1>
         <div className="title-sub">2048</div>
@@ -61,7 +29,7 @@ export function Title() {
           <button className="go alt" onClick={() => go('lobby')}>Play</button>
           <button className="go alt" onClick={() => go('handbook')}>Rulebook</button>
         </div>
-        <div className="title-small">2–4 players · about 45 minutes · bots included</div>
+        <div className="title-small">2–4 players · 30–45 minutes · bots included</div>
       </div>
     </div>
   );
