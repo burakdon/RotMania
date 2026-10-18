@@ -19,7 +19,8 @@ import { buildMeeple, buildResToken } from './tokens';
 
 export function CityScene({ game, viewer, onPad }: { game: GameState; viewer: number; onPad: (s: SpaceId) => void }) {
   return (
-    <Canvas shadows dpr={[1, 1.75]} camera={{ position: [0, 17, 16.5], fov: 40, near: 0.5, far: 120 }} gl={{ antialias: false }}>
+    <Canvas shadows dpr={[1, 1.25]} frameloop="demand" camera={{ position: [0, 17, 16.5], fov: 40, near: 0.5, far: 120 }} gl={{ antialias: false, powerPreference: 'low-power' }}>
+      <FrameCap fps={30} />
       <color attach="background" args={['#141417']} />
       <Suspense fallback={null}>
         <Lights />
@@ -38,6 +39,27 @@ export function CityScene({ game, viewer, onPad }: { game: GameState; viewer: nu
       </Suspense>
     </Canvas>
   );
+}
+
+/**
+ * The board only has gentle idle motion (pulsing rings, squishing toys, film grain), so draw it
+ * at most `fps` times a second instead of at the display's refresh rate. Keeps laptops cool.
+ */
+function FrameCap({ fps }: { fps: number }) {
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    let raf = 0;
+    let last = 0;
+    const tick = (t: number) => {
+      raf = requestAnimationFrame(tick);
+      if (t - last < 1000 / fps - 2) return;
+      last = t;
+      invalidate();
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [fps, invalidate]);
+  return null;
 }
 
 function Lights() {
