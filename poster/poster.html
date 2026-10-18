@@ -74,7 +74,7 @@ header {
 }
 .headline { max-width: 13.2in; }
 .headline .sub {
-  font-family: var(--body); font-weight: 700; font-size: 38pt; line-height: 1.12; color: #fff; text-wrap: balance;
+  font-family: var(--body); font-weight: 700; font-size: 33pt; line-height: 1.12; color: #fff; text-wrap: balance;
 }
 .headline .sub em { font-style: normal; color: var(--gold); }
 .headline .who {
@@ -244,6 +244,7 @@ svg text { font-family: var(--label); }
   margin-top: 0.14in; background: var(--red); color: #fff; border: 0.05in solid var(--ink);
   padding: 0.1in 0.18in; font-family: var(--display); font-size: 29pt; letter-spacing: 0.04em; line-height: 1.05;
 }
+.aside { font-family: var(--type); font-size: 16pt; line-height: 1.25; margin-top: 0.08in; color: var(--red); }
 .invite small { display: block; font-family: var(--body); font-size: 15.5pt; letter-spacing: 0; line-height: 1.2; margin-top: 0.03in; }
 
 /* ───────── footer ───────── */
@@ -262,7 +263,7 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
 <header>
   <div class="brand"><h1>ROTMANIA</h1><span class="year">2048</span></div>
   <div class="headline">
-    <div class="sub">A noir comic and a strategy game about <em style="white-space: nowrap">engagement-optimizing AI</em>, built to be played, not lectured.</div>
+    <div class="sub">A strategy game about <em style="white-space: nowrap">engagement-optimizing AI</em> accompanied by a noir comic. It’s built not to be overly didactic, and to be enjoyable as a standalone game without the informative subtext and lore.</div>
     <div class="who"><b>Burak Donbekci</b> &nbsp;·&nbsp; AIPI 590: Explainable AI &nbsp;·&nbsp; Duke University</div>
   </div>
   <div class="qrs">
@@ -278,21 +279,21 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
 <div class="col">
   <section class="panel">
     <h2><span class="n">01</span>The question</h2>
-    <div class="question">Can a short comic and a skill-based board game help anyone recognize how engagement-optimizing AI causes harm, and how people push back, without it feeling like a lecture?</div>
+    <div class="question">Can a skill-based board game help anyone recognize how engagement-optimizing AI causes harm, and how people push back, without it feeling like a lecture? And of course while still being fun and enjoyable!</div>
     <p>Systems tuned for engagement shape what billions of people see, and young people use them most. Ideas like <b>specification gaming</b> and <b>red-teaming</b> rarely reach the people most affected.</p>
-    <p><b>“Italian brainrot”</b>, a meme genre of absurd AI-made characters, is itself a product of generative AI and recommendation feeds. Its audience already knows the look and finds it funny. That makes it the vehicle.</p>
+    <p><b>“Italian brainrot”</b>, a meme genre of absurd AI-made characters, is itself a product of generative AI and recommendation feeds. Its audience already knows the look and finds it funny. That makes it a not-so-innocent vehicle.</p>
   </section>
 
   <section class="panel grow">
     <h2><span class="n">02</span>The story</h2>
     <p class="small"><b>The Berry That Came Back</b>, an 8-page comic. A toy strawberry thrown from a car is buried under a data center and soaks up everything that leaks through the floor. What climbs out runs the city by 2048.</p>
     <div class="comic">
-      <div class="cp"><img src="../src/comic/art/toss.jpg" alt="" style="object-position: 45% 50%" /><div class="caption bl">She didn’t even look back.</div></div>
+      <div class="cp"><img src="../src/comic/art/toss.jpg" alt="" style="object-position: 45% 50%" /><div class="caption bl">Abandoned toy. Engagement fell off; off to the next trend.</div></div>
       <div class="cp"><img src="../src/comic/art/datacenter.jpg" alt="" style="object-position: 50% 30%" /><div class="caption tl">2031. They built a data center on top of it.</div></div>
       <div class="cp"><img src="../src/comic/art/underground.jpg" alt="" /><div class="caption tr">Every feed, every 3&nbsp;a.m. doomscroll soaked through the floor.</div></div>
       <div class="cp"><img src="../src/comic/art/splash.jpg" alt="" style="object-position: 50% 40%" /><div class="caption tl">What climbed out called itself Darth Berry.</div></div>
       <div class="cp"><img src="../src/comic/art/screens.jpg" alt="" /><div class="caption bl">It learned what we’d watch, and fed us more.</div></div>
-      <div class="cp"><img src="../src/comic/art/kids.jpg" alt="" style="object-position: 50% 35%" /><div class="caption tl">The kids went first.</div></div>
+      <div class="cp"><img src="../src/comic/art/kids.jpg" alt="" style="object-position: 50% 35%" /><div class="caption tl">Captured everyone, starting with the youth.</div></div>
     </div>
     <div class="credit">Panels generated with ChatGPT’s image tool from my style tile, character sheets and per-panel prompts. Story, script and lettering are mine. Every prompt is published in the repo.</div>
   </section>
@@ -307,27 +308,24 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
       <span>2–4 players</span><span>30–45 min</span><span>6 nights</span><span>worker placement</span><span>16 spaces in 7 districts</span>
     </div>
     <div class="loop">
-      <div class="step"><b><i>1</i> Place</b>Send one of your 2–5 agents to a space. Taken spaces close, so read the table.</div>
-      <div class="step"><b><i>2</i> Gather</b>Grass, GPU coolant, circuit boards, glitter, copper. Tonight’s general charges a toll.</div>
+      <div class="step"><b><i>1</i> Place</b>Send one of your 2–5 agents to a space. Taken spaces close for the night.</div>
+      <div class="step"><b><i>2</i> Gather</b>Grass, GPU coolant, circuit boards, glitter, copper. Tonight’s general charges a toll depending on where they are.</div>
       <div class="step"><b><i>3</i> Deprogram</b>Turn brainrots from the Clinic into allies whose powers build your engine.</div>
       <div class="step"><b><i>4</i> Broadcast</b>Hijack the feed for points. Feed agents grass at check-ins or lose points.</div>
     </div>
     <h3>42 brainrots, 6 generals, 1 Darth Berry</h3>
     <img class="cast" src="img/cast.jpg" alt="The procedural cast: 42 brainrot toys and six generals in black and gold uniforms" />
-    <p class="small" style="margin-top: 0.08in">All in-game art is <b>procedural 3D built in code</b>, inked by a custom WebGL renderer. Underneath: a seeded rules engine, bots and a 13-page rulebook.</p>
+    <p class="small" style="margin-top: 0.08in">All in-game art is <b>procedural 3D built in code</b>, inked by a custom WebGL renderer. Underneath: a seeded rules engine, bots, a 13-page rulebook and the backstory comic.</p>
   </section>
 
   <section class="panel grow">
     <h2><span class="n">04</span>Design decisions</h2>
-    <div class="vs">
-      <div class="old"><b>v0.5 · Soft Power</b>An “ask the AI” card: a free wild resource that quietly disabled your engine.</div>
-      <div class="arrow">→</div>
-      <div><b>v0.6 · 2048</b>Mechanic cut. The lesson moved into the world, the villain and the names.</div>
-    </div>
     <ul class="tight small">
-      <li><b>It worked, and it preached.</b> Bogost argues games persuade through their rules. This one argues through its fiction on purpose; the playtests check whether that still lands.</li>
-      <li><b>Fun first, quiet in play.</b> It must stand as a good euro game, with no character select so skill decides. Responsible AI lives in names, flavor and story, never in a rule that rewards the “right” answer.</li>
+      <li><b>Fun first, quiet lesson.</b> It has to hold up as a euro game for someone who never reads the comic. Bogost argues games persuade through their rules; this one keeps its rules neutral, so it never feels like a quiz.</li>
+      <li><b>Skill over luck.</b> No character select, so everyone starts equal. Secret objectives differ, and worker placement means reading and blocking the table.</li>
+      <li><b>Noir with selective color.</b> A black-and-white ink city where only agents, brainrots and Darth Berry get color, so the eye finds what matters.</li>
       <li><b>A villain with a wound.</b> Darth Berry was thrown away, then fed garbage. Blame lands on incentives and training data, not on “evil AI”.</li>
+      <li><b>Borrow the look, not the characters.</b> The brainrot style is borrowed; every character is original. No real meme character, brand or person.</li>
     </ul>
   </section>
 </div>
@@ -336,19 +334,19 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
 <div class="col">
   <section class="panel">
     <h2><span class="n">05</span>Where Responsible AI lives</h2>
-    <p class="small" style="margin-bottom: 0.1in">In play the ideas stay in the fiction. This table is the part players never have to read.</p>
+    <p class="small" style="margin-bottom: 0.1in">In play the ideas stay in the fiction and the lore behind the characters. This table is the part players never have to read, but in my experience and opinion, the game is more engaging once all elements are considered. In some ways this game is engagement optimizing.</p>
     <table class="rai">
       <thead><tr><th>Course idea</th><th>Where it shows up</th></tr></thead>
       <tbody>
+        <tr><td>Red-teaming</td><td><span class="chip space">Red-Team the Racks</span> Probe the server farm for weak spots; it pays in parts.</td></tr>
+        <tr><td>Auditing &amp; interpretability</td><td><span class="chip space">Open the Archive</span> <q>Read what Darth Berry deleted.</q> Knowledge that pays off later.</td></tr>
+        <tr><td>Wellbeing</td><td>Check-ins: every agent needs Grass to stay grounded. Touch grass, literally.</td></tr>
+        <tr><td>Collective action</td><td>Resistance cells win by deprogramming brainrots into allies, not destroying them.</td></tr>
         <tr><td>Attention economy &amp; youth harms</td><td>The comic: a system that never fires a shot. <q>The kids went first. Then their parents.</q></td></tr>
         <tr><td>Specification gaming</td><td>Darth Berry’s goal, “be the newest thing”, is a proxy that turns harmful when optimized. <span class="chip gen">Commander Rewardhack</span> <q>Was told to maximize engagement. Found a shortcut.</q></td></tr>
         <tr><td>Training data &amp; provenance</td><td>The villain is trained on whatever leaked through the floor. A model is what it drinks.</td></tr>
         <tr><td>Recommender systems</td><td><span class="chip gen">The Recommender</span><span class="chip gen">Admiral Autoplay</span><span class="chip gen">General Scrollmaster</span><span class="chip gen">Colonel Clickbait</span> patrol the city and charge tolls. <q>Is wrong in a very specific way.</q></td></tr>
         <tr><td>Synthetic media</td><td><span class="chip gen">Major Deepfake</span> <q>Wears your face better than you do.</q></td></tr>
-        <tr><td>Red-teaming</td><td><span class="chip space">Red-Team the Racks</span> Probe the server farm for weak spots; it pays in parts.</td></tr>
-        <tr><td>Auditing &amp; interpretability</td><td><span class="chip space">Open the Archive</span> <q>Read what Darth Berry deleted.</q> Knowledge that pays off later.</td></tr>
-        <tr><td>Wellbeing</td><td>Check-ins: every agent needs Grass to stay grounded. Touch grass, literally.</td></tr>
-        <tr><td>Collective action</td><td>Resistance cells win by deprogramming brainrots into allies, not destroying them.</td></tr>
       </tbody>
     </table>
   </section>
@@ -356,11 +354,12 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
   <section class="panel grow">
     <h2><span class="n">06</span>Limits &amp; risks</h2>
     <ul class="tight small">
-      <li><b>Anthropomorphism.</b> Darth Berry wants revenge; real systems don’t want anything. Commander Rewardhack is the counterweight: the harm is in the objective.</li>
-      <li><b>Blaming kids.</b> Satire about screens can tip into blaming young people. The comic blames the system and the adults who set the rules; young playtesters will tell me if that lands.</li>
-      <li><b>Contested evidence.</b> The link between social media and youth mental health is debated. The game makes no scientific claim.</li>
-      <li><b>Generated art.</b> An image model with unknown training data drew the comic, for a story about AI-made content. I name the tension: every prompt and reference sheet is published, and nothing inside the game is generated.</li>
-      <li><b>Weak bots, accessibility.</b> Balance comes from one-move-lookahead bots. Colors have icon backups, but the 3D board has no screen-reader view yet.</li>
+      <li><b>It uses the hooks it critiques.</b> Collectible characters and “one more turn” are engagement tools too. The game has a hard stop after six nights, and no accounts, streaks, ads or data collection.</li>
+      <li><b>A person-shaped metaphor.</b> Darth Berry wants revenge. Real systems don’t want anything; they optimize the objective they’re given.</li>
+      <li><b>Satire can punch down.</b> Jokes about kids and screens can turn into blaming kids. The comic points at the system and the adults who set the rules; young playtesters will tell me if that holds.</li>
+      <li><b>Contested evidence.</b> Social media’s effect on youth mental health is debated. The game makes no scientific claim.</li>
+      <li><b>Generated art about generated content.</b> The comic panels come from an image model with unknown training data. They’re disclosed, every prompt is published, and nothing inside the game is generated.</li>
+      <li><b>Untested on people.</b> Balance comes from bots, not human players, and the 3D board has no screen-reader view yet.</li>
     </ul>
     <h3>Next</h3>
     <p class="small">Run the protocol and publish it · print-and-play edition · a facilitator guide pairing each general with a real case · stronger self-play bots · a text-only board.</p>
@@ -441,6 +440,7 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
       </g>
     </svg>
     <p class="chart-note">No single source decides the game. <b>11 rules tests pass</b>; all 6,000 bot games finish cleanly. Bots look one move ahead, so this is a balance smoke test, not proof of fun.</p>
+    <p class="aside">I actually tend to lose a lot still, unfortunately… to bots.</p>
   </section>
 
   <section class="panel grow">
@@ -452,7 +452,7 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
       <dt>Measure</dt><dd>Enjoyment (GEQ items, 1–5) · “The game was trying to teach me something” (1–5) · explain reward hacking, red-teaming, recommender in own words, before and after · “What is the story about?”</dd>
       <dt>Pass if</dt><dd>Enjoyment median ≥ 4, preachiness median ≤ 2, and at least half link the story to engagement-optimizing AI unprompted.</dd>
     </dl>
-    <div class="invite">Play a night with me at the expo<small>or scan “Play now” above. Your answers become the results section.</small></div>
+    <div class="invite">Scan “Play now” above</div>
   </section>
 </div>
 
