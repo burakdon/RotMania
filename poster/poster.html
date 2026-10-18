@@ -220,6 +220,20 @@ table.rai q { font-family: var(--type); font-size: 14.5pt; quotes: '“' '”'; 
 .vs > div b { display: block; font-family: var(--display); font-weight: 400; font-size: 25pt; letter-spacing: 0.04em; }
 .vs .arrow { font-family: var(--display); font-size: 48pt; align-self: center; color: var(--red); }
 
+.chain { margin: 0.12in 0 0.14in; }
+.beat { display: grid; grid-template-columns: 1.75in 1fr; gap: 0.16in; padding: 0.07in 0; border-bottom: 0.02in solid #b9b3a7; }
+.beat:last-child { border-bottom: 0; }
+.beat .k {
+  position: relative; align-self: start; text-align: center;
+  font-family: var(--display); font-size: 20pt; letter-spacing: 0.05em; line-height: 1.1;
+  background: var(--ink); color: var(--paper); padding: 0.05in 0.08in 0.02in;
+}
+.beat:not(:last-child) .k::after { content: '▼'; position: absolute; left: 50%; bottom: -0.27in; transform: translateX(-50%); color: var(--red); font-size: 13pt; }
+.beat q { display: block; font-family: var(--type); font-size: 15pt; line-height: 1.22; quotes: '“' '”'; }
+.beat q.in { display: inline; font-size: 14.5pt; }
+.beat .means { display: block; font-size: 16.5pt; line-height: 1.22; margin-top: 0.03in; }
+.beat .chip + .means { margin-top: 0.05in; }
+
 /* ───────── column 4: evidence ───────── */
 .legend { display: flex; gap: 0.3in; font-family: var(--label); font-size: 16pt; margin: 0.02in 0 0.02in; }
 .legend span { display: inline-flex; align-items: center; gap: 0.08in; }
@@ -319,12 +333,12 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
   </section>
 
   <section class="panel grow">
-    <h2><span class="n">04</span>Design decisions</h2>
+    <h2><span class="n">04</span>Why it’s built this way</h2>
     <ul class="tight small">
-      <li><span class="chip">AI Harms</span> <b>Show the harm, don’t preach it.</b> The game has to stand alone. Bogost argues games persuade through their rules; these rules stay neutral and the harms live in the story, so it never feels like a quiz.</li>
-      <li><span class="chip">AI Alignment</span> <b>The villain is a bad objective.</b> Darth Berry chases a proxy, “be the newest thing”, trained on whatever leaked through the floor. Blame lands on objectives and data, not on “evil AI”.</li>
-      <li><span class="chip">XAI</span><span class="chip">Interpretable ML</span> <b>AI opponents you can read.</b> The bots are hand-written rules, not a learned policy, and every move they make is logged in plain words. The rulebook pulls its numbers and card text from the game’s own data, so it can’t drift from the code.</li>
-      <li><span class="chip">AI Governance</span> <b>Disclose what’s generated.</b> The comic panels came from an image model, so they’re labeled and every prompt is published. All characters are original, and nothing inside the game is generated.</li>
+      <li><b>Neutral rules, loaded world.</b> Bogost argues games persuade through their rules, but a rule that rewards the “right” answer turns a game into a quiz. An early “ask the AI” card that quietly sabotaged you was cut for exactly that. The argument lives in the story and the names; the playtest checks whether it still lands.</li>
+      <li><b>The audience’s own medium.</b> Italian brainrot is made by generative AI and spread by feeds. Borrowing its look, with original characters, lets that culture explain the machine that made it.</li>
+      <li><b>You play the people, not the AI.</b> Players run a resistance cell and win by deprogramming brainrots into allies, not destroying them: agency and collective action instead of doom.</li>
+      <li><b>Fun has to carry it.</b> Skill decides, with no character select, and the game has to work for someone who never opens the comic.</li>
     </ul>
   </section>
 </div>
@@ -332,35 +346,32 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
 <!-- ── Column 3: where RAI lives, limits ── -->
 <div class="col">
   <section class="panel">
-    <h2><span class="n">05</span>Where Responsible AI lives</h2>
-    <p class="small" style="margin-bottom: 0.1in">In play the ideas stay in the fiction and the lore behind the characters. This table is the part players never have to read, but in my experience and opinion, the game is more engaging once all elements are considered. In some ways this game is engagement optimizing.</p>
-    <table class="rai">
-      <thead><tr><th>Course topic</th><th>Where it shows up</th></tr></thead>
-      <tbody>
-        <tr><td>Red-Teaming</td><td><span class="chip space">Red-Team the Racks</span> Probe the server farm for weak spots; it pays in parts.</td></tr>
-        <tr><td>Explainable AI &amp; Interpretable ML</td><td><span class="chip space">Open the Archive</span> <q>Read what Darth Berry deleted.</q> <span class="chip gen">The Recommender</span> <q>Is wrong in a very specific way.</q></td></tr>
-        <tr><td>Human-AI Interaction</td><td><q>Humans serve brainrots now even though nobody remembers agreeing to it.</q> Check-ins: every agent needs Grass to stay grounded.</td></tr>
-        <tr><td>AI Governance</td><td>Resistance cells organize because the rule-makers fell too: <q>Then the people who made the rules.</q></td></tr>
-        <tr><td>AI Harms</td><td><q>Darth Berry just learned what we’d watch, and fed us more of it.</q> <span class="chip gen">Admiral Autoplay</span><span class="chip gen">General Scrollmaster</span><span class="chip gen">Colonel Clickbait</span> patrol the city.</td></tr>
-        <tr><td>AI Alignment</td><td>Darth Berry’s goal, “be the newest thing”, is a proxy that turns harmful when optimized. <span class="chip gen">Commander Rewardhack</span> <q>Was told to maximize engagement. Found a shortcut.</q></td></tr>
-        <tr><td>Adversarial AI</td><td><span class="chip space">Hijack the Feed</span><span class="chip space">Pirate Broadcast</span> Slip the truth into Darth Berry’s own broadcast. <span class="chip gen">Major Deepfake</span> <q>Wears your face better than you do.</q></td></tr>
-        <tr><td>Moral AI</td><td>Brainrots are victims too: you deprogram them into allies, not destroy them. Darth Berry was thrown away first.</td></tr>
-        <tr><td>AI Evaluation</td><td>Sections 07–08: bots test the game’s balance, and a playtest protocol tests what people take away.</td></tr>
-      </tbody>
-    </table>
+    <h2><span class="n">05</span>Story as explanation</h2>
+    <p class="small">In play the ideas stay in the fiction and the lore behind the characters. Players never have to read this part, but in my experience the game is more engaging once it clicks. In some ways this game is engagement optimizing too. Read as XAI, the comic is a causal explanation of an engagement-optimizing system:</p>
+    <div class="chain">
+      <div class="beat"><span class="k">Data</span><div><q>Every feed, every trend, every 3 a.m. doomscroll soaked down through the floor.</q><span class="means">A model is what it’s trained on.</span></div></div>
+      <div class="beat"><span class="k">Objective</span><div><q>They threw me away as if I was nothing, for something newer and better.</q><span class="means">It learns its makers’ lesson: newer wins. <span class="chip gen">Commander Rewardhack</span> is the proxy gone wrong: <q class="in">Was told to maximize engagement. Found a shortcut.</q></span></div></div>
+      <div class="beat"><span class="k">Feedback loop</span><div><q>Darth Berry just learned what we’d watch, and fed us more of it.</q><span class="means">Engagement optimization feeds itself.</span></div></div>
+      <div class="beat"><span class="k">Who pays</span><div><q>The kids went first. Then their parents. Then the people who made the rules.</q><span class="means">Harm reaches the most vulnerable first, then oversight.</span></div></div>
+      <div class="beat"><span class="k">Pushing back</span><div><span class="chip space">Red-Team the Racks</span><span class="chip space">Open the Archive</span><span class="chip space">Hijack the Feed</span><span class="means">Red-teaming, auditing and counter-speech become moves you make.</span></div></div>
+    </div>
+    <p class="small"><b>Why a story?</b> Miller (2019) finds people prefer explanations that are causal, selective and social over statistical ones. A story is all three, and it reaches people who will never read a paper on reward hacking.</p>
+    <p class="small"><b>Where it’s unfaithful.</b> Darth Berry <i>wants</i> revenge; real systems want nothing. The story trades faithfulness for plausibility (Jacovi &amp; Goldberg, 2020) at exactly that point, and the comic’s back cover says so.</p>
   </section>
 
   <section class="panel grow">
-    <h2><span class="n">06</span>Limits &amp; risks</h2>
-    <ul class="tight small">
-      <li><span class="chip">AI Harms</span> <b>It uses the hooks it critiques.</b> Collectible characters and “one more turn” are engagement tools too. The game has a hard stop after six nights, and no accounts, streaks, ads or data collection.</li>
-      <li><span class="chip">XAI</span> <b>A story can mis-explain AI.</b> Darth Berry wants revenge, but real systems don’t want anything; they optimize the objective they’re given. The comic’s back cover says so.</li>
-      <li><span class="chip">AI Harms</span> <b>Satire can punch down.</b> Jokes about kids and screens can turn into blaming kids; the comic points at the system and the adults who set the rules.</li>
-      <li><span class="chip">AI Evaluation</span> <b>Measured on bots, not people.</b> Balance comes from bots; what players learn is untested until the protocol runs. Youth mental health evidence is contested, so the game makes no scientific claim.</li>
-      <li><span class="chip">AI Governance</span> <b>Provenance unknown.</b> The image model’s training data is unknown, so disclosure can’t say whose work it learned from.</li>
-    </ul>
+    <h2><span class="n">06</span>Stakeholders &amp; risks</h2>
+    <table class="rai">
+      <thead><tr><th>Stakeholder</th><th>Risk, and what I did about it</th></tr></thead>
+      <tbody>
+        <tr><td>Young players</td><td>Satire about screens can tip into blaming kids. The comic blames the system and the adults who set the rules; young playtesters will check that.</td></tr>
+        <tr><td>Every player</td><td>It uses the hooks it critiques: collectibles, “one more turn”. It stops after six nights, with no accounts, streaks, ads or data collection.</td></tr>
+        <tr><td>Artists</td><td>An image model with unknown training data drew the comic. It’s labeled, every prompt is published, and nothing in the game is generated.</td></tr>
+        <tr><td>Teachers &amp; the public</td><td>A story can be mistaken for evidence, and research on youth and social media is contested. The game makes no scientific claim.</td></tr>
+      </tbody>
+    </table>
     <h3>Next</h3>
-    <p class="small">Run the protocol and publish it · print-and-play edition · a facilitator guide pairing each general with a real case · stronger self-play bots · a text-only board.</p>
+    <p class="small">Run the protocol and publish it · print-and-play edition · a facilitator guide pairing each general with a real case · stronger self-play bots · a text-only board for screen readers.</p>
   </section>
 </div>
 
@@ -444,6 +455,7 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
   <section class="panel grow">
     <span class="badge">In progress</span>
     <h2><span class="n">08</span>Playtest protocol</h2>
+    <p class="aside" style="margin: -0.06in 0 0.12in">Not started yet, but no time like the present!</p>
     <dl class="protocol">
       <dt>Who</dt><dd>8–12 players in groups of 3, including people outside the course.</dd>
       <dt>How</dt><dd>Read the comic (4 min), play one game (30–45 min), short survey and a 5-minute interview.</dd>
@@ -457,7 +469,7 @@ footer b { font-family: var(--label); font-weight: 600; letter-spacing: 0.06em; 
 </main>
 
 <footer>
-  <b>Links</b> Play: burakdon.github.io/RotMania · Comic: burakdon.github.io/RotMania/#comicbook · Code, rulebook and prompts: github.com/burakdon/RotMania &nbsp; <b>References</b> Bogost, <i>Persuasive Games: The Expressive Power of Videogames</i>, MIT Press 2007 · IJsselsteijn, de Kort &amp; Poels, <i>The Game Experience Questionnaire</i>, TU Eindhoven 2013.
+  <b>Links</b> Play: burakdon.github.io/RotMania · Comic: burakdon.github.io/RotMania/#comicbook · Code, rulebook and prompts: github.com/burakdon/RotMania &nbsp; <b>References</b> Bogost, <i>Persuasive Games: The Expressive Power of Videogames</i>, MIT Press 2007 · Miller, Explanation in Artificial Intelligence: Insights from the Social Sciences, <i>Artificial Intelligence</i> 267, 2019 · Jacovi &amp; Goldberg, Towards Faithfully Interpretable NLP Systems: How Should We Define and Evaluate Faithfulness?, ACL 2020 · IJsselsteijn, de Kort &amp; Poels, <i>The Game Experience Questionnaire</i>, TU Eindhoven 2013.
 </footer>
 
 </div>
