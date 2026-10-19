@@ -2,7 +2,7 @@
 
 A creative Responsible AI artifact: a noir comic plus a playable strategy game that makes the harms of engagement-optimizing AI legible to people who would never read a paper about them.
 
-> This is a working draft for the AIPI 590 (Explainable AI) final project at Duke. The sections on evaluation describe what has been done (design iteration, automated balance testing) and what is planned (playtests). No user-study results are reported here yet.
+> Final project for AIPI 590: Explainable AI at Duke. Evaluation so far covers design iteration and automated balance testing. The playtest protocol in §6 has not been run yet, so no user-study results are reported here.
 
 ## 1. Motivation
 
@@ -44,7 +44,7 @@ The connections are deliberately quiet in play, and spelled out here (and on the
 | **Human-AI interaction / wellbeing** | Check-ins: every agent needs Grass ("touch grass") to stay grounded. | A real economic pressure, themed lightly. |
 | **Governance / collective action** | Resistance cells, broadcasts that "cut through the feed", deprogramming brainrots instead of destroying them. | Winning means building something, not smashing it. |
 
-### Related work (to ground the poster; verify citations before printing)
+### Related work
 
 - Ian Bogost, *Persuasive Games: The Expressive Power of Videogames* (MIT Press, 2007): procedural rhetoric, i.e. games argue through their rules. RotMania deliberately keeps its argument in the fiction rather than the rules (§5).
 - Mary Flanagan and Helen Nissenbaum, *Values at Play in Digital Games* (MIT Press, 2014): a framework for designing values into games.
@@ -81,10 +81,10 @@ Other decisions:
 ### Done
 
 - **Rules correctness:** 11 automated tests cover setup, placement, the aging lineup, deprogramming and check-ins, plus full 2-, 3- and 4-player games run to completion.
-- **Balance:** bot-vs-bot simulation of 300 games per player count (results in [DESIGN.md](DESIGN.md#4-balance-bot-simulation)). Seat advantage was found and fixed by rotating the first player; Clinic capacity was found to cap allies at about 3 per player and was raised to scale with player count.
-- **Visual iteration:** each comic panel was rendered and reviewed; most were recomposed at least once (camera, lighting, staging).
+- **Balance:** bot-vs-bot simulation, 2,000 games per player count (`npm run sim -- 2000 3`; design notes in [DESIGN.md](DESIGN.md#4-balance-bot-simulation)). The first player won 49% of 3-player games in an earlier 300-game run; after the start was rotated (or given to whoever takes Morning Run), seats split 34/35/31%, with 50/50 at 2 players and 22/27/26/25% at 4. Clinic capacity capped allies at 3.4 per player and now scales with player count (4.7). Moving check-ins to after nights 3 and 6 cut the average check-in penalty from −3.1 to −1.3 points.
+- **Design iteration:** v0.5 → v0.6, cutting the "ask the AI" mechanic (§5). The comic moved from 3D-rendered panels to illustrated ones, made from a style tile, character sheets and one prompt per panel ([COMIC_PROMPTS.md](COMIC_PROMPTS.md)).
 
-### Planned (suggested protocol for the expo)
+### Planned: playtest protocol (not yet run)
 
 - **Participants:** 8–12 playtesters in groups of 3, ideally including people outside the course.
 - **Procedure:** read the comic (about 4 minutes), play one game with a facilitator (30–45 minutes), then a short survey and 5-minute interview.

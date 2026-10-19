@@ -1,5 +1,6 @@
 // The intro as a comic book: still panels appear one by one, pages slide past.
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { usePhone } from '../ui/viewMode';
 import { renderAll } from './render';
 import { PAGE_ASPECT, PAGES, type PanelSpec } from './story';
 
@@ -68,16 +69,21 @@ export function Comic({ onDone, onBook }: { onDone: () => void; onBook?: () => v
   }, [next, prev, onDone]);
 
   const last = page === PAGES.length - 1 && shown === panels.length;
+  const phone = usePhone();
   return (
     <div className="comic">
       <div className="comic-stage" onClick={() => { setAuto(false); next(); }}>
-        <div key={page} className="comic-page" style={{ aspectRatio: String(PAGE_ASPECT) }}>
-          {PAGES[page].title && <div className="comic-title">{PAGES[page].title}</div>}
-          {panels.map((p, i) => (
-            <Panel key={p.id} p={p} url={images[p.id]} visible={i < shown} />
-          ))}
-          <div className="comic-folio">{page + 1}</div>
-        </div>
+        {phone ? (
+          <FocusPanel key={current.id} p={current} url={images[current.id]} />
+        ) : (
+          <div key={page} className="comic-page" style={{ aspectRatio: String(PAGE_ASPECT) }}>
+            {PAGES[page].title && <div className="comic-title">{PAGES[page].title}</div>}
+            {panels.map((p, i) => (
+              <Panel key={p.id} p={p} url={images[p.id]} visible={i < shown} />
+            ))}
+            <div className="comic-folio">{page + 1}</div>
+          </div>
+        )}
       </div>
       <div className="comic-ui" onClick={(e) => e.stopPropagation()}>
         <button onClick={() => { setAuto(false); prev(); }} disabled={page === 0 && shown === 1}>‹</button>
@@ -95,6 +101,22 @@ export function Comic({ onDone, onBook }: { onDone: () => void; onBook?: () => v
           <button className="comic-skip" onClick={onDone}>Skip</button>
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Phones read one panel at a time at full width, so the lettering stays legible.
+ * Lettering is sized as if the whole page were scaled up to make this panel fill the screen.
+ */
+function FocusPanel({ p, url }: { p: PanelSpec; url?: string }) {
+  const [, , w, h] = p.rect;
+  const aspect = (w * PAGE_ASPECT) / h;
+  const width = Math.min(window.innerWidth - 20, (window.innerHeight - 90) * aspect);
+  const fontSize = Math.max(12, Math.min(17, (width / (w * PAGE_ASPECT)) * 0.0165));
+  return (
+    <div className="comic-focus" style={{ width, aspectRatio: String(aspect), fontSize }}>
+      <Panel p={{ ...p, rect: [0, 0, 1, 1] }} url={url} visible />
     </div>
   );
 }

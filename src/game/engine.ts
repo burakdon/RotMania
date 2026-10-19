@@ -40,6 +40,9 @@ function shuffle<T>(s: GameState, a: T[]): T[] {
 // ───────────────────────── helpers ─────────────────────────
 export const brainrot = (id: string): Brainrot => BRAINROT[id];
 const zero = (): Record<Res, number> => ({ grass: 0, coolant: 0, pcb: 0, glitter: 0, copper: 0 });
+/** "Cell Blu’s", but "Your" for the default human seat named You */
+export const possessive = (name: string) => (name === 'You' ? 'Your' : `${name}’s`);
+
 export const bagTotal = (b: Bag) => RES.reduce((a, r) => a + (b[r] ?? 0), 0);
 function addBag(a: Bag, b: Bag): Bag {
   const out: Bag = { ...a };
@@ -276,7 +279,7 @@ function place(s: GameState, p: Player, space: SpaceId, helper: number | undefin
   else p.agentsFree--;
   s.spaces[space].taken.push(p.id);
   p.placements.push({ space, helper });
-  const who = helper !== undefined ? `${p.name}’s ${brainrot(p.allies[helper]).name}` : p.name;
+  const who = helper !== undefined ? `${possessive(p.name)} ${brainrot(p.allies[helper]).name}` : p.name;
   const toll = tollFor(s, p, space);
   if (bagTotal(toll)) log(s, p.id, `${patrol(s).name} takes a bribe: ${bagText(toll)}.`, 'warn');
   s.last = { p: p.id, space };
@@ -394,7 +397,7 @@ function startRound(s: GameState, r: number) {
     }
     if (bagTotal(dawn)) {
       gain(p, dawn);
-      log(s, p.id, `${p.name}’s allies bring ${bagText(dawn)} at dawn.`, 'ally');
+      log(s, p.id, `${possessive(p.name)} allies bring ${bagText(dawn)} at dawn.`, 'ally');
     }
   }
   s.turn = s.firstPlayer;

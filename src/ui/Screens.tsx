@@ -2,13 +2,14 @@
 import { useEffect, useState } from 'react';
 import { BRAINROTS } from '../game/cards';
 import { OBJECTIVES } from '../game/content';
-import { standings, type SeatConfig } from '../game/engine';
+import { possessive, standings, type SeatConfig } from '../game/engine';
 import { PANEL_ART } from '../comic/art';
 import { victory } from '../comic/panels';
 import { renderCustom } from '../comic/render';
 import { useStore } from '../store';
 import { preloadPortraits } from '../toys/portraits';
 import { Star } from './icons';
+import { useSmallScreen, useView, type ViewMode } from './viewMode';
 
 export function Title() {
   const go = useStore((s) => s.go);
@@ -30,7 +31,29 @@ export function Title() {
           <button className="go alt" onClick={() => go('handbook')}>Rulebook</button>
         </div>
         <div className="title-small">2–4 players · 30–45 minutes · bots included</div>
+        <ViewToggle />
       </div>
+    </div>
+  );
+}
+
+const VIEWS: [ViewMode, string][] = [['auto', 'Auto'], ['phone', 'Phone'], ['desktop', 'Desktop']];
+
+function ViewToggle() {
+  const mode = useView((v) => v.mode);
+  const setMode = useView((v) => v.setMode);
+  const small = useSmallScreen();
+  return (
+    <div className="view-toggle">
+      <span>Layout</span>
+      <div className="seg small">
+        {VIEWS.map(([m, label]) => (
+          <button key={m} className={mode === m ? 'on' : ''} onClick={() => setMode(m)}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {mode === 'auto' && <small>using {small ? 'phone' : 'desktop'}</small>}
     </div>
   );
 }
@@ -108,7 +131,7 @@ export function Results() {
     <div className="results">
       <div className="results-art">{art ? <img src={art} alt="" /> : <div className="panel-inking">inking…</div>}</div>
       <div className="results-cap">
-        Dawn after night six. Darth Berry is still out there, hat low, coat buttoned. But {freed} brainrots walked out of the Clinic this week, and {broadcasts} broadcasts cut through the feed. <b>{win.name}</b>’s cell did the most. It’s a start.
+        Dawn after night six. Darth Berry is still out there, hat low, coat buttoned. But {freed} brainrots walked out of the Clinic this week, and {broadcasts} broadcasts cut through the feed. <b>{possessive(win.name)}</b> cell did the most. It’s a start.
       </div>
       <table className="score-table">
         <thead>
@@ -125,6 +148,9 @@ export function Results() {
             <tr key={p.id} className={i === 0 ? 'win' : ''}>
               <td style={{ color: p.color }}>
                 {i + 1}. {p.name}
+                <span className="tot-inline">
+                  <Star size={12} /> {sheet.total}
+                </span>
                 <small>{p.objectives.map((o) => OBJECTIVES[o].name).join(', ')}</small>
               </td>
               {cols.map(([k]) => (

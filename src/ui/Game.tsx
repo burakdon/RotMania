@@ -13,9 +13,15 @@ import { useGeneralPortrait } from '../toys/portraits';
 import { BrainrotCard } from './BrainrotCard';
 import { BagView, Meeple, ResIcon, Star } from './icons';
 import { Handbook } from './Handbook';
+import { PhoneGame } from './PhoneGame';
 import { useUI } from './uiStore';
+import { usePhone } from './viewMode';
 
 export function GameScreen() {
+  return usePhone() ? <PhoneGame /> : <DesktopGame />;
+}
+
+function DesktopGame() {
   const game = useStore((s) => s.game)!;
   const viewer = useStore((s) => s.viewer);
   const answer = useStore((s) => s.answer);
@@ -113,7 +119,7 @@ function TopBar({ game }: { game: GameState }) {
 }
 
 // ───────────────────────── players ─────────────────────────
-function PlayerList({ game, viewer }: { game: GameState; viewer: number }) {
+export function PlayerList({ game, viewer }: { game: GameState; viewer: number }) {
   return (
     <div className="plist">
       {game.players.map((p) => {
@@ -160,7 +166,7 @@ function PlayerList({ game, viewer }: { game: GameState; viewer: number }) {
 }
 
 // ───────────────────────── your cell ─────────────────────────
-function MyCell({ game, me }: { game: GameState; me: Player }) {
+export function MyCell({ game, me }: { game: GameState; me: Player }) {
   const setHoverCard = useUI((u) => u.setHoverCard);
   const nextCheck = CHECKINS.find((c) => c >= game.round + 1);
   const agents = me.agents + me.rookies;
@@ -189,7 +195,7 @@ function MyCell({ game, me }: { game: GameState; me: Player }) {
           const b = brainrot(id);
           const used = me.helpersUsed.includes(i);
           return (
-            <div key={id} className="ally-row" onMouseEnter={() => setHoverCard(id)} onMouseLeave={() => setHoverCard(null)}>
+            <div key={id} className="ally-row" onMouseEnter={() => setHoverCard(id)} onMouseLeave={() => setHoverCard(null)} onClick={() => setHoverCard(id)}>
               <span className="ally-str">
                 <Star size={11} />
                 {b.strength}
@@ -239,7 +245,7 @@ function LineupBar({ game, me, myTurn }: { game: GameState; me: Player; myTurn: 
 }
 
 // ───────────────────────── choices for a clicked space ─────────────────────────
-function ChoicePanel({ game, me }: { game: GameState; me: Player }) {
+export function ChoicePanel({ game, me, phone }: { game: GameState; me: Player; phone?: boolean }) {
   const pending = useUI((u) => u.pending);
   const setPending = useUI((u) => u.setPending);
   const answer = useStore((s) => s.answer);
@@ -262,6 +268,16 @@ function ChoicePanel({ game, me }: { game: GameState; me: Player }) {
         {clinic ? 'Deprogram a brainrot' : def.name}
         <button className="x" onClick={() => setPending(null)}>×</button>
       </div>
+      {phone && !clinic && (
+        <div className="choice-desc">
+          {def.text}
+          {bagTotal(tollFor(game, me, pending)) > 0 && (
+            <span className="choice-toll">
+              Patrol toll: <BagView bag={tollFor(game, me, pending)} />
+            </span>
+          )}
+        </div>
+      )}
       {helpers.length > 0 && (
         <div className="choice-workers">
           Send:
@@ -373,7 +389,7 @@ function CardTip() {
 }
 
 // ───────────────────────── prompts ─────────────────────────
-function ObjectiveModal({ game }: { game: GameState }) {
+export function ObjectiveModal({ game }: { game: GameState }) {
   const answer = useStore((s) => s.answer);
   const pr = game.prompt;
   if (pr?.type !== 'objective') return null;
@@ -397,7 +413,7 @@ function ObjectiveModal({ game }: { game: GameState }) {
   );
 }
 
-function PawnPanel({ game, me }: { game: GameState; me: Player }) {
+export function PawnPanel({ game, me }: { game: GameState; me: Player }) {
   const answer = useStore((s) => s.answer);
   const pr = game.prompt;
   const oneForOne = me.allies.some((id) => brainrot(id).ability?.k === 'pawnRate');
@@ -485,7 +501,7 @@ function Waiting({ game, viewer }: { game: GameState; viewer: number }) {
   );
 }
 
-function Handoff({ game, viewer }: { game: GameState; viewer: number }) {
+export function Handoff({ game, viewer }: { game: GameState; viewer: number }) {
   const pending = useStore((s) => s.handoffPending);
   const accept = useStore((s) => s.acceptHandoff);
   if (!pending) return null;
