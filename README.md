@@ -9,6 +9,8 @@ In 2026 a nine-year-old throws her strawberry squishy out of a car window for a 
 - **The comic** (8 pages, still panels): black-and-white noir illustration with the central figures in color. Panel art was generated with ChatGPT's image tool from the prompts in [docs/COMIC_PROMPTS.md](docs/COMIC_PROMPTS.md) and art-directed by the author; captions and lettering are added by the app.
 - **The game** (2–4 players, bots included, hot-seat on one screen): worker placement on a 3D city map. Gather resources, deprogram brainrots into allies with permanent abilities, grow your cell, and hijack Darth Berry's broadcasts.
 
+**On a phone:** scanning the poster's QR code opens a touch layout: the city as a list of tappable spaces, with Clinic, Cell, Table and 3D Board tabs, and the comic read one panel at a time. *Layout* on the title screen switches between Auto, Phone and Desktop, and the choice is remembered.
+
 **Rulebook:** open the game and choose **Rulebook**, or go straight to [burakdon.github.io/RotMania/#handbook](https://burakdon.github.io/RotMania/#handbook). It prints as an A5 booklet (use *Print / save as PDF*).
 
 **Comic book:** *The Berry That Came Back*, all eight pages with a cover and back cover, at [burakdon.github.io/RotMania/#comicbook](https://burakdon.github.io/RotMania/#comicbook). It also prints as an A5 booklet. In the game, *Read the story* plays it panel by panel and has a *Book view* button.

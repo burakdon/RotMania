@@ -17,10 +17,11 @@ import { useUI } from '../ui/uiStore';
 import { DISTRICT_RECTS, LINEUP_POS, PAD_POS, PAD_R } from './cityLayout';
 import { buildMeeple, buildResToken } from './tokens';
 
-export function CityScene({ game, viewer, onPad }: { game: GameState; viewer: number; onPad: (s: SpaceId) => void }) {
+/** `lite` is for phones: no shadows, 1x pixels, 24 fps. */
+export function CityScene({ game, viewer, onPad, lite }: { game: GameState; viewer: number; onPad: (s: SpaceId) => void; lite?: boolean }) {
   return (
-    <Canvas shadows dpr={[1, 1.25]} frameloop="demand" camera={{ position: [0, 17, 16.5], fov: 40, near: 0.5, far: 120 }} gl={{ antialias: false, powerPreference: 'low-power' }}>
-      <FrameCap fps={30} />
+    <Canvas shadows={!lite} dpr={lite ? 1 : [1, 1.25]} frameloop="demand" camera={{ position: [0, 17, 16.5], fov: 40, near: 0.5, far: 120 }} gl={{ antialias: false, powerPreference: 'low-power' }}>
+      <FrameCap fps={lite ? 24 : 30} />
       <color attach="background" args={['#141417']} />
       <Suspense fallback={null}>
         <Lights />
